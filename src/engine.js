@@ -873,12 +873,14 @@ const SCENES = {
       const g = SCENES.bariloche.groundAt;
       for (let x = 0; x < LW; x++) {
         const t = g(x), s = x > 1300 ? 0 : Math.max(0, Math.min(1, (x - 560) / 140));
+        // snow lies on the grass and thickens uphill: patchy first, then a layer, then all the way down
+        const th = s * (H - t + 2);
         for (let y = t; y < H; y++) {
-          const snow = BAYER[y & 3][x & 3] < s * 16;
+          const d = y - t, b = BAYER[y & 3][x & 3], snow = s < .2 ? d < 2 && b < s * 70 : d < th - 1 || (d < th + 1 && b > 8);
           px(c, x, y, snow ? (y < t + 2 ? '#ffffff' : y > t + 10 ? '#d8c0cc' : '#f8e4dc') : (y < t + 1 ? '#c8b860' : y > t + 9 ? '#6a6a2a' : '#8a8a3a'));
         }
       }
-      for (let i = 0; i < 220; i++) { const x = Math.round(R(0, 620)); if (x > 34 && x < 238) continue; rect(c, x, g(x) - R(1, 3), 1, 3, pick(['#a8a040', '#d8c060'])); }
+      for (let i = 0; i < 220; i++) { const x = Math.round(R(0, 575)); if (x > 34 && x < 238) continue; rect(c, x, g(x) - R(1, 3), 1, 3, pick(['#a8a040', '#d8c060'])); }
       for (let i = 0; i < 60; i++) { const x = Math.round(R(1310, LW)); rect(c, x, g(x) - R(1, 3), 1, 3, '#a8a040'); }
       bigText(c, 'BLEST', 60, 106, 4, '#8a4428');
       for (let x = 40; x <= 230; x += 38) { rect(c, x, 122, 3, 26, '#a88458'); rect(c, x + 2, 122, 1, 26, '#8a6a40'); }
