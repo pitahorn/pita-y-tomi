@@ -1,5 +1,5 @@
 (() => {
-let W = window.__GW || 384, PLAYER_SX = Math.round(W * .39);
+let W = window.__GW || 384, PLAYER_SX = Math.round(W * .39), TALL = false;
 const W0 = W, H = 168, GROUND = 152, FLY_Y = 96;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const OUT = '#2a1e24';
@@ -1020,15 +1020,16 @@ function occluder(kind, ox) {
 }
 function onlineFrame(a, t) {
   if (a <= .01) return;
-  const c = mainCtx, b = Math.round(13 * a), top = Math.round(18 * a), bot = Math.round(20 * a), F = '#2a2d36';
+  // phones: room for the ✕ above, the HUD and besito below
+  const c = mainCtx, b = Math.round((TALL ? 20 : 13) * a), top = Math.round((TALL ? 36 : 18) * a), bot = Math.round((TALL ? 36 : 20) * a), F = '#2a2d36', hy = top - 11;
   rect(c, 0, 0, W, top, F); rect(c, 0, Hs - bot, W, bot, F); rect(c, 0, 0, b, Hs, F); rect(c, W - b, 0, b, Hs, F);
   if (a < .95) return;
-  [[6, '#e05a5a'], [13, '#e0b84a'], [20, '#5ac06a']].forEach(([x, col]) => circle(c, x, 9, 2, col));
-  text(c, 'CLASE ONLINE', 28, 7, '#c8ccd6');
-  if (Math.floor(t * 1.5) % 2) circle(c, 80, 9, 2, '#e04040');
-  text(c, 'REC', 85, 7, '#e04040');
+  [[6, '#e05a5a'], [13, '#e0b84a'], [20, '#5ac06a']].forEach(([x, col]) => circle(c, x, hy + 2, 2, col));
+  text(c, 'CLASE ONLINE', 28, hy, '#c8ccd6');
+  if (Math.floor(t * 1.5) % 2) circle(c, 80, hy + 2, 2, '#e04040');
+  text(c, 'REC', 85, hy, '#e04040');
   for (let k = 0; k < 2; k++) { const tx = W - b - 34, ty = top + 3 + k * 25; rect(c, tx, ty, 32, 22, '#1a1c22'); rect(c, tx, ty, 32, 1, '#4a4e5a'); ell(c, tx + 16, ty + 11, 5, 5, k ? '#c8956a' : '#f0c8a0'); rect(c, tx + 11, ty + 5, 10, 3, k ? '#2a2a2a' : '#8a8a8a'); rect(c, tx + 10, ty + 16, 12, 6, k ? '#4a7ad0' : '#6a6e78'); text(c, k ? '+42' : 'PROFE', tx + 2, ty + 17, '#ffffff'); }
-  const cy = Hs - bot + 7, cx = Math.round(W / 2);
+  const cy = Hs - bot + (TALL ? 6 : 7), cx = Math.round(W / 2);
   rect(c, cx - 46, cy, 4, 6, '#e8e8e8'); rect(c, cx - 47, cy + 6, 6, 1, '#e8e8e8'); line(c, cx - 49, cy - 1, cx - 39, cy + 8, '#e04040');
   rect(c, cx - 30, cy + 1, 8, 6, '#e8e8e8'); rect(c, cx - 22, cy + 2, 3, 4, '#e8e8e8');
   rect(c, cx - 12, cy, 9, 6, '#e8e8e8'); px(c, cx - 10, cy + 6, '#e8e8e8');
@@ -1040,12 +1041,13 @@ function stretchEdges(cv, off, interior) {
   for (const dx of [x, x + w]) {
     if (offY > 0 && interior) { ctx.drawImage(cv, 0, 13, w, 1, dx, -offY, w, offY + 13); ctx.drawImage(cv, 0, 0, w, 12, dx, -offY, w, 12); }
     else if (offY > 0) ctx.drawImage(cv, 0, 0, w, 1, dx, -offY, w, offY);
-    if (below > 0) ctx.drawImage(cv, 0, H - 1, w, 1, dx, H, w, below);
+    // tile the last 4 rows (one Bayer period): stretching a single dithered row draws stripes
+    for (let y = H; y < H + below; y += 4) ctx.drawImage(cv, 0, H - 4, w, 4, dx, y, w, 4);
   }
 }
 function setViewport(w, hs) {
-  W = Math.round(w); PLAYER_SX = Math.round(W * (hs > H ? .64 : .39)); canvas.width = W;
-  Hs = Math.max(H, Math.round(hs)); offY = Hs === H ? 0 : Math.round(Math.max(0, Hs * .72 - 140));
+  W = Math.round(w); TALL = hs > H; PLAYER_SX = Math.round(W * (TALL ? .5 : .39)); canvas.width = W;
+  Hs = Math.max(H, Math.round(hs)); offY = Hs === H ? 0 : Math.round(Math.max(0, Hs * .66 - 140));
   canvas.height = Hs; mainCtx.imageSmoothingEnabled = false;
   skyImg = mainCtx.createImageData(W, Hs); sky32 = new Uint32Array(skyImg.data.buffer); drops = [];
   for (const k in built) built[k].skyTab = skyTable(SCENES[k].skyStops);
@@ -1230,6 +1232,13 @@ function weather(dt, s) {
   });
 }
 function showCaption(text) { capQueue.push(text); }
+// phones are too narrow for look-ahead framing: keep whoever is walking centred
+function partyMid() {
+  const xs = [pos.tomi];
+  if (joined) xs.push(pos.pita);
+  if (milkyState === 'follow') xs.push(milkyX);
+  return (Math.min(...xs) + Math.max(...xs)) / 2;
+}
 const introOff = () => intro === 0 ? 58 : intro > 0 ? Math.round(58 * (1 - smooth(intro / 1.2))) : 0;
 const HOP = .9, hopY = who => hopT[who] > 0 ? Math.round(Math.abs(Math.sin(Math.PI * 2 * (1 - hopT[who] / HOP))) * 8) : 0;
 const drawStackLater = [];
@@ -1285,7 +1294,7 @@ function frame(now) {
     const a = altitude(milkyX), fy = footAt(milkyX);
     milkyY += (fy + (FLY_Y + 16 + Math.sin(t * 1.6 + 2) * 2 - fy) * a - milkyY) * Math.min(1, dt * 6);
   }
-  SEGS.forEach(s => { if (s.kiss !== undefined && !s.kissed && joined && pos[lead] >= s.start + s.kiss) { s.kissed = true; dating = true; lockT = 2.2; facing = 1; kiss(); booksDropped = true; for (const w of ['pita', 'tomi']) for (let i = 0; i < 12; i++) fx.push({ x: pos[w] + (Math.random() - .5) * 10, y: GROUND - 30 - Math.random() * 14, vx: (Math.random() - .5) * 50, vy: -40 - Math.random() * 30, life: 1.6, kind: 'paper' }); hearts((pos.pita + pos.tomi) / 2, GROUND - 56, 8); showCaption('7 · JULIO · 2017'); } });
+  SEGS.forEach(s => { if (s.kiss !== undefined && !s.kissed && joined && pos[lead] >= s.start + s.kiss) { s.kissed = true; dating = true; lockT = 2.2; facing = 1; kiss(); booksDropped = true; for (const w of ['pita', 'tomi']) for (let i = 0; i < 12; i++) fx.push({ x: pos[w] + (Math.random() - .5) * 10, y: GROUND - 30 - Math.random() * 14, vx: (Math.random() - .5) * 50, vy: -40 - Math.random() * 30, life: 1.6, kind: 'paper' }); hearts((pos.pita + pos.tomi) / 2, GROUND - 56, 8); showCaption('7 de julio de 2017'); } });
   if (!gradDone && joined && pos.tomi >= at('graduate') + 4) {
     gradDone = true; hopT.pita = hopT.tomi = hopT.milky = HOP; lockT = HOP + .4;
     for (let i = 0; i < 70; i++) fx.push({ x: cam + Math.random() * W, y: -offY - 10 - Math.random() * 70, vx: (Math.random() - .5) * 20, vy: 18 + Math.random() * 22, life: 2.6, kind: i % 7 === 0 ? 'diploma' : 'confetti', col: BOOK_COLS[i % BOOK_COLS.length] });
@@ -1299,14 +1308,14 @@ function frame(now) {
     prop.t += dt;
     if (prop.t > 1.4 && !prop.ask) { prop.ask = true; showCaption('¿Te casarías conmigo?'); }
     if (prop.t > 4.8 && !prop.yes) {
-      prop.yes = true; showCaption('1 · 7 · 2026 ¡DIJO QUE SÍ! ♥'); hearts(pos.pita + 10, footAt(pos.pita) - 50, 24); kissT = 2.4; kissHearts = false; prop.hT = 0;
+      prop.yes = true; showCaption('¡Dijo que sí! ♥'); showCaption('1 de julio de 2026'); hearts(pos.pita + 10, footAt(pos.pita) - 50, 24); kissT = 2.4; kissHearts = false; prop.hT = 0;
       for (let i = 0; i < 90; i++) fx.push({ x: cam + Math.random() * W, y: -offY - 10 - Math.random() * 80, vx: (Math.random() - .5) * 20, vy: 18 + Math.random() * 22, life: 2.6, kind: 'confetti', col: BOOK_COLS[i % BOOK_COLS.length] });
     }
     if (prop.yes && prop.t < 8.5) { prop.hT -= dt; if (prop.hT <= 0) { prop.hT = .12; fx.push({ x: pos.pita + 10 + (Math.random() - .5) * 60, y: footAt(pos.pita) - 30 - Math.random() * 30, vx: (Math.random() - .5) * 16, vy: -16 - Math.random() * 10, life: 1.6, kind: Math.random() < .25 ? 'H' : 'h' }); } }
-    if (prop.t > 9 && !prop.done) { prop.done = true; banner.hidden = true; capQueue = []; if (window.onPTFinal) window.onPTFinal(); }
+    if (prop.t > 9.8 && !prop.done) { prop.done = true; banner.hidden = true; capQueue = []; if (window.onPTFinal) window.onPTFinal(); }
   }
   captions.forEach(c => { if (!c.shown && pos[lead] >= c.x) { c.shown = true; showCaption(c.text); } });
-  cam += (pos[lead] - (mode === 'landing' ? Math.round(W * .62) : PLAYER_SX) - cam) * Math.min(1, dt * 5);
+  cam += ((mode === 'landing' ? pos[lead] - Math.round(W * .62) : TALL ? partyMid() - W / 2 : pos[lead] - PLAYER_SX) - cam) * Math.min(1, dt * 5);
 
   const cp = colPairs();
   renderSky(cp); renderFar(cp);

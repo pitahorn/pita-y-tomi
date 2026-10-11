@@ -3,8 +3,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Save the date: Pita & Tomi, 9 de octubre 2027.">
-<meta property="og:title" content="Pita & Tomi · 9 de octubre 2027">
+<meta name="description" content="Save the date: Pita & Tomi, 9 de octubre de 2027.">
+<meta property="og:title" content="Pita & Tomi · 9 de octubre de 2027">
 <meta property="og:description" content="Save the date ♥ Recorre nuestra historia.">
 <title>Pita & Tomi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,7 +38,7 @@ body.playing{overflow:hidden}
 .std{font-family:var(--f-px);font-weight:700;font-size:clamp(17px,5vw,24px);letter-spacing:.22em;color:var(--gold);text-shadow:2px 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink)}
 .names{font-family:var(--f-title);font-size:clamp(22px,7.4vw,48px);white-space:nowrap;color:#fff;text-shadow:4px 4px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink)}
 .names b{color:var(--rose);font-weight:400}
-.pdate{width:100%;padding:8px 10px;background:rgba(15,12,28,.62);font-family:var(--f-px);font-weight:700;font-size:clamp(17px,5.3vw,40px);letter-spacing:.03em;white-space:nowrap;color:var(--gold);text-shadow:3px 3px 0 var(--ink)}
+.pdate{width:100%;padding:8px 10px;background:rgba(15,12,28,.62);font-family:var(--f-px);font-weight:700;font-size:clamp(15px,4.6vw,40px);letter-spacing:.03em;white-space:nowrap;color:var(--gold);text-shadow:3px 3px 0 var(--ink)}
 .ph{position:absolute;width:21px;height:18px;image-rendering:pixelated;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23e8506a' d='M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z'/%3E%3C/svg%3E") center/contain no-repeat;animation:rise 3.6s ease-out forwards}
 @keyframes rise{0%{transform:translate(0,0) scale(.6);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),-170px) scale(1);opacity:0}}
 .sp{position:absolute;width:15px;height:15px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath fill='%23fff6c8' d='M2 0h1v2h2v1H3v2H2V3H0V2h2z'/%3E%3C/svg%3E") center/contain no-repeat;animation:tw 2.4s steps(2) infinite}
@@ -53,7 +53,7 @@ body.playing{overflow:hidden}
 .hud #year{font-size:24px;vertical-align:-2px}
 .rings{height:1.15em;width:auto;margin-right:.45em;vertical-align:-.12em;image-rendering:pixelated}
 .hint{display:none}
-.banner{position:absolute;left:50%;top:12%;transform:translateX(-50%);font-family:var(--f-px);font-weight:700;font-size:clamp(26px,10vw,48px);letter-spacing:.05em;color:#fff;text-align:center;white-space:nowrap;text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,0 2px 0 #000,0 -2px 0 #000,2px 0 0 #000,-2px 0 0 #000;pointer-events:none}
+.banner{position:absolute;left:50%;top:12%;transform:translateX(-50%);font-family:var(--f-px);font-weight:700;font-size:clamp(26px,10vw,48px);letter-spacing:.05em;color:#fff;text-align:center;width:94%;white-space:pre-line;text-wrap:balance;line-height:1.25;text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,0 2px 0 #000,0 -2px 0 #000,2px 0 0 #000,-2px 0 0 #000;pointer-events:none}
 body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 
 .cta{justify-self:stretch;width:100%;min-height:68px;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink),0 8px 0 4px var(--ink);border-radius:0;cursor:pointer;padding:10px 14px;transition:transform .12s ease}
@@ -77,16 +77,17 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 .onb{position:absolute;inset:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;pointer-events:none;transition:opacity .45s ease}
 .onb.out{opacity:0}
 .onb-l{background:rgba(10,8,20,.6)}
-.onb-r{position:relative;display:grid;place-content:center;justify-items:center;gap:16px;padding:0 10px;background:rgba(255,255,255,.07);border-left:3px dashed rgba(251,243,228,.8);text-align:center}
+.onb-r{position:relative;display:grid;align-content:end;justify-items:center;gap:16px;padding:0 10px calc(64px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.07);border-left:3px dashed rgba(251,243,228,.8);text-align:center}
 .onb-r p{margin:0;font-family:var(--f-px);font-weight:700;font-size:19px;line-height:1.4;color:#fff;text-shadow:2px 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink)}
-.hand{width:60px;image-rendering:pixelated;animation:tap 1.1s ease-in-out infinite}
+.hand{display:block;width:60px;image-rendering:pixelated;animation:tap 1.1s ease-in-out infinite}
 @keyframes tap{0%,100%{transform:translateY(0)}45%{transform:translateY(8px) scale(.94)}}
-.ring{position:absolute;left:50%;top:calc(50% - 46px);width:80px;height:80px;margin:-40px 0 0 -40px;border:3px solid var(--cream);border-radius:50%;animation:ripple 1.6s ease-out infinite}
+.tap{position:relative;display:block}
+.ring{position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px 0 0 -40px;border:3px solid var(--cream);border-radius:50%;animation:ripple 1.6s ease-out infinite}
 .ring.d2{animation-delay:.8s}
 @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.7);opacity:0}}
-.kiss{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink);padding:10px 22px;min-height:56px;border-radius:999px;cursor:pointer;animation:pop .35s ease-out}
+.kiss{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink);padding:10px 22px;min-height:56px;border-radius:999px;cursor:pointer;animation:pop .35s ease-out}
 @keyframes pop{0%{transform:translateX(-50%) scale(.6);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
-.kiss-tip{position:fixed;z-index:12;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-family:var(--f-px);font-weight:700;font-size:16px;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px;white-space:nowrap;pointer-events:none;animation:pop .35s ease-out}
+.kiss-tip{position:fixed;z-index:12;left:50%;bottom:calc(152px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-family:var(--f-px);font-weight:700;font-size:16px;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px;white-space:nowrap;pointer-events:none;animation:pop .35s ease-out}
 .kiss-tip::after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-8px;border:8px solid transparent;border-top-color:var(--ink)}
 .fin{position:fixed;inset:0;z-index:14;display:grid;place-content:center;justify-items:center;gap:12px;text-align:center;padding:24px;background:rgba(15,12,28,.78);opacity:0;transition:opacity .6s ease}
 .fin.in{opacity:1}
@@ -106,7 +107,7 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
   <img class="bg" src="__PHOTO__" alt="Pita y Tomi abrazados en Bariloche, mirando el lago Nahuel Huapi">
   <canvas class="side l" id="side-l" aria-hidden="true"></canvas>
   <canvas class="side r" id="side-r" aria-hidden="true"></canvas>
-  <div class="ov ov-top"><span class="std">SAVE THE DATE</span><span class="names">PITA <b>&amp;</b> TOMI</span><span class="pdate"><img class="rings" alt="">9 de octubre 2027</span></div>
+  <div class="ov ov-top"><span class="std">SAVE THE DATE</span><span class="names">PITA <b>&amp;</b> TOMI</span><span class="pdate"><img class="rings" alt="">9 de octubre de 2027</span></div>
   <div class="bottom">
     <div class="ava" id="strip">
       <div class="screen" id="screen">
@@ -122,7 +123,7 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 
 <section class="play" id="play" hidden aria-label="Nuestra historia">
   <div class="stage" id="stage"><span class="edge l" id="edge-l" aria-hidden="true">◀</span><span class="edge r" id="edge-r" aria-hidden="true">▶</span></div>
-  <div class="onb" id="onb" hidden><div class="onb-l"></div><div class="onb-r"><span class="ring"></span><span class="ring d2"></span><img class="hand" id="hand" alt=""><p>Mantén presionado<br>aquí para avanzar</p></div></div>
+  <div class="onb" id="onb" hidden><div class="onb-l"></div><div class="onb-r"><span class="tap"><span class="ring"></span><span class="ring d2"></span><img class="hand" id="hand" alt=""></span><p>Mantén presionado<br>aquí para avanzar</p></div></div>
   <button class="close" id="b-close" aria-label="Salir">✕</button>
 </section>
 <button class="kiss" id="b-kiss" hidden>♥ besito</button>
@@ -130,7 +131,7 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 <div class="fin" id="fin" hidden>
   <span class="s">SAVE THE DATE</span>
   <span class="b">¡NOS CASAMOS!</span>
-  <span class="d"><img class="rings" alt="">9 de octubre 2027</span>
+  <span class="d"><img class="rings" alt="">9 de octubre de 2027</span>
   <span class="n">Pita &amp; Tomi ♥ Milky</span>
   <div class="row"><button class="again" id="b-again">↻ Ver de nuevo</button><button class="home" id="b-home">Volver al inicio</button></div>
 </div>
