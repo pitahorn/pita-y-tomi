@@ -75,7 +75,7 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 @keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 .note{margin:0;text-align:center;font-size:15px;color:#e6d8ee;max-width:32ch}
 
-.play{position:fixed;inset:0;z-index:10;background:var(--night);opacity:0;transform:scale(1.02);transition:opacity .45s ease,transform .45s ease;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.play{touch-action:manipulation;position:fixed;inset:0;z-index:10;background:var(--night);opacity:0;transform:scale(1.02);transition:opacity .45s ease,transform .45s ease;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .play.in{opacity:1;transform:none}
 .stage{position:absolute;inset:0}
 .play .screen{position:absolute;inset:0;width:100%;height:100%;border:0;box-shadow:none;aspect-ratio:auto!important}
@@ -96,7 +96,7 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 .ring{position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px 0 0 -40px;border:3px solid var(--cream);border-radius:50%;animation:ripple 1.6s ease-out infinite}
 .ring.d2{animation-delay:.8s}
 @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.7);opacity:0}}
-.kiss{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink);padding:10px 22px;min-height:56px;border-radius:999px;cursor:pointer;animation:pop .35s ease-out}
+.kiss{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink);padding:10px 22px;min-height:56px;border-radius:999px;cursor:pointer;animation:pop .35s ease-out}
 @keyframes pop{0%{transform:translateX(-50%) scale(.6);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 .kiss-tip{position:fixed;z-index:12;left:50%;bottom:calc(152px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-family:var(--f-px);font-weight:700;font-size:16px;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px;white-space:nowrap;pointer-events:none;animation:pop .35s ease-out}
 .kiss-tip::after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-8px;border:8px solid transparent;border-top-color:var(--ink)}
