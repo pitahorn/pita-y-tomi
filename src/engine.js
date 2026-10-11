@@ -904,7 +904,7 @@ const SEGS = [
   { scene: 'puc', place: 'INGENIERÍA UC', from: 380, len: 320, occ: 'wall', years: [[0, '2023']], outfit: 'student', graduate: 180, meones: 180 },
   { scene: 'depita', place: 'DEPITA', from: 0, len: 496, occ: 'wall', years: [[0, '2024'], [360, '2025']], sofa: 290, seats: { tomi: 326, pita: 356, milky: 384 } },
   { scene: 'maraton', place: 'MARATÓN DE SANTIAGO', from: 0, len: 480, years: [[0, '2026']], arch: 400 },
-  { scene: 'bariloche', place: 'BARILOCHE · CERRO CATEDRAL', from: 0, len: 960, years: [[0, '2026']], ring: 900 },
+  { scene: 'bariloche', place: 'BARILOCHE · CERRO CATEDRAL', from: 0, len: 960, years: [[0, '2026']], caps: [[560, '1 de julio de 2026']], ring: 900 },
 ];
 const segWith = k => SEGS.find(s => s[k] !== undefined), at = k => { const s = segWith(k); return s.start + s[k]; };
 let acc0 = 0;
@@ -1035,14 +1035,30 @@ function onlineFrame(a, t) {
   rect(c, cx - 12, cy, 9, 6, '#e8e8e8'); px(c, cx - 10, cy + 6, '#e8e8e8');
   rect(c, cx + 8, cy - 1, 34, 9, '#d04040'); text(c, 'SALIR', cx + 15, cy + 1, '#ffffff');
 }
+// the floor under the world: last rows blurred sideways, so dither and posts no stretch into stripes
+function floorStrip(cv) {
+  if (cv._floor) return cv._floor;
+  const w = cv.width, d = cv.getContext('2d').getImageData(0, H - 4, w, 4).data, R = 6;
+  const out = document.createElement('canvas'); out.width = w; out.height = 1;
+  const oc = out.getContext('2d'), img = oc.createImageData(w, 1);
+  for (let x = 0; x < w; x++) {
+    let r = 0, g = 0, b = 0, a = 0, n = 0;
+    for (let k = -R; k <= R; k++) for (let y = 0; y < 4; y++) {
+      const i = (y * w + ((x + k) % w + w) % w) * 4, al = d[i + 3];
+      r += d[i] * al; g += d[i + 1] * al; b += d[i + 2] * al; a += al; n++;
+    }
+    img.data.set(a ? [r / a, g / a, b / a, a / n] : [0, 0, 0, 0], x * 4);
+  }
+  oc.putImageData(img, 0, 0);
+  return cv._floor = out;
+}
 function stretchEdges(cv, off, interior) {
   if (Hs === H) return;
   const w = cv.width, x = -Math.round(((off % w) + w) % w), below = Hs - offY - H;
   for (const dx of [x, x + w]) {
     if (offY > 0 && interior) { ctx.drawImage(cv, 0, 13, w, 1, dx, -offY, w, offY + 13); ctx.drawImage(cv, 0, 0, w, 12, dx, -offY, w, 12); }
     else if (offY > 0) ctx.drawImage(cv, 0, 0, w, 1, dx, -offY, w, offY);
-    // tile the last 4 rows (one Bayer period): stretching a single dithered row draws stripes
-    for (let y = H; y < H + below; y += 4) ctx.drawImage(cv, 0, H - 4, w, 4, dx, y, w, 4);
+    if (below > 0) ctx.drawImage(floorStrip(cv), 0, 0, w, 1, dx, H, w, below);
   }
 }
 function setViewport(w, hs) {
@@ -1070,7 +1086,7 @@ function resetWorld() {
   pos = { tomi: 0, pita: at('meet') }; lead = 'tomi'; joined = false; dating = false;
   milkyState = 'wild'; milkyX = at('adopt'); milkyY = GROUND;
   riding = false; rideDone = false; leavingTrain = null; ringFound = false; prop = null; faint = null; lockT = 0; hopT = { pita: 0, tomi: 0, milky: 0 }; booksDropped = false; gradDone = false; sofaS = null; intro = 0; hint.hidden = false; kissT = 0; dragon = false; facing = 1;
-  captions = SEGS.flatMap(s => s.years.map(([r, text]) => ({ x: s.start + r, text, shown: false }))).filter((c, i, all) => i === 0 || c.text !== all[i - 1].text); capQueue = []; bannerT = 0;
+  captions = SEGS.flatMap(s => s.years.concat(s.caps || []).map(([r, text]) => ({ x: s.start + r, text, shown: false }))).filter((c, i, all) => i === 0 || c.text !== all[i - 1].text); capQueue = []; bannerT = 0;
   lastOutfit = {}; fx = []; cam = -PLAYER_SX; banner.hidden = true;
 }
 function jumpTo(x) {
@@ -1288,7 +1304,7 @@ function frame(now) {
   else if (faint) { faint.t += dt; if (faint.t > 3.2) { faint = null; } else if (faint.t > 2.75 && !faint.up) { faint.up = true; burst(pos.tomi, GROUND - 22); } }
   else if (joined) pos.tomi += (pos.pita - (kissing ? 23 : modeAt(pos.pita) === 'fly' ? 44 : 34) * facing - pos.tomi) * Math.min(1, dt * (kissing ? 7 : 4));
   const ls = SEGS[segAt(pos[lead])];
-  if (milkyState === 'wild' && Math.abs(pos[lead] - milkyX) < 14) { milkyState = 'follow'; hearts(milkyX, GROUND - 34); hopT.pita = hopT.tomi = hopT.milky = HOP; lockT = HOP; }
+  if (milkyState === 'wild' && Math.abs(pos[lead] - milkyX) < 14) { milkyState = 'follow'; showCaption('¡Milky!'); hearts(milkyX, GROUND - 34); hopT.pita = hopT.tomi = hopT.milky = HOP; lockT = HOP; }
   if (milkyState === 'follow' && !sofaS) {
     milkyX += ((prop ? pos.pita - 30 : pos.tomi - (modeAt(milkyX) === 'fly' ? 36 : 30) * facing) - milkyX) * Math.min(1, dt * 3);
     const a = altitude(milkyX), fy = footAt(milkyX);
@@ -1308,11 +1324,11 @@ function frame(now) {
     prop.t += dt;
     if (prop.t > 1.4 && !prop.ask) { prop.ask = true; showCaption('¿Te casarías conmigo?'); }
     if (prop.t > 4.8 && !prop.yes) {
-      prop.yes = true; showCaption('¡Dijo que sí! ♥'); showCaption('1 de julio de 2026'); hearts(pos.pita + 10, footAt(pos.pita) - 50, 24); kissT = 2.4; kissHearts = false; prop.hT = 0;
+      prop.yes = true; showCaption('¡Obvio que sí! ♥'); hearts(pos.pita + 10, footAt(pos.pita) - 50, 24); kissT = 2.4; kissHearts = false; prop.hT = 0;
       for (let i = 0; i < 90; i++) fx.push({ x: cam + Math.random() * W, y: -offY - 10 - Math.random() * 80, vx: (Math.random() - .5) * 20, vy: 18 + Math.random() * 22, life: 2.6, kind: 'confetti', col: BOOK_COLS[i % BOOK_COLS.length] });
     }
     if (prop.yes && prop.t < 8.5) { prop.hT -= dt; if (prop.hT <= 0) { prop.hT = .12; fx.push({ x: pos.pita + 10 + (Math.random() - .5) * 60, y: footAt(pos.pita) - 30 - Math.random() * 30, vx: (Math.random() - .5) * 16, vy: -16 - Math.random() * 10, life: 1.6, kind: Math.random() < .25 ? 'H' : 'h' }); } }
-    if (prop.t > 9.8 && !prop.done) { prop.done = true; banner.hidden = true; capQueue = []; if (window.onPTFinal) window.onPTFinal(); }
+    if (prop.t > 9 && !prop.done) { prop.done = true; banner.hidden = true; capQueue = []; if (window.onPTFinal) window.onPTFinal(); }
   }
   captions.forEach(c => { if (!c.shown && pos[lead] >= c.x) { c.shown = true; showCaption(c.text); } });
   cam += ((mode === 'landing' ? pos[lead] - Math.round(W * .62) : TALL ? partyMid() - W / 2 : pos[lead] - PLAYER_SX) - cam) * Math.min(1, dt * 5);
