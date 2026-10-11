@@ -1298,6 +1298,7 @@ function frame(now) {
   if (!rideDone && !riding) trainSmoke(SEGS[0].start + SEGS[0].train - 70, dt);
   if (!joined && pos.tomi >= pos.pita - 24) { joined = true; lead = 'pita'; hopT.pita = hopT.tomi = HOP; lockT = HOP; }
   if (kissT > 0) kissT -= dt;
+  if (boomCD > 0) boomCD -= dt;
   const kissing = kissT > 0;
   if (prop) pos.tomi += (pos.pita + (prop.t > 4.8 ? 23 : 24) - pos.tomi) * Math.min(1, dt * 3);
   else if (sofaS) { const ss = segWith('sofa'); sofaS.t += dt; for (const w of ['pita', 'tomi']) pos[w] += (ss.start + ss.seats[w] - pos[w]) * Math.min(1, dt * 4); milkyX += (ss.start + ss.seats.milky - milkyX) * Math.min(1, dt * 4); if (sofaS.t > 5) { sofaS = null; facing = 1; } }
@@ -1391,7 +1392,24 @@ addEventListener('keyup', e => {
   if (['ArrowRight', 'd', 'D'].includes(e.key)) held.delete('r');
   syncDir();
 });
-$('b-kiss').addEventListener('click', kiss);
+// rage-kiss: 5 taps in 2 s → heart explosion, at most one every 3 s
+let taps = [], boomCD = 0;
+function tapBesito() {
+  const now = performance.now();
+  if (kissT > 0) hearts((pos.pita + pos.tomi) / 2, footAt(pos.pita) - 50, 2);
+  kiss();
+  taps = taps.filter(t0 => now - t0 < 2000); taps.push(now);
+  if (taps.length >= 5 && boomCD <= 0) { taps = []; boomCD = 3; boom(); }
+}
+function boom() {
+  const mx = (pos.pita + pos.tomi) / 2, my = footAt(pos.pita) - 40 + (FLY_Y - footAt(pos.pita)) * altitude(pos.pita);
+  for (let i = 0, n = reduced ? 12 : 40; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = 30 + Math.random() * 60;
+    fx.push({ x: mx, y: my, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 15, life: 1.4 + Math.random() * .6, kind: Math.random() < .35 ? 'H' : 'h' });
+  }
+  if (window.onPTBoom) window.onPTBoom();
+}
+$('b-kiss').addEventListener('click', tapBesito);
 
 const resetFlags = () => SEGS.forEach(s => { s.kissed = false; s.fainted = false; s.sofaDone = false; });
 function setLanding() { resetFlags(); resetWorld(); jumpTo(at('ring') - 110); intro = -1; cam = pos.pita - Math.round(W * .62); ringFound = true; kissT = 0; landT = 2.5; facing = 1; mode = 'landing'; }

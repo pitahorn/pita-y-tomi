@@ -48,6 +48,9 @@ body.playing{overflow:hidden}
 .names b{color:var(--rose);font-weight:400}
 .pdate{width:100%;padding:8px 10px;background:rgba(15,12,28,.62);font-family:var(--f-px);font-weight:700;font-size:clamp(15px,4.6vw,40px);letter-spacing:.03em;white-space:nowrap;color:var(--gold);text-shadow:3px 3px 0 var(--ink)}
 .ph{position:absolute;width:21px;height:18px;image-rendering:pixelated;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23e8506a' d='M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z'/%3E%3C/svg%3E") center/contain no-repeat;animation:rise 3.6s ease-out forwards}
+.screen.shake{animation:shake .4s steps(8)}
+@keyframes shake{0%,100%{transform:none}25%{transform:translate(-4px,2px)}50%{transform:translate(4px,-2px)}75%{transform:translate(-2px,-3px)}}
+.boom-h{z-index:4;animation-duration:2.4s}
 @keyframes rise{0%{transform:translate(0,0) scale(.6);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),-170px) scale(1);opacity:0}}
 .sp{position:absolute;width:15px;height:15px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath fill='%23fff6c8' d='M2 0h1v2h2v1H3v2H2V3H0V2h2z'/%3E%3C/svg%3E") center/contain no-repeat;animation:tw 2.4s steps(2) infinite}
 @keyframes tw{50%{opacity:.15}}
@@ -1451,6 +1454,7 @@ function frame(now) {
   if (!rideDone && !riding) trainSmoke(SEGS[0].start + SEGS[0].train - 70, dt);
   if (!joined && pos.tomi >= pos.pita - 24) { joined = true; lead = 'pita'; hopT.pita = hopT.tomi = HOP; lockT = HOP; }
   if (kissT > 0) kissT -= dt;
+  if (boomCD > 0) boomCD -= dt;
   const kissing = kissT > 0;
   if (prop) pos.tomi += (pos.pita + (prop.t > 4.8 ? 23 : 24) - pos.tomi) * Math.min(1, dt * 3);
   else if (sofaS) { const ss = segWith('sofa'); sofaS.t += dt; for (const w of ['pita', 'tomi']) pos[w] += (ss.start + ss.seats[w] - pos[w]) * Math.min(1, dt * 4); milkyX += (ss.start + ss.seats.milky - milkyX) * Math.min(1, dt * 4); if (sofaS.t > 5) { sofaS = null; facing = 1; } }
@@ -1544,7 +1548,24 @@ addEventListener('keyup', e => {
   if (['ArrowRight', 'd', 'D'].includes(e.key)) held.delete('r');
   syncDir();
 });
-$('b-kiss').addEventListener('click', kiss);
+// rage-kiss: 5 taps in 2 s → heart explosion, at most one every 3 s
+let taps = [], boomCD = 0;
+function tapBesito() {
+  const now = performance.now();
+  if (kissT > 0) hearts((pos.pita + pos.tomi) / 2, footAt(pos.pita) - 50, 2);
+  kiss();
+  taps = taps.filter(t0 => now - t0 < 2000); taps.push(now);
+  if (taps.length >= 5 && boomCD <= 0) { taps = []; boomCD = 3; boom(); }
+}
+function boom() {
+  const mx = (pos.pita + pos.tomi) / 2, my = footAt(pos.pita) - 40 + (FLY_Y - footAt(pos.pita)) * altitude(pos.pita);
+  for (let i = 0, n = reduced ? 12 : 40; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = 30 + Math.random() * 60;
+    fx.push({ x: mx, y: my, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 15, life: 1.4 + Math.random() * .6, kind: Math.random() < .35 ? 'H' : 'h' });
+  }
+  if (window.onPTBoom) window.onPTBoom();
+}
+$('b-kiss').addEventListener('click', tapBesito);
 
 const resetFlags = () => SEGS.forEach(s => { s.kissed = false; s.fainted = false; s.sofaDone = false; });
 function setLanding() { resetFlags(); resetWorld(); jumpTo(at('ring') - 110); intro = -1; cam = pos.pita - Math.round(W * .62); ringFound = true; kissT = 0; landT = 2.5; facing = 1; mode = 'landing'; }
@@ -1670,6 +1691,16 @@ const names = Object.keys(SCENES);
   $('b-again').addEventListener('click', () => { fin.classList.remove('in'); setTimeout(() => { fin.hidden = true; }, 300); window.PT.start(gameW(), gameH()); play.classList.remove('moved'); onb.hidden = false; onb.classList.remove('out'); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !play.hidden) closeGame(); });
   window.onPTFinal = () => { release(); fin.hidden = false; requestAnimationFrame(() => fin.classList.add('in')); };
+  window.onPTBoom = () => {
+    if (reduced) return;
+    const scr = $('screen'); scr.classList.remove('shake'); void scr.offsetWidth; scr.classList.add('shake');
+    for (let i = 0; i < 18; i++) {
+      const h = document.createElement('i'), left = i % 2 === 0; h.className = 'ph boom-h';
+      h.style.left = (left ? 2 + Math.random() * 14 : 80 + Math.random() * 14) + '%'; h.style.top = (45 + Math.random() * 35) + '%';
+      h.style.setProperty('--dx', ((left ? 1 : -1) * (10 + Math.random() * 40)) + 'px'); h.style.animationDelay = (Math.random() * .5) + 's';
+      $('stage').appendChild(h); setTimeout(() => h.remove(), 3100);
+    }
+  };
   window.onPTMove = () => { if (!play.classList.contains('moved')) { play.classList.add('moved'); onb.classList.add('out'); setTimeout(() => { onb.hidden = true; }, 450); } };
 
   let side = null, downAt = 0, timer = 0;
