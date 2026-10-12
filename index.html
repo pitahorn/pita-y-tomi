@@ -96,7 +96,7 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 .ring{position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px 0 0 -40px;border:3px solid var(--cream);border-radius:50%;animation:ripple 1.6s ease-out infinite}
 .ring.d2{animation-delay:.8s}
 @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.7);opacity:0}}
-.kiss{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink);padding:10px 22px;min-height:56px;border-radius:999px;cursor:pointer;animation:pop .35s ease-out}
+.kiss{white-space:nowrap;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink);padding:10px 22px;min-height:56px;border-radius:999px;cursor:pointer;animation:pop .35s ease-out}
 @keyframes pop{0%{transform:translateX(-50%) scale(.6);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 .kiss-tip{position:fixed;z-index:12;left:50%;bottom:calc(152px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-family:var(--f-px);font-weight:700;font-size:16px;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px;white-space:nowrap;pointer-events:none;animation:pop .35s ease-out}
 .kiss-tip::after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-8px;border:8px solid transparent;border-top-color:var(--ink)}
@@ -111,6 +111,34 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 .fin .again{background:var(--rose);color:var(--ink);box-shadow:0 0 0 4px var(--ink)}
 .fin .home{background:transparent;color:var(--cream)}
 [hidden]{display:none!important}
+/* Desafío 42K */
+body.racing .hud,body.racing .edge,body.racing .onb{display:none}
+body.racing .banner{top:30%}
+.rhud,.ritems{display:none}
+.rhud{position:absolute;z-index:6;left:10px;top:calc(10px + env(safe-area-inset-top,0px));width:min(58vw,260px);gap:5px;font-family:var(--f-px);font-weight:700;color:#fff;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;pointer-events:none}
+body.racing .rhud{display:grid}
+.rhud .top{display:flex;gap:10px;align-items:baseline;font-size:15px}
+.rhud .lives{color:var(--rose);font-size:18px;letter-spacing:2px}
+.rbar{display:grid;grid-template-columns:22px 1fr;align-items:center;gap:6px}
+.rbar[hidden]{display:none}
+.rbar i{font-style:normal;font-size:15px;text-align:center}
+.rbar b{display:block;height:11px;border:2px solid var(--ink);background:rgba(15,12,28,.6);position:relative;box-shadow:0 0 0 1px rgba(251,243,228,.6)}
+.rbar b span{position:absolute;left:0;top:0;bottom:0;background:var(--c,#7ad08a)}
+.rbar.low b,.rbar.blink b{animation:rblink .5s steps(2) infinite}
+.rbar.dim i{opacity:.35}
+@keyframes rblink{50%{box-shadow:0 0 0 3px #e04040}}
+.ritems{position:absolute;z-index:6;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));justify-content:center;gap:6px;padding:0 8px}
+body.racing .ritems{display:flex}
+.ritems button{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;flex:1;max-width:78px;min-height:60px;display:grid;place-items:center;gap:2px;padding:4px 0;font-family:var(--f-px);font-weight:700;font-size:10px;color:var(--ink);background:var(--cream);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);border-radius:0;cursor:pointer}
+.ritems button span{font-size:22px;line-height:1}
+.ritems button:active{transform:translateY(3px);box-shadow:none}
+.ritems button[hidden]{display:none}
+.rtoast{position:absolute;z-index:7;left:50%;top:34%;transform:translateX(-50%);width:max-content;max-width:84vw;font-family:var(--f-px);font-weight:700;font-size:15px;line-height:1.35;text-align:center;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px;pointer-events:none;animation:pop .35s ease-out}
+.fin .n.k{color:var(--rose)}
+.fin .race{background:var(--gold);color:var(--ink);box-shadow:0 0 0 4px var(--ink)}
+.fin button small{display:block;font-size:12px;font-weight:400;margin-top:4px}
+.fin .ultra{background:#e05a5a;color:#fff}
+.medal{width:78px;image-rendering:pixelated}
 @media (prefers-reduced-motion:reduce){.cta,.milky-ov,.sp,.hand,.ring{animation:none}.play,.fin,.onb{transition:none}}
 </style>
 
@@ -136,6 +164,22 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
   <div class="stage" id="stage"><span class="edge l" id="edge-l" aria-hidden="true">◀</span><span class="edge r" id="edge-r" aria-hidden="true">▶</span></div>
   <div class="onb" id="onb" hidden><div class="onb-l"></div><div class="onb-r"><span class="tap"><span class="ring"></span><span class="ring d2"></span><img class="hand" id="hand" alt=""></span><p>Mantén presionado<br>aquí para avanzar</p></div></div>
   <button class="close" id="b-close" aria-label="Salir">✕</button>
+  <div class="rhud" id="rhud" aria-live="off">
+    <div class="top"><span class="lives" id="r-lives">♥♥♥</span><span id="r-km">KM 0</span><span id="r-clock">0:00:00</span></div>
+    <div class="rbar" data-k="e" style="--c:#f0c040"><i>⚡</i><b><span></span></b></div>
+    <div class="rbar" data-k="w" style="--c:#5aa8e8"><i>💧</i><b><span></span></b></div>
+    <div class="rbar" data-k="g" style="--c:#8ac850"><i>🤢</i><b><span></span></b></div>
+    <div class="rbar" data-k="sun" style="--c:#f8e070"><i>☀️</i><b><span></span></b></div>
+    <div class="rbar" data-k="salt" style="--c:#e8e8f0"><i>🧂</i><b><span></span></b></div>
+  </div>
+  <div class="ritems" id="ritems">
+    <button data-item="gel"><span>⚡</span>GEL</button>
+    <button data-item="frugele"><span>🍬</span>FRUGELE</button>
+    <button data-item="agua"><span>💧</span>AGUA</button>
+    <button data-item="bloqueador"><span>🧴</span>BLOQ.</button>
+    <button data-item="sal"><span>🧂</span>SALES</button>
+  </div>
+  <div class="rtoast" id="rtoast" hidden></div>
 </section>
 <button class="kiss" id="b-kiss" hidden>♥ besito</button>
 <div class="kiss-tip" id="kiss-tip" hidden>¡Toca aquí para un besito!</div>
@@ -144,7 +188,21 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
   <span class="b">¡NOS CASAMOS!</span>
   <span class="d"><img class="rings" alt="">9 de octubre de 2027</span>
   <span class="n">Pita &amp; Tomi ♥ Milky</span>
-  <div class="row"><button class="again" id="b-again">↻ Ver de nuevo</button><button class="home" id="b-home">Salir</button></div>
+  <span class="n k" id="fin-kisses" hidden></span>
+  <div class="row"><button class="race" id="b-race">🏅 Desafío 42K</button><button class="again" id="b-again">↻ Ver de nuevo</button><button class="home" id="b-home">Salir</button></div>
+</div>
+<div class="fin" id="rpick" hidden>
+  <span class="s">DESAFÍO 42K</span>
+  <span class="b">Corre la maratón como Tomi</span>
+  <span class="n">Mantén presionado para correr rápido.<br>Come y toma agua… ¡sin dolor de guatita!</span>
+  <div class="row"><button class="again" id="b-facil">FÁCIL · 2 min<small id="best-facil"></small></button><button class="ultra" id="b-ultra">ULTRA · 4 min<small id="best-ultra">+ sol y sales. Sin ayudas.</small></button><button class="home" id="b-pick-x">Salir</button></div>
+</div>
+<div class="fin" id="rend" hidden>
+  <img class="medal" id="medal" alt="Medalla del 42K">
+  <span class="s" id="rend-s"></span>
+  <span class="d" id="rend-d"></span>
+  <span class="n" id="rend-n"></span>
+  <div class="row"><button class="race" id="b-share">Compartir</button><button class="again" id="b-retry">↻ Otra vez</button><button class="home" id="b-rend-x">Salir</button></div>
 </div>
 
 <script>
@@ -847,7 +905,7 @@ const SCENES = {
       costanera(c, 600, 44, 116);
       for (let x = 10; x < LW; x += Math.round(R(30, 42))) planeTree(c, x, 116);
     },
-    near(c) {
+    near(c, sc) {
       rect(c, 0, 112, LW, 24, '#b8b4a8');
       for (let x = 2; x < LW; x += 5) {
         if (x > 392 && x < 432) continue;
@@ -864,7 +922,7 @@ const SCENES = {
       for (let i = 0; i < 160; i++) px(c, R(0, LW), R(138, 167), '#5e5e66');
       for (let x = 0; x < LW; x += 16) rect(c, x, 163, 8, 1, '#e8e8e8');
       [60, 150, 300, 520, 700].forEach(x => { px(c, x + 1, 137, '#f07030'); rect(c, x, 138, 3, 2, '#f07030'); rect(c, x, 140, 3, 1, '#ffffff'); rect(c, x - 1, 141, 5, 2, '#f07030'); rect(c, x - 2, 143, 7, 1, '#3a3a3a'); });
-      rect(c, 652, 98, 1, 28, '#8a8a8a'); rect(c, 640, 90, 26, 10, '#2a4aa8'); text(c, '42K', 647, 93, '#f0c040');
+      if (!sc.race) { rect(c, 652, 98, 1, 28, '#8a8a8a'); rect(c, 640, 90, 26, 10, '#2a4aa8'); text(c, '42K', 647, 93, '#f0c040'); }
     },
   },
   valle: {
@@ -1297,11 +1355,11 @@ function updatePuffs(B, lc, dt) {
   });
   ctx.globalAlpha = 1; B.puffs = B.puffs.filter(p => p.age < p.life);
 }
-function drawLayerOf(target, s, kind, t, dt) {
+function drawLayerOf(target, s, kind, t, dt, near) {
   const D = SCENES[s.scene], B = built[s.scene], lc = cam - s.start + s.from;
   ctx = target; LW = D.lw || 768;
   if (kind === 'mid') { layer(B.mid, lc * .45); updatePuffs(B, lc, dt); if (D.anim) D.anim(lc, t, B); }
-  else { layer(B.near, lc); stretchEdges(B.near, lc, D.interior); if (D.animFront) D.animFront(lc, t, B); }
+  else { near = near || B.near; layer(near, lc); stretchEdges(near, lc, D.interior); if (D.animFront) D.animFront(lc, t, B); }
   ctx = mainCtx;
 }
 function canopy(cx, footY, w, cols) {
@@ -1450,6 +1508,7 @@ function drawStack(who, x, flip, moving) {
 function kiss() { if (dating && !prop && kissT <= 0) { kissT = 1.9; kissHearts = false; } }
 function frame(now) {
   const t = now / 1000, dt = Math.max(0, Math.min(.05, last ? t - last : 0)); last = Math.max(last, t);
+  if (mode === 'race') { raceFrame(t, dt); requestAnimationFrame(frame); return; }
   if (mode === 'landing') { dir = 0; landT -= dt; if (landT <= 0) { landT = 6; kiss(); } }
   if (lockT > 0) lockT -= dt;
   if (intro >= 0 && mode === 'game') { if (intro === 0 && dir > 0) intro = .001; else if (intro > 0) { intro += dt; if (intro > 1.4) { intro = -1; facing = 1; } } }
@@ -1556,6 +1615,7 @@ addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('button')) return;
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) { held.add('l'); syncDir(); e.preventDefault(); }
   if (['ArrowRight', 'd', 'D'].includes(e.key)) { held.add('r'); syncDir(); e.preventDefault(); }
+  if (mode === 'race') { const it = ['gel', 'frugele', 'agua', 'bloqueador', 'sal'][+e.key - 1]; if (it && !e.repeat) raceItem(it); return; }
   if (e.key === ' ' && !e.repeat) { transform(); e.preventDefault(); }
   if ((e.key === 'k' || e.key === 'K') && !e.repeat) kiss();
   if ((e.key === 'n' || e.key === 'N') && !e.repeat && !riding) { const s = SEGS[Math.min(SEGS.length - 1, segAt(pos[lead]) + 1)]; jumpTo(s.start + 20); }
@@ -1584,6 +1644,177 @@ function boom() {
 }
 $('b-kiss').addEventListener('click', tapBesito);
 
+/* ---------- Desafío 42K ---------- */
+// Tomi runs the Maratón de Santiago forever-scrolling; hold = sprint, items feed the bars, 3 faints and out.
+// Bars are 0..1: e energía, w agua, g guatita (bad when high), sun bloqueador, salt sales.
+const RACE_CFG = {
+  facil: { secs: 120, sprintE: 2, sprintW: 1.5, bars: ['e', 'w', 'g'], hints: true },
+  ultra: { secs: 240, sprintE: 3, sprintW: 2, bars: ['e', 'w', 'g', 'sun', 'salt'], hints: false },
+};
+const JOG = 70, SPRINT = 115, TARGET_CLOCK = 3.5 * 3600, FAINT_SECS = 3.2, RECOVER_SECS = 3, FAINT_PENALTY = 360;
+const KM_COUNT = 42.195;
+let race = null, raceCP = null;
+
+function newRace(kind) {
+  const cfg = RACE_CFG[kind], L = cfg.secs * (JOG + SPRINT) / 2;
+  return {
+    kind, cfg, L, kmPx: L / KM_COUNT, clockScale: TARGET_CLOCK / cfg.secs,
+    d: 0, clock: 0, t: 0, lives: 3, e: .8, w: .8, g: 0, sun: 1, salt: 1,
+    gels: [], lastWater: -99, quemado: false, faint: null, recover: 0, boost: 0, done: 0, over: false,
+    luck: { at: L * (.5 + Math.random() * .35), state: 'wait', x: 0, t: 0 }, hinted: {},
+  };
+}
+// ultra: open avenue (sun) vs tree shade, by km; the first 2 km are shaded to warm up
+const sunnyKm = k => k >= 2 && (k * 7 + 3) % 5 < 3;
+const raceSprinting = () => held.size > 0 && !race.faint && race.recover <= 0 && !(race.cfg.bars.includes('salt') && race.salt < .2) && !race.done;
+const raceInSun = () => race.cfg.bars.includes('sun') && sunnyKm(Math.floor(race.d / race.kmPx));
+const raceHint = key => { if (race.cfg.hints && !race.hinted[key]) { race.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key); } };
+
+function raceItem(name) {
+  const r = race; if (!r || r.faint || r.done || r.over) return;
+  const ultra = r.kind === 'ultra';
+  if (name === 'gel') { r.gels.push({ left: .4, t: 3 }); r.g += ultra && r.t - r.lastWater > 5 ? .6 : .3; }
+  if (name === 'frugele') { r.e = Math.min(1, r.e + .12); r.g += .08; }
+  if (name === 'agua') { r.w = Math.min(1, r.w + .3); r.g += .06; r.lastWater = r.t; if (ultra) r.salt = Math.max(0, r.salt - .12); }
+  if (name === 'bloqueador' && ultra) { r.sun = 1; r.quemado = false; }
+  if (name === 'sal' && ultra) { r.salt = Math.min(1, r.salt + .45); r.w = Math.min(1, r.w + .08); r.g += .05; }
+  // overeating hurts right away, not a frame later when the bar has already started to drain
+  if (r.g >= 1) { r.g = 1; if (r.recover <= 0) raceFaint('¡Dolor de guatita!'); }
+}
+
+function raceFaint(cause) {
+  const r = race; r.lives--; r.faint = { t: 0, cause }; held.clear(); dir = 0;
+  r.clock += FAINT_PENALTY - FAINT_SECS * r.clockScale;
+  showCaption(cause);
+}
+
+function raceUpdate(dt) {
+  const r = race; r.t += dt;
+  if (r.over) return;
+  if (r.faint) {
+    r.faint.t += dt; r.clock += dt * r.clockScale;
+    if (r.faint.t > 2.75 && !r.faint.up) { r.faint.up = true; burst(tomiX(), GROUND - 22); }
+    if (r.faint.t >= FAINT_SECS) {
+      // out of the race: Tomi stays down behind the results
+      if (r.lives <= 0) { r.over = true; r.faint.t = 1.5; if (window.onPTRaceEnd) window.onPTRaceEnd({ ok: false, kind: r.kind, km: Math.floor(r.d / r.kmPx), cause: r.faint.cause }); return; }
+      r.recover = RECOVER_SECS; r.faint = null;
+    }
+    return;
+  }
+  if (r.done) { r.done += dt; if (r.done > 2.2 && !r.reported) { r.reported = true; if (window.onPTRaceEnd) window.onPTRaceEnd({ ok: true, kind: r.kind, time: r.clock }); } return; }
+  if (r.recover > 0) r.recover -= dt;
+  if (r.boost > 0) r.boost -= dt;
+  const sprint = raceSprinting(), ultra = r.kind === 'ultra', sun = raceInSun();
+  if (sprint) r.hinted.run = true; else if (r.t > 1.5) raceHint('run');
+  // drains
+  r.e -= dt * .011 * (sprint ? r.cfg.sprintE : 1);
+  r.w -= dt * .009 * (sprint ? r.cfg.sprintW : 1) * (sun && r.sun <= 0 ? 2 : 1);
+  r.g = Math.max(0, r.g - dt * (sprint ? .01 : .035));
+  if (ultra) {
+    if (sprint) r.salt = Math.max(0, r.salt - dt * .004);
+    if (sun) { r.sun = Math.max(0, r.sun - dt * .07); if (r.sun <= 0) r.quemado = true; }
+  }
+  r.gels = r.gels.filter(gl => { const k = Math.min(gl.left, dt * .4 / 3); r.e = Math.min(1, r.e + k); gl.left -= k; return gl.left > 1e-4; });
+  r.e = Math.max(0, r.e); r.w = Math.max(0, r.w);
+  if (r.e < .35) raceHint('e'); if (r.w < .35) raceHint('w'); if (r.g > .6) raceHint('g');
+  // move
+  const v = (sprint ? SPRINT : JOG) * (r.g > .6 ? .75 : 1) * (r.quemado ? .9 : 1) * (r.boost > 0 ? 1.25 : 1);
+  r.d += v * dt; r.clock += dt * r.clockScale; phase += dt * v / 85 * 12;
+  // besito de la suerte: drifts ahead at jog speed, only a sprint catches it
+  const lk = r.luck;
+  if (lk.state === 'wait' && r.d >= lk.at) { lk.state = 'live'; lk.x = tomiX() + 70; lk.t = 0; showCaption('¡Besito de la suerte!'); raceHint('luck'); }
+  if (lk.state === 'live') {
+    lk.t += dt; lk.x += JOG * dt;
+    if (tomiX() >= lk.x - 6) {
+      lk.state = 'gone'; r.g = Math.max(0, r.g - .15);
+      if (r.lives < 3) { r.lives++; showCaption('+1 ♥'); } else { r.boost = 5; showCaption('¡Turbo de amor!'); }
+      hearts(tomiX(), GROUND - 50, 14);
+    } else if (lk.t > 6) lk.state = 'gone';
+  }
+  if (r.d >= r.L) { r.d = r.L; r.done = .001; held.clear(); dir = 0; hearts(tomiX(), GROUND - 50, 18); return; }
+  if (r.recover > 0) return;
+  if (r.e <= 0) raceFaint('¡Sin energía!');
+  else if (r.w <= 0) raceFaint(r.quemado ? '¡Insolación!' : '¡Sin agua!');
+  else if (r.g >= 1) raceFaint('¡Dolor de guatita!');
+  else if (ultra && r.salt <= .04) raceFaint('¡Calambre: pocas sales!');
+}
+
+const RSEG = () => segWith('arch');
+const tomiSX = () => Math.round(W * .55);
+const tomiX = () => RSEG().start + race.d;
+
+function raceFrame(t, dt) {
+  raceUpdate(dt);
+  const r = race, s = RSEG(), segIdx = SEGS.indexOf(s), finishX = s.start + r.L + 30;
+  cam = tomiX() - tomiSX();
+  if (!raceCP || raceCP.A.length !== W) { const A = new Int8Array(W).fill(segIdx); raceCP = { A, B: A, Wt: new Float32Array(W) }; }
+  renderSky(raceCP); renderFar(raceCP);
+  mainCtx.save(); mainCtx.translate(0, offY);
+  // the story's lone "42K" sign would repeat every tile and read as a wrong km marker
+  const B = built[s.scene]; if (!B.raceNear) { LW = SCENES[s.scene].lw || 768; B.raceNear = bake(LW, H, c => SCENES[s.scene].near(c, { race: true })); }
+  drawLayerOf(mainCtx, s, 'mid', t, dt); drawLayerOf(mainCtx, s, 'near', t, dt, B.raceNear);
+  if (r.cfg.bars.includes('sun')) {
+    // tree shade over sidewalk and road on shaded km
+    const k0 = Math.floor(cam / r.kmPx - s.start / r.kmPx) - 1;
+    for (let k = k0; k < k0 + 3 + W / r.kmPx; k++) {
+      if (k < 0 || sunnyKm(k)) continue;
+      const x0 = Math.round(s.start + k * r.kmPx - cam);
+      mainCtx.fillStyle = 'rgba(30,40,80,.22)'; mainCtx.fillRect(x0, 112, Math.ceil(r.kmPx), H - 112);
+    }
+  }
+  // km markers
+  for (let k = Math.max(1, Math.floor((cam - s.start) / r.kmPx)); k <= KM_COUNT; k++) {
+    const sx = Math.round(s.start + k * r.kmPx - cam); if (sx > W + 20) break; if (sx < -20) continue;
+    rect(ctx, sx, 98, 1, 28, '#8a8a8a'); rect(ctx, sx - 9, 90, 20, 9, '#2a4aa8'); text(ctx, String(k), sx - 7 + (k < 10 ? 4 : 0), 92, '#f0c040');
+  }
+  // finish arch + Milky waiting
+  const ax = Math.round(finishX - cam);
+  if (ax > -60 && ax < W + 60) {
+    const L0 = ax - 44;
+    rect(ctx, L0, GROUND - 52, 4, 58, '#2a4aa8'); rect(ctx, ax + 40, GROUND - 52, 4, 58, '#2a4aa8');
+    rect(ctx, L0, GROUND - 62, 88, 12, '#2a4aa8'); rect(ctx, L0, GROUND - 62, 88, 1, '#5a7ae0');
+    for (let i = 0; i < 44; i++) rect(ctx, L0 + i * 2, GROUND - 50, 2, 1, i % 2 ? '#ffffff' : '#1a1a1a');
+    text(ctx, 'META', ax - 7, GROUND - 59, '#f0c040');
+    const mx = ax + 30; shadow(mx, 16); sprite(milkySet('shades').idle[Math.floor(t * 2) % 2], mx, GROUND + 2, true);
+  }
+  // lucky heart
+  const lk = r.luck;
+  if (lk.state === 'live') {
+    const sx = Math.round(lk.x - cam), y = GROUND - 34 + Math.round(Math.sin(t * 5) * 3);
+    ctx.globalAlpha = lk.t > 5 ? Math.max(0, 6 - lk.t) : 1;
+    ctx.drawImage(HEART, sx - 10, y - 9, 21, 18);
+    if (Math.floor(t * 6) % 2) { rect(ctx, sx + 11, y - 10, 1, 3, '#ffffff'); rect(ctx, sx + 10, y - 9, 3, 1, '#ffffff'); }
+    ctx.globalAlpha = 1;
+  }
+  // runners: Pita alongside, Tomi is the player
+  const set = outfitSprites('run'), tx = tomiSX(), px0 = tx - 26, sprint = raceSprinting();
+  const runner = (who, sx, moving, flip) => { const fr = moving ? Math.floor(phase) % 4 : 1; shadow(sx, 20); sprite(set[who].run[fr], sx, GROUND + 2 - (moving && fr % 2 ? 1 : 0), flip); };
+  const finished = r.done > .4;
+  runner('pita', r.faint ? tx + 22 : px0, !r.faint && !finished, !!r.faint);
+  if (r.faint) {
+    const ft = r.faint.t, ang = ft < .25 || ft > 2.5 ? -Math.PI / 4 : -Math.PI / 2, img = set.tomi.run[1];
+    ctx.save(); ctx.translate(tx, Math.round(GROUND + 1 - Math.abs(Math.sin(ang)) * 12)); ctx.rotate(ang); ctx.drawImage(img, -Math.round(img.width / 2), -img.height + 2); ctx.restore();
+    if (ft >= .25 && ft <= 2.5) for (let k = 0; k < 3; k++) { const a = ft * 6 + k * 2.1, x = Math.round(tx - 30 + Math.cos(a) * 9), y = Math.round(GROUND - 20 + Math.sin(a) * 3); rect(ctx, x - 1, y, 3, 1, '#f2d27a'); rect(ctx, x, y - 1, 1, 3, '#f2d27a'); }
+  } else {
+    runner('tomi', tx, !finished, false);
+    if (sprint && Math.floor(t * 10) % 2) { rect(ctx, tx - 22, GROUND - 18, 6, 1, '#ffffff'); rect(ctx, tx - 26, GROUND - 12, 8, 1, '#ffffff'); }
+    if (r.recover > 0 && Math.floor(t * 4) % 2) text(ctx, '...', tx - 5, GROUND - 46, '#ffffff');
+  }
+  drawFx(dt);
+  mainCtx.restore();
+  if (bannerT > 0) { bannerT -= dt; if (bannerT <= 0) banner.hidden = true; }
+  if (bannerT <= 0 && capQueue.length) { banner.textContent = capQueue.shift(); banner.hidden = false; bannerT = 2.4; }
+  const kb = $('b-kiss'); if (!kb.hidden) kb.hidden = true;
+  if (window.onPTRaceHUD) window.onPTRaceHUD({
+    kind: r.kind, lives: r.lives, km: Math.min(KM_COUNT, r.d / r.kmPx), clock: r.clock, e: r.e, w: r.w, g: r.g, sun: r.sun, salt: r.salt,
+    inSun: raceInSun(), quemado: r.quemado, cramp: r.cfg.bars.includes('salt') && r.salt < .2, recovering: r.recover > 0, faint: r.faint && r.faint.cause,
+  });
+}
+function startRace(kind, w, hs) {
+  setViewport(w || W0, hs || H); mode = 'race'; race = newRace(kind);
+  fx = []; capQueue = []; bannerT = 0; banner.hidden = true; held.clear(); dir = 0; hint.hidden = true;
+}
+
 const resetFlags = () => SEGS.forEach(s => { s.kissed = false; s.fainted = false; s.sofaDone = false; });
 function setLanding() { resetFlags(); resetWorld(); jumpTo(at('ring') - 110); intro = -1; cam = pos.pita - Math.round(W * .62); ringFound = true; kissT = 0; landT = 2.5; facing = 1; mode = 'landing'; }
 window.PT = {
@@ -1591,6 +1822,8 @@ window.PT = {
   landing() { setViewport(150, H); setLanding(); },
   resize(w, hs) { setViewport(w, hs); },
   press(k, on) { if (on) held.add(k); else held.delete(k); syncDir(); },
+  race(kind, w, hs) { startRace(kind, w, hs); },
+  item: raceItem,
   milky: () => milkySet('scarf').idle[0], heart: () => HEART,
 };
 const names = Object.keys(SCENES);
@@ -1700,14 +1933,112 @@ const names = Object.keys(SCENES);
   }
   function closeGame() {
     release(); play.classList.remove('in'); fin.classList.remove('in');
-    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; document.body.classList.remove('playing'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
+    ['rpick', 'rend'].forEach(id => { $(id).classList.remove('in'); });
+    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; $('rpick').hidden = $('rend').hidden = $('rtoast').hidden = true; document.body.classList.remove('playing', 'racing'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
   }
   start.addEventListener('click', openGame);
   $('b-close').addEventListener('click', closeGame);
   $('b-home').addEventListener('click', closeGame);
   $('b-again').addEventListener('click', () => { fin.classList.remove('in'); setTimeout(() => { fin.hidden = true; }, 300); window.PT.start(gameW(), gameH()); play.classList.remove('moved'); onb.hidden = false; onb.classList.remove('out'); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !play.hidden) closeGame(); });
-  window.onPTFinal = () => { release(); fin.hidden = false; requestAnimationFrame(() => fin.classList.add('in')); };
+  window.onPTFinal = () => { release(); showKisses(); show(fin); };
+  const show = el => { el.hidden = false; requestAnimationFrame(() => el.classList.add('in')); };
+  const hide = el => { el.classList.remove('in'); el.hidden = true; };
+  const store = {
+    get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v === null ? d : v; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  };
+
+  // besitos given, per phone for now (a global total needs a backend)
+  let kisses = store.get('ptBesitos', 0);
+  const kissLabel = () => { kissBtn.textContent = '♥ besito' + (kisses ? ' · ' + kisses : ''); };
+  kissLabel(); kissBtn.addEventListener('click', () => { kisses++; store.set('ptBesitos', kisses); kissLabel(); });
+  function showKisses() { const el = $('fin-kisses'); el.hidden = !kisses; el.textContent = 'Le diste ' + kisses + (kisses === 1 ? ' besito' : ' besitos') + ' a Pita & Tomi ♥'; }
+
+  // Desafío 42K
+  const fmt = sec => { sec = Math.round(sec); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, ss = sec % 60; return h + ':' + String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0'); };
+  const MODE = { facil: 'FÁCIL', ultra: 'ULTRA' };
+  let raceKind = 'facil', lastRace = null;
+  (() => {
+    const R = ['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'];
+    const col = { b: '#3a6ad0', r: '#e05050', o: '#8a5a10', y: '#f6cf6a', w: '#fff6c8', d: '#c89a30' };
+    const c = document.createElement('canvas'); c.width = 9; c.height = 12; const x = c.getContext('2d');
+    R.forEach((row, yy) => [...row].forEach((ch, xx) => { if (col[ch]) { x.fillStyle = col[ch]; x.fillRect(xx, yy, 1, 1); } }));
+    $('medal').src = c.toDataURL();
+  })();
+  function openPick() {
+    hide(fin); hide($('rend'));
+    const best = store.get('pt42k', {});
+    $('best-facil').textContent = best.facil ? 'Tu mejor: ' + fmt(best.facil) : 'Energía, agua y guatita';
+    $('best-ultra').textContent = best.ultra ? 'Tu mejor: ' + fmt(best.ultra) : '+ sol y sales. Sin ayudas.';
+    show($('rpick'));
+  }
+  function runRace(kind) {
+    raceKind = kind; hide($('rpick')); hide($('rend')); hide(fin); release();
+    document.body.classList.add('racing'); play.classList.add('moved'); onb.hidden = true; tip.hidden = true;
+    const ultra = kind === 'ultra';
+    document.querySelectorAll('#ritems [data-item=bloqueador], #ritems [data-item=sal], .rbar[data-k=sun], .rbar[data-k=salt]').forEach(el => { el.hidden = !ultra; });
+    window.PT.race(kind, gameW(), gameH());
+  }
+  $('b-race').addEventListener('click', openPick);
+  $('b-facil').addEventListener('click', () => runRace('facil'));
+  $('b-ultra').addEventListener('click', () => runRace('ultra'));
+  $('b-retry').addEventListener('click', () => runRace(raceKind));
+  $('b-pick-x').addEventListener('click', closeGame);
+  $('b-rend-x').addEventListener('click', closeGame);
+  document.querySelectorAll('#ritems button').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); window.PT.item(b.dataset.item); }));
+  const bars = {}; document.querySelectorAll('.rbar').forEach(el => { bars[el.dataset.k] = el; });
+  const CAUSE_BAR = { '¡Sin energía!': 'e', '¡Sin agua!': 'w', '¡Insolación!': 'w', '¡Dolor de guatita!': 'g', '¡Calambre: pocas sales!': 'salt' };
+  window.onPTRaceHUD = h => {
+    $('r-lives').textContent = '♥'.repeat(Math.max(0, h.lives)) + '♡'.repeat(3 - Math.max(0, h.lives));
+    $('r-km').textContent = 'KM ' + Math.floor(h.km);
+    $('r-clock').textContent = fmt(h.clock);
+    for (const k in bars) {
+      const v = h[k], el = bars[k];
+      el.querySelector('span').style.width = Math.round(v * 100) + '%';
+      el.classList.toggle('low', k === 'g' ? v > .6 : v < .25);
+      el.classList.toggle('blink', CAUSE_BAR[h.faint] === k);
+    }
+    bars.g.style.setProperty('--c', h.g > .6 ? '#e05a5a' : h.g > .35 ? '#e0b040' : '#8ac850');
+    bars.sun.classList.toggle('dim', !h.inSun);
+    bars.salt.classList.toggle('low', h.cramp);
+  };
+  const HINTS = {
+    run: 'Mantén presionado para correr más rápido 🏃',
+    e: '¡Energía baja! Toca ⚡ gel o 🍬 Frugele',
+    w: '¡Agua baja! Toca 💧 agua',
+    g: '¡Dolor de guatita! Trota y no comas tanto de una',
+    luck: '¡Un besito de la suerte! Corre rápido para atraparlo',
+  };
+  let toastT = 0;
+  window.onPTRaceHint = key => {
+    const seen = store.get('pt42kHints', {}); if (seen[key] || !HINTS[key]) return;
+    seen[key] = true; store.set('pt42kHints', seen);
+    const t = $('rtoast'); t.textContent = HINTS[key]; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200);
+  };
+  window.onPTRaceEnd = res => {
+    release(); $('rtoast').hidden = true; lastRace = res;
+    const best = store.get('pt42k', {}), prev = best[res.kind];
+    $('medal').hidden = !res.ok; $('b-share').hidden = !res.ok;
+    if (res.ok) {
+      const record = !prev || res.time < prev;
+      if (record) { best[res.kind] = Math.round(res.time); store.set('pt42k', best); }
+      $('rend-s').textContent = '¡TERMINASTE! · ' + MODE[res.kind];
+      $('rend-d').textContent = fmt(res.time);
+      $('rend-n').textContent = record ? (prev ? '¡Nuevo récord!' : '¡Tu primer 42K!') : 'Tu mejor: ' + fmt(prev);
+    } else {
+      $('rend-s').textContent = '😵 FUERA DE CARRERA';
+      $('rend-d').textContent = 'Llegaste al km ' + res.km;
+      $('rend-n').textContent = '3 desmayos. El último: ' + res.cause;
+    }
+    show($('rend'));
+  };
+  $('b-share').addEventListener('click', () => {
+    if (!lastRace || !lastRace.ok) return;
+    const text = 'Corrí el 42K de Pita & Tomi en ' + fmt(lastRace.time) + ' 🏅 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com';
+    if (navigator.share) navigator.share({ text }).catch(() => {});
+    else window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  });
   window.onPTBoom = () => {
     if (reduced) return;
     const scr = $('screen'); scr.classList.remove('shake'); void scr.offsetWidth; scr.classList.add('shake');
@@ -1725,12 +2056,12 @@ const names = Object.keys(SCENES);
   function release() { clearTimeout(timer); if (side) { window.PT.press(side, false); edge(side).classList.remove('on'); } side = null; }
   play.addEventListener('pointerdown', e => {
     if (e.target.closest('button')) return;
-    const s = e.clientX >= innerWidth / 2 ? 'r' : 'l';
+    const s = document.body.classList.contains('racing') || e.clientX >= innerWidth / 2 ? 'r' : 'l';
     release(); side = s; downAt = performance.now(); window.PT.press(s, true); edge(s).classList.add('on');
     try { play.setPointerCapture(e.pointerId); } catch (err) {}
     e.preventDefault();
   });
-  const up = () => { if (!side) return; const s = side; clearTimeout(timer); timer = setTimeout(() => { if (side === s) release(); }, Math.max(0, 400 - (performance.now() - downAt))); };
+  const up = () => { if (!side) return; const s = side; clearTimeout(timer); timer = setTimeout(() => { if (side === s) release(); }, document.body.classList.contains('racing') ? 0 : Math.max(0, 400 - (performance.now() - downAt))); };
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => play.addEventListener(ev, up));
   play.addEventListener('contextmenu', e => e.preventDefault());
 })();

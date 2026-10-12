@@ -691,7 +691,7 @@ const SCENES = {
       costanera(c, 600, 44, 116);
       for (let x = 10; x < LW; x += Math.round(R(30, 42))) planeTree(c, x, 116);
     },
-    near(c) {
+    near(c, sc) {
       rect(c, 0, 112, LW, 24, '#b8b4a8');
       for (let x = 2; x < LW; x += 5) {
         if (x > 392 && x < 432) continue;
@@ -708,7 +708,7 @@ const SCENES = {
       for (let i = 0; i < 160; i++) px(c, R(0, LW), R(138, 167), '#5e5e66');
       for (let x = 0; x < LW; x += 16) rect(c, x, 163, 8, 1, '#e8e8e8');
       [60, 150, 300, 520, 700].forEach(x => { px(c, x + 1, 137, '#f07030'); rect(c, x, 138, 3, 2, '#f07030'); rect(c, x, 140, 3, 1, '#ffffff'); rect(c, x - 1, 141, 5, 2, '#f07030'); rect(c, x - 2, 143, 7, 1, '#3a3a3a'); });
-      rect(c, 652, 98, 1, 28, '#8a8a8a'); rect(c, 640, 90, 26, 10, '#2a4aa8'); text(c, '42K', 647, 93, '#f0c040');
+      if (!sc.race) { rect(c, 652, 98, 1, 28, '#8a8a8a'); rect(c, 640, 90, 26, 10, '#2a4aa8'); text(c, '42K', 647, 93, '#f0c040'); }
     },
   },
   valle: {
@@ -1141,11 +1141,11 @@ function updatePuffs(B, lc, dt) {
   });
   ctx.globalAlpha = 1; B.puffs = B.puffs.filter(p => p.age < p.life);
 }
-function drawLayerOf(target, s, kind, t, dt) {
+function drawLayerOf(target, s, kind, t, dt, near) {
   const D = SCENES[s.scene], B = built[s.scene], lc = cam - s.start + s.from;
   ctx = target; LW = D.lw || 768;
   if (kind === 'mid') { layer(B.mid, lc * .45); updatePuffs(B, lc, dt); if (D.anim) D.anim(lc, t, B); }
-  else { layer(B.near, lc); stretchEdges(B.near, lc, D.interior); if (D.animFront) D.animFront(lc, t, B); }
+  else { near = near || B.near; layer(near, lc); stretchEdges(near, lc, D.interior); if (D.animFront) D.animFront(lc, t, B); }
   ctx = mainCtx;
 }
 function canopy(cx, footY, w, cols) {
@@ -1294,6 +1294,7 @@ function drawStack(who, x, flip, moving) {
 function kiss() { if (dating && !prop && kissT <= 0) { kissT = 1.9; kissHearts = false; } }
 function frame(now) {
   const t = now / 1000, dt = Math.max(0, Math.min(.05, last ? t - last : 0)); last = Math.max(last, t);
+  if (mode === 'race') { raceFrame(t, dt); requestAnimationFrame(frame); return; }
   if (mode === 'landing') { dir = 0; landT -= dt; if (landT <= 0) { landT = 6; kiss(); } }
   if (lockT > 0) lockT -= dt;
   if (intro >= 0 && mode === 'game') { if (intro === 0 && dir > 0) intro = .001; else if (intro > 0) { intro += dt; if (intro > 1.4) { intro = -1; facing = 1; } } }
@@ -1400,6 +1401,7 @@ addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('button')) return;
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) { held.add('l'); syncDir(); e.preventDefault(); }
   if (['ArrowRight', 'd', 'D'].includes(e.key)) { held.add('r'); syncDir(); e.preventDefault(); }
+  if (mode === 'race') { const it = ['gel', 'frugele', 'agua', 'bloqueador', 'sal'][+e.key - 1]; if (it && !e.repeat) raceItem(it); return; }
   if (e.key === ' ' && !e.repeat) { transform(); e.preventDefault(); }
   if ((e.key === 'k' || e.key === 'K') && !e.repeat) kiss();
   if ((e.key === 'n' || e.key === 'N') && !e.repeat && !riding) { const s = SEGS[Math.min(SEGS.length - 1, segAt(pos[lead]) + 1)]; jumpTo(s.start + 20); }
@@ -1428,6 +1430,7 @@ function boom() {
 }
 $('b-kiss').addEventListener('click', tapBesito);
 
+/*__RACE__*/
 const resetFlags = () => SEGS.forEach(s => { s.kissed = false; s.fainted = false; s.sofaDone = false; });
 function setLanding() { resetFlags(); resetWorld(); jumpTo(at('ring') - 110); intro = -1; cam = pos.pita - Math.round(W * .62); ringFound = true; kissT = 0; landT = 2.5; facing = 1; mode = 'landing'; }
 window.PT = {
@@ -1435,6 +1438,8 @@ window.PT = {
   landing() { setViewport(150, H); setLanding(); },
   resize(w, hs) { setViewport(w, hs); },
   press(k, on) { if (on) held.add(k); else held.delete(k); syncDir(); },
+  race(kind, w, hs) { startRace(kind, w, hs); },
+  item: raceItem,
   milky: () => milkySet('scarf').idle[0], heart: () => HEART,
 };
 const names = Object.keys(SCENES);

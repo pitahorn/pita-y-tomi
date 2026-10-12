@@ -96,7 +96,7 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 .ring{position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px 0 0 -40px;border:3px solid var(--cream);border-radius:50%;animation:ripple 1.6s ease-out infinite}
 .ring.d2{animation-delay:.8s}
 @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.7);opacity:0}}
-.kiss{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink);padding:10px 22px;min-height:56px;border-radius:999px;cursor:pointer;animation:pop .35s ease-out}
+.kiss{white-space:nowrap;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--ink);background:var(--rose);border:4px solid var(--cream);box-shadow:0 0 0 4px var(--ink);padding:10px 22px;min-height:56px;border-radius:999px;cursor:pointer;animation:pop .35s ease-out}
 @keyframes pop{0%{transform:translateX(-50%) scale(.6);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 .kiss-tip{position:fixed;z-index:12;left:50%;bottom:calc(152px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-family:var(--f-px);font-weight:700;font-size:16px;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px;white-space:nowrap;pointer-events:none;animation:pop .35s ease-out}
 .kiss-tip::after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-8px;border:8px solid transparent;border-top-color:var(--ink)}
@@ -111,6 +111,34 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 .fin .again{background:var(--rose);color:var(--ink);box-shadow:0 0 0 4px var(--ink)}
 .fin .home{background:transparent;color:var(--cream)}
 [hidden]{display:none!important}
+/* Desafío 42K */
+body.racing .hud,body.racing .edge,body.racing .onb{display:none}
+body.racing .banner{top:30%}
+.rhud,.ritems{display:none}
+.rhud{position:absolute;z-index:6;left:10px;top:calc(10px + env(safe-area-inset-top,0px));width:min(58vw,260px);gap:5px;font-family:var(--f-px);font-weight:700;color:#fff;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;pointer-events:none}
+body.racing .rhud{display:grid}
+.rhud .top{display:flex;gap:10px;align-items:baseline;font-size:15px}
+.rhud .lives{color:var(--rose);font-size:18px;letter-spacing:2px}
+.rbar{display:grid;grid-template-columns:22px 1fr;align-items:center;gap:6px}
+.rbar[hidden]{display:none}
+.rbar i{font-style:normal;font-size:15px;text-align:center}
+.rbar b{display:block;height:11px;border:2px solid var(--ink);background:rgba(15,12,28,.6);position:relative;box-shadow:0 0 0 1px rgba(251,243,228,.6)}
+.rbar b span{position:absolute;left:0;top:0;bottom:0;background:var(--c,#7ad08a)}
+.rbar.low b,.rbar.blink b{animation:rblink .5s steps(2) infinite}
+.rbar.dim i{opacity:.35}
+@keyframes rblink{50%{box-shadow:0 0 0 3px #e04040}}
+.ritems{position:absolute;z-index:6;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));justify-content:center;gap:6px;padding:0 8px}
+body.racing .ritems{display:flex}
+.ritems button{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;flex:1;max-width:78px;min-height:60px;display:grid;place-items:center;gap:2px;padding:4px 0;font-family:var(--f-px);font-weight:700;font-size:10px;color:var(--ink);background:var(--cream);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);border-radius:0;cursor:pointer}
+.ritems button span{font-size:22px;line-height:1}
+.ritems button:active{transform:translateY(3px);box-shadow:none}
+.ritems button[hidden]{display:none}
+.rtoast{position:absolute;z-index:7;left:50%;top:34%;transform:translateX(-50%);width:max-content;max-width:84vw;font-family:var(--f-px);font-weight:700;font-size:15px;line-height:1.35;text-align:center;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px;pointer-events:none;animation:pop .35s ease-out}
+.fin .n.k{color:var(--rose)}
+.fin .race{background:var(--gold);color:var(--ink);box-shadow:0 0 0 4px var(--ink)}
+.fin button small{display:block;font-size:12px;font-weight:400;margin-top:4px}
+.fin .ultra{background:#e05a5a;color:#fff}
+.medal{width:78px;image-rendering:pixelated}
 @media (prefers-reduced-motion:reduce){.cta,.milky-ov,.sp,.hand,.ring{animation:none}.play,.fin,.onb{transition:none}}
 </style>
 
@@ -136,6 +164,22 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
   <div class="stage" id="stage"><span class="edge l" id="edge-l" aria-hidden="true">◀</span><span class="edge r" id="edge-r" aria-hidden="true">▶</span></div>
   <div class="onb" id="onb" hidden><div class="onb-l"></div><div class="onb-r"><span class="tap"><span class="ring"></span><span class="ring d2"></span><img class="hand" id="hand" alt=""></span><p>Mantén presionado<br>aquí para avanzar</p></div></div>
   <button class="close" id="b-close" aria-label="Salir">✕</button>
+  <div class="rhud" id="rhud" aria-live="off">
+    <div class="top"><span class="lives" id="r-lives">♥♥♥</span><span id="r-km">KM 0</span><span id="r-clock">0:00:00</span></div>
+    <div class="rbar" data-k="e" style="--c:#f0c040"><i>⚡</i><b><span></span></b></div>
+    <div class="rbar" data-k="w" style="--c:#5aa8e8"><i>💧</i><b><span></span></b></div>
+    <div class="rbar" data-k="g" style="--c:#8ac850"><i>🤢</i><b><span></span></b></div>
+    <div class="rbar" data-k="sun" style="--c:#f8e070"><i>☀️</i><b><span></span></b></div>
+    <div class="rbar" data-k="salt" style="--c:#e8e8f0"><i>🧂</i><b><span></span></b></div>
+  </div>
+  <div class="ritems" id="ritems">
+    <button data-item="gel"><span>⚡</span>GEL</button>
+    <button data-item="frugele"><span>🍬</span>FRUGELE</button>
+    <button data-item="agua"><span>💧</span>AGUA</button>
+    <button data-item="bloqueador"><span>🧴</span>BLOQ.</button>
+    <button data-item="sal"><span>🧂</span>SALES</button>
+  </div>
+  <div class="rtoast" id="rtoast" hidden></div>
 </section>
 <button class="kiss" id="b-kiss" hidden>♥ besito</button>
 <div class="kiss-tip" id="kiss-tip" hidden>¡Toca aquí para un besito!</div>
@@ -144,7 +188,21 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
   <span class="b">¡NOS CASAMOS!</span>
   <span class="d"><img class="rings" alt="">9 de octubre de 2027</span>
   <span class="n">Pita &amp; Tomi ♥ Milky</span>
-  <div class="row"><button class="again" id="b-again">↻ Ver de nuevo</button><button class="home" id="b-home">Salir</button></div>
+  <span class="n k" id="fin-kisses" hidden></span>
+  <div class="row"><button class="race" id="b-race">🏅 Desafío 42K</button><button class="again" id="b-again">↻ Ver de nuevo</button><button class="home" id="b-home">Salir</button></div>
+</div>
+<div class="fin" id="rpick" hidden>
+  <span class="s">DESAFÍO 42K</span>
+  <span class="b">Corre la maratón como Tomi</span>
+  <span class="n">Mantén presionado para correr rápido.<br>Come y toma agua… ¡sin dolor de guatita!</span>
+  <div class="row"><button class="again" id="b-facil">FÁCIL · 2 min<small id="best-facil"></small></button><button class="ultra" id="b-ultra">ULTRA · 4 min<small id="best-ultra">+ sol y sales. Sin ayudas.</small></button><button class="home" id="b-pick-x">Salir</button></div>
+</div>
+<div class="fin" id="rend" hidden>
+  <img class="medal" id="medal" alt="Medalla del 42K">
+  <span class="s" id="rend-s"></span>
+  <span class="d" id="rend-d"></span>
+  <span class="n" id="rend-n"></span>
+  <div class="row"><button class="race" id="b-share">Compartir</button><button class="again" id="b-retry">↻ Otra vez</button><button class="home" id="b-rend-x">Salir</button></div>
 </div>
 
 <script>
@@ -253,14 +311,112 @@ __ENGINE__
   }
   function closeGame() {
     release(); play.classList.remove('in'); fin.classList.remove('in');
-    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; document.body.classList.remove('playing'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
+    ['rpick', 'rend'].forEach(id => { $(id).classList.remove('in'); });
+    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; $('rpick').hidden = $('rend').hidden = $('rtoast').hidden = true; document.body.classList.remove('playing', 'racing'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
   }
   start.addEventListener('click', openGame);
   $('b-close').addEventListener('click', closeGame);
   $('b-home').addEventListener('click', closeGame);
   $('b-again').addEventListener('click', () => { fin.classList.remove('in'); setTimeout(() => { fin.hidden = true; }, 300); window.PT.start(gameW(), gameH()); play.classList.remove('moved'); onb.hidden = false; onb.classList.remove('out'); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !play.hidden) closeGame(); });
-  window.onPTFinal = () => { release(); fin.hidden = false; requestAnimationFrame(() => fin.classList.add('in')); };
+  window.onPTFinal = () => { release(); showKisses(); show(fin); };
+  const show = el => { el.hidden = false; requestAnimationFrame(() => el.classList.add('in')); };
+  const hide = el => { el.classList.remove('in'); el.hidden = true; };
+  const store = {
+    get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v === null ? d : v; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  };
+
+  // besitos given, per phone for now (a global total needs a backend)
+  let kisses = store.get('ptBesitos', 0);
+  const kissLabel = () => { kissBtn.textContent = '♥ besito' + (kisses ? ' · ' + kisses : ''); };
+  kissLabel(); kissBtn.addEventListener('click', () => { kisses++; store.set('ptBesitos', kisses); kissLabel(); });
+  function showKisses() { const el = $('fin-kisses'); el.hidden = !kisses; el.textContent = 'Le diste ' + kisses + (kisses === 1 ? ' besito' : ' besitos') + ' a Pita & Tomi ♥'; }
+
+  // Desafío 42K
+  const fmt = sec => { sec = Math.round(sec); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, ss = sec % 60; return h + ':' + String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0'); };
+  const MODE = { facil: 'FÁCIL', ultra: 'ULTRA' };
+  let raceKind = 'facil', lastRace = null;
+  (() => {
+    const R = ['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'];
+    const col = { b: '#3a6ad0', r: '#e05050', o: '#8a5a10', y: '#f6cf6a', w: '#fff6c8', d: '#c89a30' };
+    const c = document.createElement('canvas'); c.width = 9; c.height = 12; const x = c.getContext('2d');
+    R.forEach((row, yy) => [...row].forEach((ch, xx) => { if (col[ch]) { x.fillStyle = col[ch]; x.fillRect(xx, yy, 1, 1); } }));
+    $('medal').src = c.toDataURL();
+  })();
+  function openPick() {
+    hide(fin); hide($('rend'));
+    const best = store.get('pt42k', {});
+    $('best-facil').textContent = best.facil ? 'Tu mejor: ' + fmt(best.facil) : 'Energía, agua y guatita';
+    $('best-ultra').textContent = best.ultra ? 'Tu mejor: ' + fmt(best.ultra) : '+ sol y sales. Sin ayudas.';
+    show($('rpick'));
+  }
+  function runRace(kind) {
+    raceKind = kind; hide($('rpick')); hide($('rend')); hide(fin); release();
+    document.body.classList.add('racing'); play.classList.add('moved'); onb.hidden = true; tip.hidden = true;
+    const ultra = kind === 'ultra';
+    document.querySelectorAll('#ritems [data-item=bloqueador], #ritems [data-item=sal], .rbar[data-k=sun], .rbar[data-k=salt]').forEach(el => { el.hidden = !ultra; });
+    window.PT.race(kind, gameW(), gameH());
+  }
+  $('b-race').addEventListener('click', openPick);
+  $('b-facil').addEventListener('click', () => runRace('facil'));
+  $('b-ultra').addEventListener('click', () => runRace('ultra'));
+  $('b-retry').addEventListener('click', () => runRace(raceKind));
+  $('b-pick-x').addEventListener('click', closeGame);
+  $('b-rend-x').addEventListener('click', closeGame);
+  document.querySelectorAll('#ritems button').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); window.PT.item(b.dataset.item); }));
+  const bars = {}; document.querySelectorAll('.rbar').forEach(el => { bars[el.dataset.k] = el; });
+  const CAUSE_BAR = { '¡Sin energía!': 'e', '¡Sin agua!': 'w', '¡Insolación!': 'w', '¡Dolor de guatita!': 'g', '¡Calambre: pocas sales!': 'salt' };
+  window.onPTRaceHUD = h => {
+    $('r-lives').textContent = '♥'.repeat(Math.max(0, h.lives)) + '♡'.repeat(3 - Math.max(0, h.lives));
+    $('r-km').textContent = 'KM ' + Math.floor(h.km);
+    $('r-clock').textContent = fmt(h.clock);
+    for (const k in bars) {
+      const v = h[k], el = bars[k];
+      el.querySelector('span').style.width = Math.round(v * 100) + '%';
+      el.classList.toggle('low', k === 'g' ? v > .6 : v < .25);
+      el.classList.toggle('blink', CAUSE_BAR[h.faint] === k);
+    }
+    bars.g.style.setProperty('--c', h.g > .6 ? '#e05a5a' : h.g > .35 ? '#e0b040' : '#8ac850');
+    bars.sun.classList.toggle('dim', !h.inSun);
+    bars.salt.classList.toggle('low', h.cramp);
+  };
+  const HINTS = {
+    run: 'Mantén presionado para correr más rápido 🏃',
+    e: '¡Energía baja! Toca ⚡ gel o 🍬 Frugele',
+    w: '¡Agua baja! Toca 💧 agua',
+    g: '¡Dolor de guatita! Trota y no comas tanto de una',
+    luck: '¡Un besito de la suerte! Corre rápido para atraparlo',
+  };
+  let toastT = 0;
+  window.onPTRaceHint = key => {
+    const seen = store.get('pt42kHints', {}); if (seen[key] || !HINTS[key]) return;
+    seen[key] = true; store.set('pt42kHints', seen);
+    const t = $('rtoast'); t.textContent = HINTS[key]; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200);
+  };
+  window.onPTRaceEnd = res => {
+    release(); $('rtoast').hidden = true; lastRace = res;
+    const best = store.get('pt42k', {}), prev = best[res.kind];
+    $('medal').hidden = !res.ok; $('b-share').hidden = !res.ok;
+    if (res.ok) {
+      const record = !prev || res.time < prev;
+      if (record) { best[res.kind] = Math.round(res.time); store.set('pt42k', best); }
+      $('rend-s').textContent = '¡TERMINASTE! · ' + MODE[res.kind];
+      $('rend-d').textContent = fmt(res.time);
+      $('rend-n').textContent = record ? (prev ? '¡Nuevo récord!' : '¡Tu primer 42K!') : 'Tu mejor: ' + fmt(prev);
+    } else {
+      $('rend-s').textContent = '😵 FUERA DE CARRERA';
+      $('rend-d').textContent = 'Llegaste al km ' + res.km;
+      $('rend-n').textContent = '3 desmayos. El último: ' + res.cause;
+    }
+    show($('rend'));
+  };
+  $('b-share').addEventListener('click', () => {
+    if (!lastRace || !lastRace.ok) return;
+    const text = 'Corrí el 42K de Pita & Tomi en ' + fmt(lastRace.time) + ' 🏅 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com';
+    if (navigator.share) navigator.share({ text }).catch(() => {});
+    else window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  });
   window.onPTBoom = () => {
     if (reduced) return;
     const scr = $('screen'); scr.classList.remove('shake'); void scr.offsetWidth; scr.classList.add('shake');
@@ -278,12 +434,12 @@ __ENGINE__
   function release() { clearTimeout(timer); if (side) { window.PT.press(side, false); edge(side).classList.remove('on'); } side = null; }
   play.addEventListener('pointerdown', e => {
     if (e.target.closest('button')) return;
-    const s = e.clientX >= innerWidth / 2 ? 'r' : 'l';
+    const s = document.body.classList.contains('racing') || e.clientX >= innerWidth / 2 ? 'r' : 'l';
     release(); side = s; downAt = performance.now(); window.PT.press(s, true); edge(s).classList.add('on');
     try { play.setPointerCapture(e.pointerId); } catch (err) {}
     e.preventDefault();
   });
-  const up = () => { if (!side) return; const s = side; clearTimeout(timer); timer = setTimeout(() => { if (side === s) release(); }, Math.max(0, 400 - (performance.now() - downAt))); };
+  const up = () => { if (!side) return; const s = side; clearTimeout(timer); timer = setTimeout(() => { if (side === s) release(); }, document.body.classList.contains('racing') ? 0 : Math.max(0, 400 - (performance.now() - downAt))); };
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => play.addEventListener(ev, up));
   play.addEventListener('contextmenu', e => e.preventDefault());
 })();
