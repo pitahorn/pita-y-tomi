@@ -707,7 +707,7 @@ const SCENES = {
       rect(c, 0, 136, LW, 32, '#6a6a72'); rect(c, 0, 136, LW, 1, '#e8e8e8');
       for (let i = 0; i < 160; i++) px(c, R(0, LW), R(138, 167), '#5e5e66');
       for (let x = 0; x < LW; x += 16) rect(c, x, 163, 8, 1, '#e8e8e8');
-      [60, 150, 300, 520, 700].forEach(x => { px(c, x + 1, 137, '#f07030'); rect(c, x, 138, 3, 2, '#f07030'); rect(c, x, 140, 3, 1, '#ffffff'); rect(c, x - 1, 141, 5, 2, '#f07030'); rect(c, x - 2, 143, 7, 1, '#3a3a3a'); });
+      if (!sc.race) [60, 150, 300, 520, 700].forEach(x => { px(c, x + 1, 137, '#f07030'); rect(c, x, 138, 3, 2, '#f07030'); rect(c, x, 140, 3, 1, '#ffffff'); rect(c, x - 1, 141, 5, 2, '#f07030'); rect(c, x - 2, 143, 7, 1, '#3a3a3a'); });
       if (!sc.race) { rect(c, 652, 98, 1, 28, '#8a8a8a'); rect(c, 640, 90, 26, 10, '#2a4aa8'); text(c, '42K', 647, 93, '#f0c040'); }
     },
   },
@@ -1401,7 +1401,7 @@ addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('button')) return;
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) { held.add('l'); syncDir(); e.preventDefault(); }
   if (['ArrowRight', 'd', 'D'].includes(e.key)) { held.add('r'); syncDir(); e.preventDefault(); }
-  if (mode === 'race') { const it = ['gel', 'frugele', 'agua', 'bloqueador', 'sal'][+e.key - 1]; if (it && !e.repeat) raceItem(it); return; }
+  if (mode === 'race') { if (!e.repeat && ['ArrowLeft', 'ArrowUp', ' '].includes(e.key)) raceTap('l'); if (!e.repeat && e.key === 'ArrowRight') raceTap('r'); e.preventDefault(); return; }
   if (e.key === ' ' && !e.repeat) { transform(); e.preventDefault(); }
   if ((e.key === 'k' || e.key === 'K') && !e.repeat) kiss();
   if ((e.key === 'n' || e.key === 'N') && !e.repeat && !riding) { const s = SEGS[Math.min(SEGS.length - 1, segAt(pos[lead]) + 1)]; jumpTo(s.start + 20); }
@@ -1439,7 +1439,9 @@ window.PT = {
   resize(w, hs) { setViewport(w, hs); },
   press(k, on) { if (on) held.add(k); else held.delete(k); syncDir(); },
   race(kind, w, hs) { startRace(kind, w, hs); },
-  item: raceItem,
+  tap: raceTap,
+  pause(on) { if (race) race.paused = on; },
+  art: raceArtURL,
   milky: () => milkySet('scarf').idle[0], heart: () => HEART,
 };
 const names = Object.keys(SCENES);

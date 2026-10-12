@@ -10,11 +10,14 @@ Served by GitHub Pages from `index.html`, one self-contained file.
 Edit `src/`, then rebuild and push:
 
 ```sh
-./build.py        # inlines src/photo.jpg + src/engine.js into src/page.html -> index.html
+./build.py        # inlines photo + engine (+ race.js) into src/page.html -> index.html and 42k/index.html
 ```
 
 - `src/page.html` — landing, controls, onboarding, final overlay
 - `src/engine.js` — the game: world, sprites, scenes, timeline
+- `src/race.js` — Desafío 42K (spliced into the engine); also served at `/42k`
 - `src/photo.jpg` — landing photo
 
-Commit `index.html` together with the `src/` change; Pages serves it as-is.
+Commit `index.html` and `42k/index.html` together with the `src/` change; Pages serves them as-is.
+
+Design of the race: `docs/v2-desafio-42k.md`.
