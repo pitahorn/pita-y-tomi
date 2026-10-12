@@ -138,7 +138,11 @@ body.racing .rhud{display:grid}
 .rbar.low b,.rbar.blink b{animation:rblink .5s steps(2) infinite}
 .rbar.dim i{opacity:.35}
 @keyframes rblink{50%{box-shadow:0 0 0 3px #e04040}}
-.rtoast{position:absolute;z-index:7;left:50%;top:34%;transform:translateX(-50%);width:max-content;max-width:84vw;font-family:var(--f-px);font-weight:700;font-size:15px;line-height:1.35;text-align:center;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px;pointer-events:none;animation:pop .35s ease-out}
+.rspot{position:absolute;inset:0;z-index:8;overflow:hidden;touch-action:manipulation}
+.rspot .hole{position:absolute;border-radius:50%;box-shadow:0 0 0 200vmax rgba(10,8,20,.74);outline:3px dashed var(--cream);outline-offset:4px;animation:spot 1.2s ease-in-out infinite}
+@keyframes spot{50%{outline-offset:9px}}
+.rspot .rtip{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:84vw;margin:0;font-family:var(--f-px);font-weight:700;font-size:16px;line-height:1.35;text-align:center;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px}
+.rspot .rtip small{display:block;margin-top:6px;font-size:11px;opacity:.7}
 .fin .n.k{color:var(--rose)}
 .fin .race{background:var(--gold);color:var(--ink);box-shadow:0 0 0 4px var(--ink)}
 .fin button small{display:block;font-size:12px;font-weight:400;margin-top:4px}
@@ -189,7 +193,7 @@ body.racing .close{display:none}
     <div class="rbar" data-k="salt" style="--c:#e8e8f0"><i>🧂</i><b><span></span></b></div>
   </div>
   <div class="rctl" id="rctl"><div><span class="hands"><img class="hand" alt=""></span>TOCA<br>PARA SALTAR</div><div><span class="hands"><img class="hand" alt=""><img class="hand d2" alt=""></span>TOCA Y TOCA<br>PARA CORRER</div></div>
-  <div class="rtoast" id="rtoast" hidden></div>
+  <div class="rspot" id="rspot" hidden><div class="hole" id="rspot-hole"></div><p class="rtip" id="rspot-tip"></p></div>
 </section>
 <button class="kiss" id="b-kiss" hidden>♥ besito</button>
 <div class="kiss-tip" id="kiss-tip" hidden>¡Toca aquí para un besito!</div>
@@ -325,7 +329,7 @@ __ENGINE__
   function closeGame() {
     release(); play.classList.remove('in'); fin.classList.remove('in');
     ['rpick', 'rend', 'rgloss'].forEach(id => { $(id).classList.remove('in'); });
-    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; $('rpick').hidden = $('rend').hidden = $('rgloss').hidden = $('rtoast').hidden = true; document.body.classList.remove('playing', 'racing'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
+    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; $('rpick').hidden = $('rend').hidden = $('rgloss').hidden = $('rspot').hidden = true; document.body.classList.remove('playing', 'racing'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
   }
   start.addEventListener('click', openGame);
   $('b-close').addEventListener('click', closeGame);
@@ -424,23 +428,34 @@ __ENGINE__
     bars.salt.classList.toggle('low', h.cramp);
     if (h.tapped) $('rctl').classList.add('out');
   };
+  // Fácil hints: pause, dim everything but the thing being taught, tap to continue
   const HINTS = {
-    fast: 'Toca la derecha para correr más rápido 🏃',
-    jump: 'Toca la izquierda para saltar y agarrar lo que flota',
-    rock: '¡Ojo con piedras, cáscaras y hoyos! Sáltalos',
-    e: '¡Energía baja! Salta a agarrar un gel o un Frugele',
-    w: '¡Agua baja! Salta a agarrar agua',
-    g: '¡Dolor de guatita! No agarres tanta comida seguida',
-    luck: '¡Besito de la suerte! Acelera y salta para atraparlo',
+    fast: 'Toca y toca aquí para correr más rápido',
+    jump: 'Toca a la izquierda para saltar y agarrarlo',
+    rock: '¡Obstáculo! Toca a la izquierda para saltarlo',
+    e: 'Energía baja: agarra geles y Frugeles',
+    w: 'Agua baja: agarra botellas de agua',
+    g: 'Dolor de guatita: no agarres tanta comida seguida',
+    luck: '¡Besito de la suerte! Corre rápido y salta para atraparlo',
   };
-  let toastT = 0;
-  window.onPTRaceHint = key => {
+  window.onPTRaceHint = (key, tg) => {
     const seen = store.get('pt42kHints', {}); if (seen[key] || !HINTS[key]) return;
     seen[key] = true; store.set('pt42kHints', seen);
-    const t = $('rtoast'); t.textContent = HINTS[key]; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200);
+    window.PT.pause(true); release(); $('rctl').classList.add('out');
+    const spot = $('rspot'), hole = $('rspot-hole'), tip = $('rspot-tip'), pad = 6;
+    let x, y, w, h, round = true;
+    if (tg && tg.bar) { const b = bars[tg.bar].getBoundingClientRect(); x = b.left - pad; y = b.top - pad; w = b.width + pad * 2; h = b.height + pad * 2; round = false; }
+    else if (tg && tg.side) { x = innerWidth / 2 + 10; y = innerHeight * .2; w = innerWidth / 2 - 20; h = innerHeight * .55; round = false; }
+    else { const cv = $('game').getBoundingClientRect(), k = cv.width / $('game').width, cx = cv.left + tg.x * k, cy = cv.top + tg.y * cv.height / $('game').height, rad = Math.max(28, tg.r * k); x = cx - rad; y = cy - rad; w = h = rad * 2; }
+    Object.assign(hole.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', borderRadius: round ? '50%' : '8px' });
+    tip.innerHTML = ''; tip.append(HINTS[key]); const sm = document.createElement('small'); sm.textContent = 'Toca para seguir'; tip.appendChild(sm);
+    const below = !!(tg && (tg.bar || tg.side)); // road things: card above, clear of the runners
+    Object.assign(tip.style, below ? { top: (y + h + 18) + 'px', bottom: '' } : { top: '', bottom: (innerHeight - y + 18) + 'px' });
+    spot.hidden = false;
   };
+  $('rspot').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); $('rspot').hidden = true; window.PT.pause(false); });
   window.onPTRaceEnd = res => {
-    release(); $('rtoast').hidden = true; lastRace = res;
+    release(); $('rspot').hidden = true; lastRace = res;
     const best = store.get('pt42k', {}), prev = best[res.kind];
     $('medal').hidden = !res.ok; $('b-share').hidden = !res.ok;
     if (res.ok) {

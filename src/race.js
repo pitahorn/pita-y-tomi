@@ -27,7 +27,8 @@ function newRace(kind) {
 const sunnyKm = k => k >= 2 && (k * 7 + 3) % 5 < 3;
 const raceInSun = () => race.kind === 'ultra' && sunnyKm(Math.floor(race.d / race.kmPx));
 const raceCramp = () => race.kind === 'ultra' && race.salt < .2;
-const raceHint = key => { if (race.cfg.hints && !race.hinted[key]) { race.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key); } };
+// target tells the page what to spotlight: a bar, the right half, or a point in game px (offY included)
+const raceHint = (key, target) => { if (race.cfg.hints && !race.hinted[key]) { race.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
 const raceBusy = () => !race || race.faint || race.done || race.over;
 
 function raceTap(side) {
@@ -130,8 +131,8 @@ function raceUpdate(dt) {
   }
   r.gels = r.gels.filter(gl => { const k = Math.min(gl.left, dt * .4 / 3); r.e = Math.min(1, r.e + k); gl.left -= k; return gl.left > 1e-4; });
   r.e = Math.max(0, r.e); r.w = Math.max(0, r.w);
-  if (r.e < .35) raceHint('e'); if (r.w < .35) raceHint('w'); if (r.g > .6) raceHint('g');
-  if (r.t > 4 && !r.hinted.fast) raceHint('fast');
+  if (r.e < .35) raceHint('e', { bar: 'e' }); if (r.w < .35) raceHint('w', { bar: 'w' }); if (r.g > .6) raceHint('g', { bar: 'g' });
+  if (r.t > 4 && !r.hinted.fast) raceHint('fast', { side: 'r' });
   const v = Math.min(r.vmax, JOG * r.mul * (r.stumble > 0 ? .4 : 1) * (r.g > .6 ? .75 : 1) * (r.boost > 0 ? r.turboMul : 1));
   r.d += v * dt; r.clock += dt * r.clockScale; phase += dt * v / 85 * 12;
   raceSpawn();
@@ -139,14 +140,14 @@ function raceUpdate(dt) {
   r.things = r.things.filter(th => {
     const dx = th.x - tx;
     if (th.x - cam < -30) return false;
-    if (dx > 0 && dx < 90) raceHint(th.kind === 'rock' ? 'rock' : 'jump');
+    if (dx > 0 && dx < 90) raceHint(th.kind === 'rock' ? 'rock' : 'jump', { x: tomiSX() + dx, y: offY + GROUND - (th.kind === 'rock' ? 8 : th.lift), r: 16 });
     if (th.kind === 'item' && Math.abs(dx) < 10 && r.jy > 0 && r.jy + TOMI_H > th.lift - 4) { raceEat(th.it); hearts(th.x, GROUND - th.lift, 1); return false; }
     if (th.kind === 'rock' && !th.hit && Math.abs(dx) < 11 && r.jy < (th.look === 2 ? 3 : 12) && r.recover <= 0) { th.hit = true; r.stumble = STUMBLE_SECS; r.mul = 1; r.boost = 0; burst(tx + 6, GROUND - 6); }
     return true;
   });
   // besito de la suerte: floats ahead a bit faster than a jog; speed up to reach it, jump to grab it
   const lk = r.luck;
-  if (lk.state === 'wait' && r.d >= lk.at) { lk.state = 'live'; lk.x = tx + 90; lk.t = 0; showCaption('¡Besito de la suerte!'); raceHint('luck'); }
+  if (lk.state === 'wait' && r.d >= lk.at) { lk.state = 'live'; lk.x = tx + 90; lk.t = 0; showCaption('¡Besito de la suerte!'); raceHint('luck', { x: tomiSX() + 90, y: offY + GROUND - ITEM_LO - ITEM_ARC, r: 20 }); }
   if (lk.state === 'live') {
     lk.t += dt; lk.x += JOG * 1.1 * dt;
     if (Math.abs(lk.x - tx) < 12 && r.jy + TOMI_H > ITEM_LO + ITEM_ARC - 4) {
