@@ -146,6 +146,8 @@ body.racing .rhud{display:grid}
 .medal{width:78px;image-rendering:pixelated}
 .info{display:none;position:absolute;z-index:6;top:calc(70px + env(safe-area-inset-top,0px));right:18px;width:40px;height:40px;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--cream);background:rgba(15,12,28,.55);border:3px solid var(--cream);border-radius:50%;cursor:pointer;touch-action:manipulation;background:rgba(15,12,28,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 7' shape-rendering='crispEdges'%3E%3Cpath fill='%23fbf3e4' d='M1 0h1v1H1zM0 2h2v4h1v1H0V6h1V3H0z'/%3E%3C/svg%3E") center/9px 21px no-repeat}
 body.racing .info{display:block}
+body.racing .close{display:none}
+.info.menu{top:calc(10px + env(safe-area-inset-top,0px));right:12px;width:52px;height:52px;border-radius:0;background:rgba(15,12,28,.55);font-size:24px;line-height:1}
 .gloss{display:grid;gap:8px;width:min(320px,100%);text-align:left;font-family:var(--f-px);font-weight:700;font-size:14px;color:#fff}
 .gloss div{display:grid;grid-template-columns:56px 1fr;align-items:center;gap:10px}
 .gloss span:first-child{display:flex;justify-content:center;align-items:flex-end;gap:2px;height:36px}
@@ -176,6 +178,7 @@ body.racing .info{display:block}
   <div class="stage" id="stage"><span class="edge l" id="edge-l" aria-hidden="true">◀</span><span class="edge r" id="edge-r" aria-hidden="true">▶</span></div>
   <div class="onb" id="onb" hidden><div class="onb-l"></div><div class="onb-r"><span class="tap"><span class="ring"></span><span class="ring d2"></span><img class="hand" id="hand" alt=""></span><p>Mantén presionado<br>aquí para avanzar</p></div></div>
   <button class="close" id="b-close" aria-label="Salir">✕</button>
+  <button class="info menu" id="b-menu" aria-label="Menú">☰</button>
   <button class="info" id="b-info" aria-label="¿Qué es qué?"></button>
   <div class="rhud" id="rhud" aria-live="off">
     <div class="top"><span class="lives" id="r-lives">♥♥♥</span><span id="r-km">KM 0</span><span id="r-clock">0:00:00</span></div>
@@ -200,7 +203,7 @@ body.racing .info{display:block}
 </div>
 <div class="fin" id="rpick" hidden>
   <span class="b">Pita y Tomi en la Maratón 2026</span>
-  <div class="row"><button class="again" id="b-facil">FÁCIL<small id="best-facil" hidden></small></button><button class="ultra" id="b-ultra">DIFÍCIL<small id="best-ultra" hidden></small></button><button class="home" id="b-pick-x">Salir</button></div>
+  <div class="row"><button class="race" id="b-resume" hidden>▶ Volver a la carrera</button><button class="again" id="b-restart" hidden>↻ Reiniciar carrera</button><button class="again" id="b-facil">FÁCIL<small id="best-facil" hidden></small></button><button class="ultra" id="b-ultra">DIFÍCIL<small id="best-ultra" hidden></small></button><button class="home" id="b-pick-x">Salir</button></div>
 </div>
 <div class="fin" id="rgloss" hidden>
   <span class="s">¿QUÉ ES QUÉ?</span>
@@ -212,7 +215,7 @@ body.racing .info{display:block}
   <span class="s" id="rend-s"></span>
   <span class="d" id="rend-d"></span>
   <span class="n" id="rend-n"></span>
-  <div class="row"><button class="race" id="b-share">Compartir</button><button class="again" id="b-retry">↻ Otra vez</button><button class="home" id="b-rend-x">Salir</button></div>
+  <div class="row"><button class="race" id="b-share">Compartir</button><button class="again" id="b-retry">↻ Otra vez</button><button class="again" id="b-rend-menu">☰ Menú</button><button class="home" id="b-rend-x">Salir</button></div>
 </div>
 
 <script>
@@ -2097,8 +2100,10 @@ const names = Object.keys(SCENES);
     R.forEach((row, yy) => [...row].forEach((ch, xx) => { if (col[ch]) { x.fillStyle = col[ch]; x.fillRect(xx, yy, 1, 1); } }));
     $('medal').src = c.toDataURL();
   })();
-  function openPick() {
+  // inRace: opened from ☰ mid-race, so the race is paused and can be resumed or restarted
+  function openPick(inRace) {
     hide(fin); hide($('rend'));
+    $('b-resume').hidden = $('b-restart').hidden = inRace !== true;
     const best = store.get('pt42k', {});
     for (const k of ['facil', 'ultra']) { const el = $('best-' + k); el.hidden = !best[k]; el.textContent = best[k] ? 'Tu mejor: ' + fmt(best[k]) : ''; }
     show($('rpick'));
@@ -2130,14 +2135,20 @@ const names = Object.keys(SCENES);
   }
   $('b-info').addEventListener('click', openGloss);
   $('b-gloss-x').addEventListener('click', () => { hide($('rgloss')); window.PT.pause(false); });
-  $('b-race').addEventListener('click', openPick);
+  $('b-race').addEventListener('click', () => openPick(false));
   // /42k opens straight into the race menu
-  if (window.__START42K) { const go = () => { openGame(); openPick(); }; if (window.PT_READY) go(); else addEventListener('pt-ready', go, { once: true }); }
+  if (window.__START42K) { const go = () => { openGame(); openPick(false); }; if (window.PT_READY) go(); else addEventListener('pt-ready', go, { once: true }); }
   $('b-facil').addEventListener('click', () => runRace('facil'));
   $('b-ultra').addEventListener('click', () => runRace('ultra'));
   $('b-retry').addEventListener('click', () => runRace(raceKind));
-  $('b-pick-x').addEventListener('click', closeGame);
-  $('b-rend-x').addEventListener('click', closeGame);
+  // Salir always lands on the save-the-date page, also from /42k
+  const leave = () => { if (window.__START42K) location.href = '/'; else closeGame(); };
+  $('b-pick-x').addEventListener('click', leave);
+  $('b-rend-x').addEventListener('click', leave);
+  $('b-rend-menu').addEventListener('click', () => openPick(false));
+  $('b-menu').addEventListener('click', () => { window.PT.pause(true); openPick(true); });
+  $('b-resume').addEventListener('click', () => { hide($('rpick')); window.PT.pause(false); });
+  $('b-restart').addEventListener('click', () => runRace(raceKind));
   const bars = {}; document.querySelectorAll('.rbar').forEach(el => { bars[el.dataset.k] = el; });
   const CAUSE_BAR = { '¡Sin energía!': 'e', '¡Sin agua!': 'w', '¡Insolación!': 'sun', '¡Dolor de guatita!': 'g', '¡Calambre: pocas sales!': 'salt' };
   window.onPTRaceHUD = h => {
