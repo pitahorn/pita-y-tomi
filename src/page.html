@@ -142,7 +142,8 @@ body.racing .rhud{display:grid}
 .rspot .hole{position:absolute;border-radius:50%;box-shadow:0 0 0 200vmax rgba(10,8,20,.74);outline:3px dashed var(--cream);outline-offset:4px;animation:spot 1.2s ease-in-out infinite}
 @keyframes spot{50%{outline-offset:9px}}
 .rspot .rtip{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:84vw;margin:0;font-family:var(--f-px);font-weight:700;font-size:16px;line-height:1.35;text-align:center;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px}
-.rspot .rtip small{display:block;margin-top:6px;font-size:11px;opacity:.7}
+.rspot .rtip button{display:block;margin:10px auto 0;min-width:96px;min-height:44px;font-family:var(--f-px);font-weight:700;font-size:16px;color:var(--ink);background:var(--rose);border:3px solid var(--ink);border-radius:0;cursor:pointer;touch-action:manipulation}
+.rspot .rtip button:disabled{opacity:.45}
 .fin .n.k{color:var(--rose)}
 .fin .race{background:var(--gold);color:var(--ink);box-shadow:0 0 0 4px var(--ink)}
 .fin button small{display:block;font-size:12px;font-weight:400;margin-top:4px}
@@ -448,12 +449,15 @@ __ENGINE__
     else if (tg && tg.side) { x = innerWidth / 2 + 10; y = innerHeight * .2; w = innerWidth / 2 - 20; h = innerHeight * .55; round = false; }
     else { const cv = $('game').getBoundingClientRect(), k = cv.width / $('game').width, cx = cv.left + tg.x * k, cy = cv.top + tg.y * cv.height / $('game').height, rad = Math.max(28, tg.r * k); x = cx - rad; y = cy - rad; w = h = rad * 2; }
     Object.assign(hole.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', borderRadius: round ? '50%' : '8px' });
-    tip.innerHTML = ''; tip.append(HINTS[key]); const sm = document.createElement('small'); sm.textContent = 'Toca para seguir'; tip.appendChild(sm);
+    // only OK closes it, and only after a beat, so speed-tapping can't skip the lesson
+    tip.innerHTML = ''; tip.append(HINTS[key]); const ok = document.createElement('button'); ok.textContent = 'OK'; ok.disabled = true; tip.appendChild(ok);
+    setTimeout(() => { ok.disabled = false; }, 600);
+    ok.addEventListener('click', () => { spot.hidden = true; window.PT.pause(false); });
     const below = !!(tg && (tg.bar || tg.side)); // road things: card above, clear of the runners
     Object.assign(tip.style, below ? { top: (y + h + 18) + 'px', bottom: '' } : { top: '', bottom: (innerHeight - y + 18) + 'px' });
     spot.hidden = false;
   };
-  $('rspot').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); $('rspot').hidden = true; window.PT.pause(false); });
+  $('rspot').addEventListener('pointerdown', e => { e.stopPropagation(); if (!e.target.closest('button')) e.preventDefault(); });
   window.onPTRaceEnd = res => {
     release(); $('rspot').hidden = true; lastRace = res;
     const best = store.get('pt42k', {}), prev = best[res.kind];
