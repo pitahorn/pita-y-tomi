@@ -920,7 +920,7 @@ const SEGS = [
   { scene: 'parapente', place: 'CAJÓN DEL MAIPO', from: 0, len: 760, years: [[0, '2022']], windsock: 700 },
   { scene: 'puc', place: 'INGENIERÍA UC', from: 380, len: 320, occ: 'wall', years: [[0, '2023']], outfit: 'student', graduate: 180, meones: 180 },
   { scene: 'depita', place: 'DEPITA', from: 0, len: 496, occ: 'wall', years: [[0, '2024'], [360, '2025']], sofa: 290, seats: { tomi: 326, pita: 356, milky: 384 } },
-  { scene: 'maraton', place: 'MARATÓN DE SANTIAGO', from: 0, len: 480, years: [[0, '2026']], arch: 400 },
+  { scene: 'maraton', place: 'MARATÓN DE SANTIAGO', from: 0, len: 560, years: [[0, '2026']], arch: 400 },
   { scene: 'bariloche', place: 'BARILOCHE · CERRO CATEDRAL', from: 0, len: 960, years: [[0, '2026']], caps: [[560, '1 de julio de 2026']], ring: 900 },
 ];
 const segWith = k => SEGS.find(s => s[k] !== undefined), at = k => { const s = segWith(k); return s.start + s[k]; };
@@ -1112,7 +1112,7 @@ function jumpTo(x) {
   if (joined) { lead = 'pita'; pos.pita = x; pos.tomi = x - 34; } else { pos.tomi = x; }
   if (x > at('adopt')) { milkyState = 'follow'; milkyX = x - 64; milkyY = footAt(milkyX); }
   captions.forEach(c => { if (c.x < x) c.shown = true; });
-  SEGS.forEach(sg => { if (sg.kiss !== undefined && sg.start + sg.kiss < x) sg.kissed = true; if (sg.arch !== undefined && sg.start + sg.arch + 52 < x) sg.fainted = true; });
+  SEGS.forEach(sg => { if (sg.kiss !== undefined && sg.start + sg.kiss < x) sg.kissed = true; if (sg.arch !== undefined && sg.start + sg.arch + 90 < x) sg.fainted = true; });
   cam = x - PLAYER_SX;
 }
 function buildScene(name) {
@@ -1337,7 +1337,8 @@ function frame(now) {
   const sofaSeg = segWith('sofa');
   if (!sofaS && !sofaSeg.sofaDone && joined && pos.pita >= at('sofa')) { sofaSeg.sofaDone = true; sofaS = { t: 0 }; lockT = 5; }
   const archSeg = segWith('arch');
-  if (!faint && !archSeg.fainted && joined && pos.tomi >= at('arch') + 18) { archSeg.fainted = true; faint = { t: 0 }; lockT = 3.2; facing = 1; }
+  // Tomi faints well past the finish line, not under the arch
+  if (!faint && !archSeg.fainted && joined && pos.tomi >= at('arch') + 60) { archSeg.fainted = true; faint = { t: 0 }; lockT = 3.2; facing = 1; }
   if (!prop && joined && pos.pita >= at('ring') - 30) { prop = { t: 0 }; ringFound = true; facing = 1; }
   if (prop) {
     prop.t += dt;

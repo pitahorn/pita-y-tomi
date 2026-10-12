@@ -2,10 +2,11 @@
 // Tomi runs the Maratón de Santiago: tap left = jump (grab floating items, clear rocks), tap right = faster.
 // Bars are 0..1: e energía, w agua, g guatita (bad when high), sun bloqueador, salt sales.
 const RACE_CFG = {
-  facil: { secs: 75, aid: ['agua', 'gel', 'agua'], items: ['gel', 'frugele', 'agua'], hints: true, cost: .85 },
-  ultra: { secs: 150, aid: ['agua', 'gel', 'sal', 'agua'], items: ['gel', 'frugele', 'gel', 'frugele', 'agua', 'agua', 'agua', 'bloqueador', 'sal'], hints: false, cost: 1.15 },
+  // eDrain: jogging with no food runs dry around km 10
+  facil: { secs: 75, eDrain: .032, aid: ['agua', 'gel', 'agua'], items: ['gel', 'frugele', 'agua'], hints: true, cost: .85 },
+  ultra: { secs: 150, eDrain: .016, aid: ['agua', 'gel', 'sal', 'agua'], items: ['gel', 'frugele', 'gel', 'frugele', 'agua', 'agua', 'agua', 'bloqueador', 'sal'], hints: false, cost: 1.15 },
 };
-const JOG = 80, AVG_MUL = 1.4, TAP_MUL = 1.2, MAX_MUL = 4, MUL_DECAY = 1.5;
+const WALK_MUL = .55, JOG = 80, AVG_MUL = 1.4, TAP_MUL = 1.2, MAX_MUL = 4, MUL_DECAY = 1.5;
 const JUMP_V = 200, GRAVITY = 667, ITEM_LO = 58, ITEM_ARC = 14, ARC_W = 70, TOMI_H = 48, TARGET_CLOCK = 3.5 * 3600;
 // nobody beats a 1:59:59 marathon: speed is capped at that pace
 const MIN_CLOCK = 7199, FAINT_SECS = 3.2, RECOVER_SECS = 3, FAINT_PENALTY = 360, STUMBLE_SECS = 1, KM_COUNT = 42.195;
@@ -18,7 +19,7 @@ function newRace(kind) {
   return {
     kind, cfg, L, kmPx: L / KM_COUNT, clockScale: TARGET_CLOCK / cfg.secs, vmax: L * TARGET_CLOCK / cfg.secs / MIN_CLOCK, paused: false,
     d: 0, clock: 0, t: 0, lives: 3, e: .8, w: .8, g: 0, sun: 1, salt: 1, mul: 1, jy: 0, jv: 0, stumble: 0,
-    kiss: 0, turboMul: 1, gels: [], lastWater: -99, eaten: [], quemado: false, burnFaint: false, calambre: false, faint: null, recover: 0, boost: 0, done: 0, over: false,
+    kiss: 0, turboMul: 1, gels: [], lastWater: -99, eaten: [], quemado: false, burnFaint: false, calambre: false, tired: false, faint: null, recover: 0, boost: 0, done: 0, over: false,
     things: [], nextAt: 260, aidKm: 5, tapped: false, rand,
     luck: { at: L * (.5 + rand() * .35), state: 'wait', x: 0, t: 0 }, hinted: {},
   };
@@ -36,7 +37,7 @@ function raceTap(side) {
   const r = race; if (raceBusy()) return;
   r.tapped = true;
   if (side === 'l') { if (r.jy <= 0) { r.jv = JUMP_V; r.jy = .01; } return; }
-  if (r.recover > 0 || r.stumble > 0 || raceCramp()) return;
+  if (r.recover > 0 || r.stumble > 0 || raceCramp() || r.tired) return;
   r.mul = Math.min(MAX_MUL, r.mul * TAP_MUL); r.hinted.fast = true;
 }
 // combos: items grabbed together give a turbo (speed without the extra drain); any order counts.
@@ -121,7 +122,7 @@ function raceUpdate(dt) {
   if (r.jy > 0) { r.jy += r.jv * dt; r.jv -= GRAVITY * dt; if (r.jy <= 0) { r.jy = 0; r.jv = 0; if (r.eaten.length) raceCombo(); } }
   // bars drain at fixed rates: speed is its own difficulty (harder to grab items and dodge obstacles); guatita only comes from food
   const ultra = r.kind === 'ultra', sun = raceInSun(), cost = r.cfg.cost;
-  r.e -= dt * .012 * cost;
+  r.e -= dt * r.cfg.eDrain;
   r.w -= dt * .014 * cost;
   r.g = Math.max(0, r.g - dt * .05);
   if (ultra) {
@@ -134,7 +135,9 @@ function raceUpdate(dt) {
   r.e = Math.max(0, r.e); r.w = Math.max(0, r.w);
   if (r.e < .35) raceHint('e', { bar: 'e' }); if (r.w < .35) raceHint('w', { bar: 'w' }); if (r.g > .6) raceHint('g', { bar: 'g' });
   if (r.t > 4 && !r.hinted.fast) raceHint('fast', { side: 'r' });
-  const v = Math.min(r.vmax, JOG * r.mul * (r.stumble > 0 ? .4 : 1) * (r.g > .6 ? .75 : 1) * (r.boost > 0 ? r.turboMul : 1));
+  if (r.tired && r.e > .02) r.tired = false;
+  if (r.tired) { r.mul = 1; r.boost = 0; }
+  const v = Math.min(r.vmax, JOG * r.mul * (r.tired ? WALK_MUL : 1) * (r.stumble > 0 ? .4 : 1) * (r.g > .6 ? .75 : 1) * (r.boost > 0 ? r.turboMul : 1));
   r.d += v * dt; r.clock += dt * r.clockScale; phase += dt * v / 85 * 12;
   raceSpawn();
   const tx = tomiX();
@@ -164,7 +167,8 @@ function raceUpdate(dt) {
   }
   if (r.d >= r.L) { r.d = r.L; r.done = .001; r.mul = 1; r.jv = JUMP_V; r.jy = .01; hearts(tx, GROUND - 50, 18); return; }
   if (r.recover > 0) return;
-  if (r.e <= 0) raceFaint('¡Sin energía!');
+  // out of energy: one faint, then walking only until he eats
+  if (r.e <= 0 && !r.tired) { r.tired = true; raceFaint('¡Sin energía!'); }
   else if (r.w <= 0) raceFaint('¡Sin agua!');
   else if (r.burnFaint) { r.burnFaint = false; raceFaint('¡Insolación!'); }
   else if (ultra && r.salt <= 0 && !r.calambre) { r.calambre = true; raceFaint('¡Calambre: pocas sales!'); }
