@@ -1683,7 +1683,7 @@ function newRace(kind) {
   return {
     kind, cfg, L, kmPx: L / KM_COUNT, clockScale: TARGET_CLOCK / cfg.secs, vmax: L * TARGET_CLOCK / cfg.secs / MIN_CLOCK, paused: false,
     d: 0, clock: 0, t: 0, lives: 3, e: .8, w: .8, g: 0, sun: 1, salt: 1, mul: 1, jy: 0, jv: 0, stumble: 0,
-    kiss: 0, turboMul: 1, gels: [], lastWater: -99, eaten: [], quemado: false, burnFaint: false, faint: null, recover: 0, boost: 0, done: 0, over: false,
+    kiss: 0, turboMul: 1, gels: [], lastWater: -99, eaten: [], quemado: false, burnFaint: false, calambre: false, faint: null, recover: 0, boost: 0, done: 0, over: false,
     things: [], nextAt: 260, aidKm: 5, tapped: false, rand,
     luck: { at: L * (.5 + rand() * .35), state: 'wait', x: 0, t: 0 }, hinted: {},
   };
@@ -1691,7 +1691,8 @@ function newRace(kind) {
 // ultra: open avenue (sun) vs tree shade, by km; the first 2 km are shaded to warm up
 const sunnyKm = k => k >= 2 && (k * 7 + 3) % 5 < 3;
 const raceInSun = () => race.kind === 'ultra' && sunnyKm(Math.floor(race.d / race.kmPx));
-const raceCramp = () => race.kind === 'ultra' && race.salt < .2;
+// calambre works like insolación: one faint when sales run dry, then no speeding up until sales are grabbed
+const raceCramp = () => race.calambre;
 // target tells the page what to spotlight: a bar, the right half, or a point in game px (offY included)
 const raceHint = (key, target) => { if (race.cfg.hints && !race.hinted[key]) { race.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
 const raceBusy = () => !race || race.faint || race.done || race.over;
@@ -1734,7 +1735,7 @@ function raceEat(name) {
   if (name === 'frugele') { r.e = Math.min(1, r.e + .12); r.g += .08; }
   if (name === 'agua') { r.w = Math.min(1, r.w + .3); r.g += .06; r.lastWater = r.t; if (ultra) r.salt = Math.max(0, r.salt - .12); }
   if (name === 'bloqueador') { r.sun = 1; r.quemado = false; }
-  if (name === 'sal') { r.salt = Math.min(1, r.salt + .45); r.w = Math.min(1, r.w + .08); r.g += .05; }
+  if (name === 'sal') { r.calambre = false; r.salt = Math.min(1, r.salt + .45); r.w = Math.min(1, r.w + .08); r.g += .05; }
   // overeating hurts right away, not a frame later when the bar has already started to drain — and earns no combo
   if (r.g >= 1) { r.g = 1; if (r.recover <= 0) { raceFaint('¡Dolor de guatita!'); return; } }
   r.eaten.push({ it: name, t: r.t });
@@ -1831,7 +1832,7 @@ function raceUpdate(dt) {
   if (r.e <= 0) raceFaint('¡Sin energía!');
   else if (r.w <= 0) raceFaint('¡Sin agua!');
   else if (r.burnFaint) { r.burnFaint = false; raceFaint('¡Insolación!'); }
-  else if (ultra && r.salt <= .04) raceFaint('¡Calambre: pocas sales!');
+  else if (ultra && r.salt <= 0 && !r.calambre) { r.calambre = true; raceFaint('¡Calambre: pocas sales!'); }
 }
 
 const RSEG = () => segWith('arch');
@@ -2241,9 +2242,15 @@ const names = Object.keys(SCENES);
   let side = null, downAt = 0, timer = 0;
   const edge = s => $(s === 'r' ? 'edge-r' : 'edge-l');
   function release() { clearTimeout(timer); if (side) { window.PT.press(side, false); edge(side).classList.remove('on'); } side = null; }
+  // race: read raw touches, so a left tap while a right finger is still down isn't swallowed as a pinch
+  play.addEventListener('touchstart', e => {
+    if (!document.body.classList.contains('racing') || e.target.closest('button, .rspot')) return;
+    for (const tch of e.changedTouches) window.PT.tap(tch.clientX >= innerWidth / 2 ? 'r' : 'l');
+    e.preventDefault();
+  }, { passive: false });
   play.addEventListener('pointerdown', e => {
     if (e.target.closest('button')) return;
-    if (document.body.classList.contains('racing')) { window.PT.tap(e.clientX >= innerWidth / 2 ? 'r' : 'l'); e.preventDefault(); return; }
+    if (document.body.classList.contains('racing')) { if (e.pointerType !== 'touch') window.PT.tap(e.clientX >= innerWidth / 2 ? 'r' : 'l'); e.preventDefault(); return; }
     const s = e.clientX >= innerWidth / 2 ? 'r' : 'l';
     release(); side = s; downAt = performance.now(); window.PT.press(s, true); edge(s).classList.add('on');
     try { play.setPointerCapture(e.pointerId); } catch (err) {}

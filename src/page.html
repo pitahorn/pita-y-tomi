@@ -496,9 +496,15 @@ __ENGINE__
   let side = null, downAt = 0, timer = 0;
   const edge = s => $(s === 'r' ? 'edge-r' : 'edge-l');
   function release() { clearTimeout(timer); if (side) { window.PT.press(side, false); edge(side).classList.remove('on'); } side = null; }
+  // race: read raw touches, so a left tap while a right finger is still down isn't swallowed as a pinch
+  play.addEventListener('touchstart', e => {
+    if (!document.body.classList.contains('racing') || e.target.closest('button, .rspot')) return;
+    for (const tch of e.changedTouches) window.PT.tap(tch.clientX >= innerWidth / 2 ? 'r' : 'l');
+    e.preventDefault();
+  }, { passive: false });
   play.addEventListener('pointerdown', e => {
     if (e.target.closest('button')) return;
-    if (document.body.classList.contains('racing')) { window.PT.tap(e.clientX >= innerWidth / 2 ? 'r' : 'l'); e.preventDefault(); return; }
+    if (document.body.classList.contains('racing')) { if (e.pointerType !== 'touch') window.PT.tap(e.clientX >= innerWidth / 2 ? 'r' : 'l'); e.preventDefault(); return; }
     const s = e.clientX >= innerWidth / 2 ? 'r' : 'l';
     release(); side = s; downAt = performance.now(); window.PT.press(s, true); edge(s).classList.add('on');
     try { play.setPointerCapture(e.pointerId); } catch (err) {}
