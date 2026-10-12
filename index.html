@@ -245,6 +245,22 @@ const FONT = {
   '*': ['...', '#.#', '###', '.#.', '...'], '+': ['...', '.#.', '###', '.#.', '...'], '-': ['...', '...', '###', '...', '...'], '.': ['...', '...', '...', '...', '.#.'],
 };
 const ACC = { 'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U' };
+// Metro de Santiago street sign: three red diamonds in a bronze oval over a black name plate
+function metroSign(c, x, base, name) {
+  const cy = base - 48, ring = (rx, ry, ox, col) => {
+    ell(c, x + ox, cy, rx, ry, col);
+    c.globalCompositeOperation = 'destination-out'; ell(c, x + ox + (ox ? 1 : 0), cy, rx - 2, ry - 2, '#000'); c.globalCompositeOperation = 'source-over';
+  };
+  rect(c, x - 1, cy, 3, base - cy, '#2a2a30'); rect(c, x + 1, cy, 1, base - cy, '#45454e');
+  ring(16, 12, -1, '#34302c'); ring(15, 11, 0, '#a08a62');
+  rect(c, x - 13, cy - 1, 26, 1, '#5a5048');
+  for (const dx of [-7, 0, 7]) for (let dy = -6; dy <= 6; dy++) {
+    const w = Math.round(4 * (1 - Math.abs(dy) / 6.5));
+    rect(c, x + dx - w, cy + dy, w, 1, '#d8343f'); rect(c, x + dx, cy + dy, w + 1, 1, '#a01e2c');
+  }
+  const pw = name.length * 4 + 5; rect(c, x - (pw >> 1), cy + 13, pw, 10, '#1e1e24'); rect(c, x - (pw >> 1), cy + 13, pw, 1, '#4a4a54');
+  text(c, name, x - (pw >> 1) + 3, cy + 16, '#f4f0e8');
+}
 function text(c, str, x, y, col) {
   [...str].forEach((ch, i) => {
     const X = x + i * 4; let g = ch;
@@ -791,8 +807,7 @@ const SCENES = {
       rect(c, 0, 156, LW, 12, '#5e5e66'); rect(c, 0, 156, LW, 1, '#8a8a90');
       for (let x = 0; x < LW; x += 14) rect(c, x, 162, 6, 1, '#e8c04a');
       [90, 430, 660].forEach(x => palm(c, x, 136)); [260, 560].forEach(x => lamp(c, x, 136));
-      map(c, ['..........oo....', '..oooooooodDo...', '.oddddddddddddo.', 'oddddddddddkddno', 'oddddddddrrdddo.', '.oddoddddddoddo.', '..oo.oooooo.oo..'], { o: OUT, d: '#c9a070', D: '#8a6a46', k: OUT, n: OUT, r: '#c0383e' }, 330, 136);
-      map(c, ['####', '..#.', '.#..', '####'], { '#': '#3e3a4a' }, 346, 126);
+      metroSign(c, 308, 140, 'ALCANTARA');
     },
   },
   puc: {
