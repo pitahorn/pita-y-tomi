@@ -1683,7 +1683,7 @@ function transform() {
 const held = new Set();
 const syncDir = () => { dir = (held.has('r') ? 1 : 0) - (held.has('l') ? 1 : 0); };
 addEventListener('keydown', e => {
-  if (e.target.closest && e.target.closest('button')) return;
+  if (e.target.closest && e.target.closest('button, input')) return;
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) { held.add('l'); syncDir(); e.preventDefault(); }
   if (['ArrowRight', 'd', 'D'].includes(e.key)) { held.add('r'); syncDir(); e.preventDefault(); }
   if (mode === 'race') { if (!e.repeat && ['ArrowLeft', 'ArrowUp', ' '].includes(e.key)) raceTap('l'); if (!e.repeat && e.key === 'ArrowRight') raceTap('r'); e.preventDefault(); return; }
