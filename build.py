@@ -13,7 +13,7 @@ print(f"index.html: {len(html) // 1024} KB")
 # /42k and /puc: same page, opening straight into that game's menu
 for route, title, og_title, og_alt in [
     ("42k", "Pita y Tomi · 42K", "Pita y Tomi en la Maratón 2026", "Pita y Tomi corren la Maratón de Santiago"),
-    ("puc", "Pita en la PUC", "Pita en la PUC", "Pita equilibra libros frente a la Escuela de Ingeniería"),
+    ("puc", "Pita y Tomi · PUC", "Pita y Tomi en la PUC", "Pita equilibra libros frente a la Escuela de Ingeniería"),
 ]:
     out = html.replace('<meta property="og:url" content="https://matri.pitahorn.com/">', f'<meta property="og:url" content="https://matri.pitahorn.com/{route}/">', 1)
     out = out.replace('<meta property="og:title" content="Pita & Tomi · 9 de octubre de 2027">', f'<meta property="og:title" content="{og_title}">', 1)

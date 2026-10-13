@@ -16,7 +16,7 @@ Edit `src/`, then rebuild and push:
 - `src/page.html` — landing, controls, onboarding, final overlay
 - `src/engine.js` — the game: world, sprites, scenes, timeline
 - `src/race.js` — Desafío 42K (spliced into the engine); also served at `/42k`
-- `src/stack.js` — Pita en la PUC (spliced into the engine); also served at `/puc`
+- `src/stack.js` — Pita y Tomi en la PUC (spliced into the engine); also served at `/puc`
 - `src/photo.jpg` — landing photo
 
 Commit `index.html`, `42k/index.html` and `puc/index.html` together with the `src/` change; Pages serves them as-is.

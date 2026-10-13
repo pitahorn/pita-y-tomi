@@ -191,7 +191,7 @@ body.stacking #s-tired{display:grid}
     </div>
     <button class="cta" id="b-start" disabled>Cargando…</button>
     <button class="head-btn" id="b-tomi" aria-label="Desafío 42K" hidden><img id="tomi-head" alt=""></button>
-    <button class="head-btn" id="b-pita" aria-label="Pita en la PUC" hidden><img id="pita-head" alt=""></button>
+    <button class="head-btn" id="b-pita" aria-label="Pita y Tomi en la PUC" hidden><img id="pita-head" alt=""></button>
   </div>
 </main>
 
@@ -375,8 +375,8 @@ __ENGINE__
   // Desafío 42K
   const fmt = sec => { sec = Math.round(sec); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, ss = sec % 60; return h + ':' + String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0'); };
   const MODE = { facil: 'FÁCIL', ultra: 'DIFÍCIL' };
-  // two minigames share the menu, results and hints: the 42K race and Pita en la PUC
-  const TITLES = { '42k': 'Pita y Tomi en la Maratón 2026', puc: 'Pita en la PUC' };
+  // two minigames share the menu, results and hints: the 42K race and Pita y Tomi en la PUC
+  const TITLES = { '42k': 'Pita y Tomi en la Maratón 2026', puc: 'Pita y Tomi en la PUC' };
   let game = window.__START || '42k', raceKind = 'facil', lastRace = null;
   (() => {
     const R = ['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'];
@@ -532,7 +532,7 @@ __ENGINE__
   $('b-share').addEventListener('click', () => {
     if (!lastRace || !lastRace.ok) return;
     const text = game === 'puc'
-      ? 'Me titulé con Pita en la PUC con una torre de ' + lastRace.n + ' cosas 🎓 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com/puc'
+      ? 'Me titulé con Pita y Tomi en la PUC con una torre de ' + lastRace.n + ' cosas 🎓 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com/puc'
       : 'Corrí el 42K de Pita & Tomi en ' + fmt(lastRace.time) + ' 🏅 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com';
     if (navigator.share) navigator.share({ text }).catch(() => {});
     else window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
@@ -553,7 +553,7 @@ __ENGINE__
   const edge = s => $(s === 'r' ? 'edge-r' : 'edge-l');
   function release() { clearTimeout(timer); if (side) { window.PT.press(side, false); edge(side).classList.remove('on'); } side = null; }
   // race: read raw touches, so a left tap while a right finger is still down isn't swallowed as a pinch
-  // Pita en la PUC: Pita follows the finger
+  // Pita y Tomi en la PUC: Pita follows the finger
   const stacking = () => document.body.classList.contains('stacking');
   const follow = e => { if (!stacking() || e.target.closest('button, .rspot')) return; window.PT.stackTo(e.touches[0].clientX / innerWidth); e.preventDefault(); };
   play.addEventListener('touchstart', follow, { passive: false });

@@ -1,4 +1,4 @@
-# v3 — Pita en la PUC
+# v3 — Pita y Tomi en la PUC
 
 Agreed with Pita via /grilling and play-testing, 2026-10-13. Second minigame,
 same shape as the Desafío 42K. Front-end only.
@@ -6,7 +6,7 @@ same shape as the Desafío 42K. Front-end only.
 ## Entry
 - Floating **Pita head** on the landing, next to Tomi's. Same "only after the
   story" rule. Own link: `matri.pitahorn.com/puc`.
-- Menu "Pita en la PUC", FÁCIL / DIFÍCIL, on the game's own paused scene.
+- Menu "Pita y Tomi en la PUC", FÁCIL / DIFÍCIL, on the game's own paused scene.
 
 ## Play
 - In front of the Escuela de Ingeniería. Pita balances the stack on her head and

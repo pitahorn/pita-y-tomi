@@ -1,4 +1,4 @@
-/* ---------- Pita en la PUC ---------- */
+/* ---------- Pita y Tomi en la PUC ---------- */
 // Pita catches falling coursework on a stack of books. Items land where they hit; an off-center
 // tower or too much sway topples it. Energy items fight tiredness, which makes Pita shaky.
 const STACK_CFG = {

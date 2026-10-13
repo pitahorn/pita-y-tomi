@@ -238,7 +238,7 @@ function drawPerson(c, s, lf, lb, run, kneel, kissPose, sit) {
   rect(c, 11, 8, 2, 1, s.brow); rect(c, 15, 8, 3, 1, s.brow);
   for (const ex of [12, 16]) { if (kissPose || s.asleep) rect(c, ex - 1, 11, 2, 1, '#2a1e24'); else { px(c, ex, 10, '#2a1e24'); px(c, ex, 11, s.eye); } }
   px(c, 11, 12, '#f0a0a0'); px(c, 17, 12, '#f0a0a0');
-  // Pita en la PUC: eye bags for the first 2 tired steps (the wiry hair is painted on the grown sprite)
+  // Pita y Tomi en la PUC: eye bags for the first 2 tired steps (the wiry hair is painted on the grown sprite)
   if (s.tired) {
     for (const ex of [12, 16]) { rect(c, ex - 1, 12, s.tired > 1 ? 3 : 2, 1, s.tired > 1 ? '#8a6a90' : '#c8a8b8'); if (s.tired > 1) rect(c, ex - 1, 13, 3, 1, '#c8a8b8'); }
   }
@@ -273,7 +273,7 @@ function person(spec, lf, lb, run, kneel, kissPose, sit) {
   return cv;
 }
 const HEAD_ROWS = 26, HEAD_PAD = 3;
-// lvl: Pita's tiredness step in Pita en la PUC (0..4), for the energy bar's face
+// lvl: Pita's tiredness step in Pita y Tomi en la PUC (0..4), for the energy bar's face
 function head(who, lvl) {
   const src = lvl === undefined ? outfitSprites('casual')[who].walk[1] : pitaStack(lvl).walk[1];
   const rows = HEAD_ROWS + (src.pad || 0);
@@ -1094,7 +1094,7 @@ function stretchEdges(cv, off, interior) {
 }
 function setViewport(w, hs) {
   W = Math.round(w); TALL = hs > H; PLAYER_SX = Math.round(W * (TALL ? .5 : .39)); canvas.width = W;
-  // Pita en la PUC keeps only a strip of grass: the sky is room for the tower
+  // Pita y Tomi en la PUC keeps only a strip of grass: the sky is room for the tower
   Hs = Math.max(H, Math.round(hs)); offY = Hs === H ? 0 : mode === 'stack' ? Math.max(0, Hs - GROUND - STACK_FLOOR) : Math.round(Math.max(0, Hs * .66 - 140));
   canvas.height = Hs; mainCtx.imageSmoothingEnabled = false;
   skyImg = mainCtx.createImageData(W, Hs); sky32 = new Uint32Array(skyImg.data.buffer); drops = [];
