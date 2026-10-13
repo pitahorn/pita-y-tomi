@@ -236,8 +236,12 @@ function drawPerson(c, s, lf, lb, run, kneel, kissPose, sit) {
   if (hat && hat.kind === 'grad') { rect(c, 8, 2, 10, 4, '#2a2a30'); rect(c, 4, 1, 18, 2, '#1a1a1e'); rect(c, 5, 1, 16, 1, '#3a3a44'); px(c, 13, 0, '#f0c040'); rect(c, 20, 2, 1, 4, '#f0c040'); px(c, 20, 6, '#f8d860'); }
   if (hat && hat.kind === 'beanie') { ell(c, 12.5, 4.4, 7.2, 3.4, hat.color); rect(c, 5, 6, 15, 2, shade(hat.color, .8)); rect(c, 11, 0, 3, 2, shade(hat.color, 1.3)); }
   rect(c, 11, 8, 2, 1, s.brow); rect(c, 15, 8, 3, 1, s.brow);
-  for (const ex of [12, 16]) { if (kissPose) rect(c, ex - 1, 11, 2, 1, '#2a1e24'); else { px(c, ex, 10, '#2a1e24'); px(c, ex, 11, s.eye); } }
+  for (const ex of [12, 16]) { if (kissPose || s.asleep) rect(c, ex - 1, 11, 2, 1, '#2a1e24'); else { px(c, ex, 10, '#2a1e24'); px(c, ex, 11, s.eye); } }
   px(c, 11, 12, '#f0a0a0'); px(c, 17, 12, '#f0a0a0');
+  // Pita en la PUC: eye bags for the first 2 tired steps (the wiry hair is painted on the grown sprite)
+  if (s.tired) {
+    for (const ex of [12, 16]) { rect(c, ex - 1, 12, s.tired > 1 ? 3 : 2, 1, s.tired > 1 ? '#8a6a90' : '#c8a8b8'); if (s.tired > 1) rect(c, ex - 1, 13, 3, 1, '#c8a8b8'); }
+  }
   if (kissPose) { px(c, 16, 13, '#b04a5a'); px(c, 17, 13, '#c05a6a'); } 
   if (s.mask) { rect(c, 11, 12, 8, 3, '#cfe8f4'); rect(c, 11, 13, 8, 1, '#a8cce0'); rect(c, 7, 11, 4, 1, '#e8f4fa'); }
   if (s.glasses === 'round') { for (const ex of [12, 16]) { rect(c, ex - 1, 9, 3, 1, OUT); rect(c, ex - 1, 12, 3, 1, OUT); px(c, ex - 1, 10, OUT); px(c, ex - 1, 11, OUT); px(c, ex + 1, 10, OUT); px(c, ex + 1, 11, OUT); } px(c, 14, 10, OUT); rect(c, 7, 10, 4, 1, OUT); }
@@ -269,10 +273,12 @@ function person(spec, lf, lb, run, kneel, kissPose, sit) {
   return cv;
 }
 const HEAD_ROWS = 26, HEAD_PAD = 3;
-function tomiHead() {
-  const src = outfitSprites('casual').tomi.walk[1];
-  return bake(src.width + HEAD_PAD * 2, HEAD_ROWS + HEAD_PAD * 2, c => {
-    c.drawImage(src, 0, 0, src.width, HEAD_ROWS, HEAD_PAD, HEAD_PAD, src.width, HEAD_ROWS);
+// lvl: Pita's tiredness step in Pita en la PUC (0..4), for the energy bar's face
+function head(who, lvl) {
+  const src = lvl === undefined ? outfitSprites('casual')[who].walk[1] : pitaStack(lvl).walk[1];
+  const rows = HEAD_ROWS + (src.pad || 0);
+  return bake(src.width + HEAD_PAD * 2, rows + HEAD_PAD * 2, c => {
+    c.drawImage(src, 0, 0, src.width, rows, HEAD_PAD, HEAD_PAD, src.width, rows);
     outline(c); outline(c, '#fbf3e4'); outline(c, '#0f0c1c');
   });
 }
@@ -1088,7 +1094,8 @@ function stretchEdges(cv, off, interior) {
 }
 function setViewport(w, hs) {
   W = Math.round(w); TALL = hs > H; PLAYER_SX = Math.round(W * (TALL ? .5 : .39)); canvas.width = W;
-  Hs = Math.max(H, Math.round(hs)); offY = Hs === H ? 0 : Math.round(Math.max(0, Hs * .66 - 140));
+  // Pita en la PUC keeps only a strip of grass: the sky is room for the tower
+  Hs = Math.max(H, Math.round(hs)); offY = Hs === H ? 0 : mode === 'stack' ? Math.max(0, Hs - GROUND - STACK_FLOOR) : Math.round(Math.max(0, Hs * .66 - 140));
   canvas.height = Hs; mainCtx.imageSmoothingEnabled = false;
   skyImg = mainCtx.createImageData(W, Hs); sky32 = new Uint32Array(skyImg.data.buffer); drops = [];
   for (const k in built) built[k].skyTab = skyTable(SCENES[k].skyStops);
@@ -1303,6 +1310,7 @@ function kiss() { if (dating && !prop && kissT <= 0) { kissT = 1.9; kissHearts =
 function frame(now) {
   const t = now / 1000, dt = Math.max(0, Math.min(.05, last ? t - last : 0)); last = Math.max(last, t);
   if (mode === 'race') { raceFrame(t, dt); requestAnimationFrame(frame); return; }
+  if (mode === 'stack') { stackFrame(t, dt); requestAnimationFrame(frame); return; }
   if (mode === 'landing') { dir = 0; landT -= dt; if (landT <= 0) { landT = 6; kiss(); } }
   if (lockT > 0) lockT -= dt;
   if (intro >= 0 && mode === 'game') { if (intro === 0 && dir > 0) intro = .001; else if (intro > 0) { intro += dt; if (intro > 1.4) { intro = -1; facing = 1; } } }
@@ -1411,6 +1419,7 @@ addEventListener('keydown', e => {
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) { held.add('l'); syncDir(); e.preventDefault(); }
   if (['ArrowRight', 'd', 'D'].includes(e.key)) { held.add('r'); syncDir(); e.preventDefault(); }
   if (mode === 'race') { if (!e.repeat && ['ArrowLeft', 'ArrowUp', ' '].includes(e.key)) raceTap('l'); if (!e.repeat && e.key === 'ArrowRight') raceTap('r'); e.preventDefault(); return; }
+  if (mode === 'stack') { e.preventDefault(); return; }
   if (e.key === ' ' && !e.repeat) { transform(); e.preventDefault(); }
   if ((e.key === 'k' || e.key === 'K') && !e.repeat) kiss();
   if ((e.key === 'n' || e.key === 'N') && !e.repeat && !riding) { const s = SEGS[Math.min(SEGS.length - 1, segAt(pos[lead]) + 1)]; jumpTo(s.start + 20); }
@@ -1440,6 +1449,7 @@ function boom() {
 $('b-kiss').addEventListener('click', tapBesito);
 
 /*__RACE__*/
+/*__STACK__*/
 const resetFlags = () => SEGS.forEach(s => { s.kissed = false; s.fainted = false; s.sofaDone = false; });
 function setLanding() { resetFlags(); resetWorld(); jumpTo(at('ring') - 110); intro = -1; cam = pos.pita - Math.round(W * .62); ringFound = true; kissT = 0; landT = 2.5; facing = 1; mode = 'landing'; }
 window.PT = {
@@ -1449,10 +1459,12 @@ window.PT = {
   press(k, on) { if (on) held.add(k); else held.delete(k); syncDir(); },
   race(kind, w, hs) { startRace(kind, w, hs); },
   tap: raceTap,
-  pause(on) { if (race) race.paused = on; },
+  pause(on) { if (race) race.paused = on; if (stk) stk.paused = on; },
   art: raceArtURL,
   milky: () => milkySet('scarf').idle[0], heart: () => HEART,
-  tomiHead,
+  head, stack: startStack, stackTo,
+  // a game's menu sits on that game's own scene: started, paused, and quiet
+  lobby(game, w, hs) { (game === 'puc' ? startStack : startRace)('facil', w, hs); capQueue = []; this.pause(true); },
 };
 const names = Object.keys(SCENES);
 (function boot(i) {

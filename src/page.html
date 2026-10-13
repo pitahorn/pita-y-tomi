@@ -114,8 +114,8 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 .fin .home{background:transparent;color:var(--cream)}
 [hidden]{display:none!important}
 /* Desafío 42K */
-body.racing .hud,body.racing .edge,body.racing .onb{display:none}
-body.racing .banner{top:30%}
+body.racing .hud,body.racing .edge,body.racing .onb,body.stacking .hud,body.stacking .edge,body.stacking .onb{display:none}
+body.racing .banner,body.stacking .banner{top:30%}
 .rhud,.rctl{display:none}
 body.racing .rctl{display:grid}
 .rctl{position:absolute;inset:0;z-index:5;grid-template-columns:1fr 1fr;pointer-events:none}
@@ -127,7 +127,7 @@ body.racing .rctl.out{display:none}
 .rctl .hand{width:48px}
 .rctl .hand.d2{animation-delay:.25s}
 .rhud{position:absolute;z-index:6;left:10px;top:calc(10px + env(safe-area-inset-top,0px));width:min(58vw,260px);gap:5px;font-family:var(--f-px);font-weight:700;color:#fff;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;pointer-events:none}
-body.racing .rhud{display:grid}
+body.racing #rhud,body.stacking #shud{display:grid}
 .rhud .top{display:flex;gap:10px;align-items:baseline;font-size:15px}
 .rhud .lives{color:var(--rose);font-size:18px;letter-spacing:2px}
 .rbar{display:grid;grid-template-columns:22px 1fr;align-items:center;gap:6px}
@@ -148,12 +148,24 @@ body.racing .rhud{display:grid}
 .fin button small{display:block;font-size:12px;font-weight:400;margin-top:4px}
 .fin .ultra{background:#e05a5a;color:#fff}
 .medal{width:78px;image-rendering:pixelated}
-.tomi-btn{position:absolute;left:12px;bottom:calc(100% + 10px);padding:4px;background:none;border:0;cursor:pointer;animation:bob 2.4s ease-in-out infinite;touch-action:manipulation}
-.tomi-btn img{width:63px;display:block;image-rendering:pixelated;filter:drop-shadow(2px 2px 0 rgba(15,12,28,.55))}
+.head-btn{position:absolute;left:12px;bottom:calc(100% + 10px);padding:4px;background:none;border:0;cursor:pointer;animation:bob 2.4s ease-in-out infinite;touch-action:manipulation}
+#b-pita{left:84px;animation-delay:-1.2s}
+.head-btn img{width:63px;display:block;image-rendering:pixelated;filter:drop-shadow(2px 2px 0 rgba(15,12,28,.55))}
 @keyframes bob{50%{transform:translateY(-5px)}}
 .info{display:none;position:absolute;z-index:6;top:calc(70px + env(safe-area-inset-top,0px));right:18px;width:40px;height:40px;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--cream);background:rgba(15,12,28,.55);border:3px solid var(--cream);border-radius:50%;cursor:pointer;touch-action:manipulation;background:rgba(15,12,28,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 7' shape-rendering='crispEdges'%3E%3Cpath fill='%23fbf3e4' d='M1 0h1v1H1zM0 2h2v4h1v1H0V6h1V3H0z'/%3E%3C/svg%3E") center/9px 21px no-repeat}
 body.racing .info{display:block}
-body.racing .close{display:none}
+body.racing .close,body.stacking .close{display:none}
+body.stacking #b-menu{display:block}
+body.lobby .hud,body.lobby .edge,body.lobby .onb,body.lobby .close{display:none}
+#shud{width:auto;right:80px}
+body.stacking .banner{width:calc(100% - 100px);left:calc(50% - 30px)}
+#s-tired{display:none;position:absolute;z-index:6;right:16px;top:calc(76px + env(safe-area-inset-top,0px));justify-items:center;gap:6px;pointer-events:none}
+body.stacking #s-tired{display:grid}
+#s-tired img{width:52px;image-rendering:pixelated}
+#s-tired b{display:block;width:14px;height:28vh;border:2px solid var(--ink);background:rgba(15,12,28,.6);position:relative;box-shadow:0 0 0 1px rgba(251,243,228,.6)}
+#s-tired b span{position:absolute;left:0;right:0;bottom:0;background:#f0c040}
+#s-tired.low b{animation:rblink .5s steps(2) infinite}
+#shud .top span{white-space:nowrap}
 .info.menu{top:calc(10px + env(safe-area-inset-top,0px));right:12px;width:52px;height:52px;border-radius:0;background:rgba(15,12,28,.55);font-size:24px;line-height:1}
 .gloss{display:grid;gap:8px;width:min(320px,100%);text-align:left;font-family:var(--f-px);font-weight:700;font-size:14px;color:#fff}
 .gloss div{display:grid;grid-template-columns:56px 1fr;align-items:center;gap:10px}
@@ -178,7 +190,8 @@ body.racing .close{display:none}
       </div>
     </div>
     <button class="cta" id="b-start" disabled>Cargando…</button>
-    <button class="tomi-btn" id="b-tomi" aria-label="Desafío 42K" hidden><img id="tomi-head" alt=""></button>
+    <button class="head-btn" id="b-tomi" aria-label="Desafío 42K" hidden><img id="tomi-head" alt=""></button>
+    <button class="head-btn" id="b-pita" aria-label="Pita en la PUC" hidden><img id="pita-head" alt=""></button>
   </div>
 </main>
 
@@ -196,6 +209,10 @@ body.racing .close{display:none}
     <div class="rbar" data-k="sun" style="--c:#f8e070"><i>☀️</i><b><span></span></b></div>
     <div class="rbar" data-k="salt" style="--c:#e8e8f0"><i>🧂</i><b><span></span></b></div>
   </div>
+  <div class="rhud" id="shud" aria-live="off">
+    <div class="top"><span id="s-sem">SEMESTRE 1</span><span id="s-got"></span></div>
+  </div>
+  <div id="s-tired" aria-hidden="true"><img id="s-face" alt=""><b><span></span></b></div>
   <div class="rctl" id="rctl"><div><span class="hands"><img class="hand" alt=""></span>TOCA<br>PARA SALTAR</div><div><span class="hands"><img class="hand" alt=""><img class="hand d2" alt=""></span>TOCA Y TOCA<br>PARA CORRER</div></div>
   <div class="rspot" id="rspot" hidden><div class="hole" id="rspot-hole"></div><p class="rtip" id="rspot-tip"></p></div>
 </section>
@@ -210,7 +227,7 @@ body.racing .close{display:none}
   <div class="row"><button class="again" id="b-again">↻ Ver de nuevo</button><button class="home" id="b-home">Salir</button></div>
 </div>
 <div class="fin" id="rpick" hidden>
-  <span class="b">Pita y Tomi en la Maratón 2026</span>
+  <span class="b" id="rpick-t"></span>
   <div class="row"><button class="race" id="b-resume" hidden>▶ Volver a la carrera</button><button class="again" id="b-restart" hidden>↻ Reiniciar carrera</button><button class="again" id="b-facil">FÁCIL<small id="best-facil" hidden></small></button><button class="ultra" id="b-ultra">DIFÍCIL<small id="best-ultra" hidden></small></button><button class="home" id="b-pick-x">Salir</button></div>
 </div>
 <div class="fin" id="rgloss" hidden>
@@ -243,7 +260,7 @@ __ENGINE__
 
   function ready() {
     start.disabled = false; start.textContent = '▶ Recorre nuestra historia';
-    $('tomi-head').src = window.PT.tomiHead().toDataURL();
+    $('tomi-head').src = window.PT.head('tomi').toDataURL(); $('pita-head').src = window.PT.head('pita').toDataURL();
   }
   if (window.PT_READY) ready(); else addEventListener('pt-ready', ready, { once: true });
 
@@ -334,14 +351,14 @@ __ENGINE__
   function closeGame() {
     release(); play.classList.remove('in'); fin.classList.remove('in');
     ['rpick', 'rend', 'rgloss'].forEach(id => { $(id).classList.remove('in'); });
-    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; $('rpick').hidden = $('rend').hidden = $('rgloss').hidden = $('rspot').hidden = true; document.body.classList.remove('playing', 'racing'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
+    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; $('rpick').hidden = $('rend').hidden = $('rgloss').hidden = $('rspot').hidden = true; document.body.classList.remove('playing', 'racing', 'stacking', 'lobby'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
   }
   start.addEventListener('click', openGame);
   $('b-close').addEventListener('click', closeGame);
   $('b-home').addEventListener('click', closeGame);
   $('b-again').addEventListener('click', () => { fin.classList.remove('in'); setTimeout(() => { fin.hidden = true; }, 300); window.PT.start(gameW(), gameH()); play.classList.remove('moved'); onb.hidden = false; onb.classList.remove('out'); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !play.hidden) closeGame(); });
-  window.onPTFinal = () => { release(); showKisses(); show(fin); store.set('ptStoryDone', true); $('b-tomi').hidden = false; };
+  window.onPTFinal = () => { release(); showKisses(); show(fin); store.set('ptStoryDone', true); $('b-tomi').hidden = $('b-pita').hidden = false; };
   const show = el => { el.hidden = false; requestAnimationFrame(() => el.classList.add('in')); };
   const hide = el => { el.classList.remove('in'); el.hidden = true; };
   const store = {
@@ -358,7 +375,9 @@ __ENGINE__
   // Desafío 42K
   const fmt = sec => { sec = Math.round(sec); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, ss = sec % 60; return h + ':' + String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0'); };
   const MODE = { facil: 'FÁCIL', ultra: 'DIFÍCIL' };
-  let raceKind = 'facil', lastRace = null;
+  // two minigames share the menu, results and hints: the 42K race and Pita en la PUC
+  const TITLES = { '42k': 'Pita y Tomi en la Maratón 2026', puc: 'Pita en la PUC' };
+  let game = window.__START || '42k', raceKind = 'facil', lastRace = null;
   (() => {
     const R = ['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'];
     const col = { b: '#3a6ad0', r: '#e05050', o: '#8a5a10', y: '#f6cf6a', w: '#fff6c8', d: '#c89a30' };
@@ -369,18 +388,23 @@ __ENGINE__
   // inRace: opened from ☰ mid-race, so the race is paused and can be resumed or restarted
   function openPick(inRace) {
     hide(fin); hide($('rend'));
-    $('b-resume').hidden = $('b-restart').hidden = !inRace;
+    $('b-resume').hidden = $('b-restart').hidden = !inRace; $('rpick-t').textContent = TITLES[game];
     const best = store.get('pt42k', {});
-    for (const k of ['facil', 'ultra']) { const el = $('best-' + k); el.hidden = !best[k]; el.textContent = best[k] ? 'Tu mejor: ' + fmt(best[k]) : ''; }
+    for (const k of ['facil', 'ultra']) { const el = $('best-' + k); el.hidden = !best[k] || game !== '42k'; el.textContent = best[k] ? 'Tu mejor: ' + fmt(best[k]) : ''; }
     show($('rpick'));
   }
-  function runRace(kind) {
+  function playGame(kind) {
     raceKind = kind; hide($('rpick')); hide($('rend')); hide(fin); release();
-    document.body.classList.add('racing'); play.classList.add('moved'); onb.hidden = true; tip.hidden = true;
+    document.body.classList.remove('racing', 'stacking', 'lobby'); document.body.classList.add(game === 'puc' ? 'stacking' : 'racing'); play.classList.add('moved'); onb.hidden = true; tip.hidden = true;
+    if (game === 'puc') { window.PT.stack(kind, gameW(), gameH()); return; }
     bars.sun.hidden = bars.salt.hidden = kind !== 'ultra';
     $('rctl').classList.remove('out');
     window.PT.race(kind, gameW(), gameH());
     if (!store.get('pt42kGloss', false)) { store.set('pt42kGloss', true); openGloss(); }
+  }
+  function openLobby() {
+    openGame(); onb.hidden = true; document.body.classList.add('lobby');
+    window.PT.lobby(game, gameW(), gameH()); openPick(false);
   }
   // glossary: what each road thing is; shown before the first race, and from the (i) button
   const GLOSS = [
@@ -400,24 +424,25 @@ __ENGINE__
   }
   $('b-info').addEventListener('click', openGloss);
   $('b-gloss-x').addEventListener('click', () => { hide($('rgloss')); window.PT.pause(false); });
-  // finished the story once: Tomi's head floats on the landing and opens the race
-  const tomiBtn = $('b-tomi');
-  tomiBtn.hidden = !store.get('ptStoryDone', false);
-  tomiBtn.addEventListener('click', () => { openGame(); openPick(false); });
-  // /42k opens straight into the race menu
-  if (window.__START42K) { const go = () => { openGame(); openPick(false); }; if (window.PT_READY) go(); else addEventListener('pt-ready', go, { once: true }); }
-  $('b-facil').addEventListener('click', () => runRace('facil'));
-  $('b-ultra').addEventListener('click', () => runRace('ultra'));
-  $('b-retry').addEventListener('click', () => runRace(raceKind));
-  // Salir always lands on the save-the-date page, also from /42k
-  const leave = () => { if (window.__START42K) location.href = '/'; else closeGame(); };
+  // finished the story once: Tomi's and Pita's heads float on the landing and open their games
+  for (const [id, g] of [['b-tomi', '42k'], ['b-pita', 'puc']]) {
+    $(id).hidden = !store.get('ptStoryDone', false);
+    $(id).addEventListener('click', () => { game = g; openLobby(); });
+  }
+  // /42k and /puc open straight into their menu
+  if (window.__START) { if (window.PT_READY) openLobby(); else addEventListener('pt-ready', openLobby, { once: true }); }
+  $('b-facil').addEventListener('click', () => playGame('facil'));
+  $('b-ultra').addEventListener('click', () => playGame('ultra'));
+  $('b-retry').addEventListener('click', () => playGame(raceKind));
+  // Salir always lands on the save-the-date page, also from /42k and /puc
+  const leave = () => { if (window.__START) location.href = '/'; else closeGame(); };
   $('b-pick-x').addEventListener('click', leave);
   $('b-rend-x').addEventListener('click', leave);
   $('b-rend-menu').addEventListener('click', () => openPick(false));
   $('b-menu').addEventListener('click', () => { window.PT.pause(true); openPick(true); });
   $('b-resume').addEventListener('click', () => { hide($('rpick')); window.PT.pause(false); });
-  $('b-restart').addEventListener('click', () => runRace(raceKind));
-  const bars = {}; document.querySelectorAll('.rbar').forEach(el => { bars[el.dataset.k] = el; });
+  $('b-restart').addEventListener('click', () => playGame(raceKind));
+  const bars = {}; document.querySelectorAll('#rhud .rbar').forEach(el => { bars[el.dataset.k] = el; });
   const CAUSE_BAR = { '¡Sin energía!': 'e', '¡Sin agua!': 'w', '¡Insolación!': 'sun', '¡Dolor de guatita!': 'g', '¡Calambre: pocas sales!': 'salt' };
   window.onPTRaceHUD = h => {
     $('r-lives').textContent = '♥'.repeat(Math.max(0, h.lives)) + '♡'.repeat(3 - Math.max(0, h.lives));
@@ -435,6 +460,15 @@ __ENGINE__
     bars.salt.classList.toggle('low', h.cramp);
     if (h.tapped) $('rctl').classList.add('out');
   };
+  const faces = [];
+  window.onPTStackHUD = h => {
+    $('s-sem').textContent = 'SEMESTRE ' + h.sem + '/12';
+    $('s-got').textContent = '📚 ' + h.got + '/' + h.need;
+    $('s-tired').querySelector('span').style.height = Math.round(h.e * 100) + '%';
+    $('s-tired').classList.toggle('low', h.e < .25);
+    const face = faces[h.tired] ??= window.PT.head('pita', h.tired).toDataURL();
+    if ($('s-face').src !== face) $('s-face').src = face;
+  };
   // Fácil hints: pause, dim everything but the thing being taught, tap to continue
   const HINTS = {
     fast: 'Toca y toca aquí para correr más rápido',
@@ -444,6 +478,11 @@ __ENGINE__
     w: 'Agua baja: agarra botellas de agua',
     g: 'Dolor de guatita: no agarres tanta comida seguida',
     luck: '¡Besito de la suerte! Corre rápido y salta para atraparlo',
+    'p-move': 'Desliza el dedo para mover a Pita',
+    'p-sway': '¡Se va a caer! Atrapa algo al otro lado para equilibrarla',
+    'p-energy': 'Pita se cansa: atrapa café, queques y siestas',
+    'p-snack': '¡Comida! Atrápala para recuperar energía',
+    'p-luck': '¡Besito de la suerte! Atrápalo para enderezar la torre',
   };
   window.onPTRaceHint = (key, tg) => {
     const seen = store.get('pt42kHints', {}); if (seen[key] || !HINTS[key]) return;
@@ -451,7 +490,7 @@ __ENGINE__
     window.PT.pause(true); $('rctl').classList.add('out');
     const spot = $('rspot'), hole = $('rspot-hole'), tip = $('rspot-tip'), pad = 6;
     let x, y, w, h, round = true;
-    if (tg.bar) { const b = bars[tg.bar].getBoundingClientRect(); x = b.left - pad; y = b.top - pad; w = b.width + pad * 2; h = b.height + pad * 2; round = false; }
+    if (tg.bar) { const b = (bars[tg.bar] || $(tg.bar)).getBoundingClientRect(); x = b.left - pad; y = b.top - pad; w = b.width + pad * 2; h = b.height + pad * 2; round = false; }
     else if (tg.side) { x = innerWidth / 2 + 10; y = innerHeight * .2; w = innerWidth / 2 - 20; h = innerHeight * .55; round = false; }
     else { const cv = $('game').getBoundingClientRect(), k = cv.width / $('game').width, cx = cv.left + tg.x * k, cy = cv.top + tg.y * cv.height / $('game').height, rad = Math.max(28, tg.r * k); x = cx - rad; y = cy - rad; w = h = rad * 2; }
     Object.assign(hole.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', borderRadius: round ? '50%' : '8px' });
@@ -459,9 +498,10 @@ __ENGINE__
     tip.innerHTML = ''; tip.append(HINTS[key]); const ok = document.createElement('button'); ok.textContent = 'OK'; ok.disabled = true; tip.appendChild(ok);
     setTimeout(() => { ok.disabled = false; }, 600);
     ok.addEventListener('click', () => { spot.hidden = true; window.PT.pause(false); });
-    const below = !!(tg.bar || tg.side); // road things: card above, clear of the runners
-    Object.assign(tip.style, below ? { top: (y + h + 18) + 'px', bottom: '' } : { top: '', bottom: (innerHeight - y + 18) + 'px' });
+    // road things: card above, clear of the runners — unless the spot is too close to the top
     spot.hidden = false;
+    const below = !!(tg.bar || tg.side) || y - 18 - tip.offsetHeight < 10;
+    Object.assign(tip.style, below ? { top: (y + h + 18) + 'px', bottom: '' } : { top: '', bottom: (innerHeight - y + 18) + 'px' });
   };
   $('rspot').addEventListener('pointerdown', e => { e.stopPropagation(); if (!e.target.closest('button')) e.preventDefault(); });
   window.onPTRaceEnd = res => {
@@ -481,9 +521,19 @@ __ENGINE__
     }
     show($('rend'));
   };
+  window.onPTStackEnd = res => {
+    $('rspot').hidden = true; lastRace = res;
+    $('medal').hidden = true; $('b-share').hidden = !res.ok;
+    $('rend-s').textContent = res.ok ? '🎓 ¡TITULADA! · ' + MODE[res.kind] : 'TODO SE DERRUMBÓ 💔';
+    $('rend-d').textContent = res.ok ? '12 semestres' : 'Semestre ' + res.sem;
+    $('rend-n').textContent = res.ok ? 'Con una torre de ' + res.n + ' cosas' : 'Pita se quedó dormida';
+    show($('rend'));
+  };
   $('b-share').addEventListener('click', () => {
     if (!lastRace || !lastRace.ok) return;
-    const text = 'Corrí el 42K de Pita & Tomi en ' + fmt(lastRace.time) + ' 🏅 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com';
+    const text = game === 'puc'
+      ? 'Me titulé con Pita en la PUC con una torre de ' + lastRace.n + ' cosas 🎓 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com/puc'
+      : 'Corrí el 42K de Pita & Tomi en ' + fmt(lastRace.time) + ' 🏅 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com';
     if (navigator.share) navigator.share({ text }).catch(() => {});
     else window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
   });
@@ -503,6 +553,12 @@ __ENGINE__
   const edge = s => $(s === 'r' ? 'edge-r' : 'edge-l');
   function release() { clearTimeout(timer); if (side) { window.PT.press(side, false); edge(side).classList.remove('on'); } side = null; }
   // race: read raw touches, so a left tap while a right finger is still down isn't swallowed as a pinch
+  // Pita en la PUC: Pita follows the finger
+  const stacking = () => document.body.classList.contains('stacking');
+  const follow = e => { if (!stacking() || e.target.closest('button, .rspot')) return; window.PT.stackTo(e.touches[0].clientX / innerWidth); e.preventDefault(); };
+  play.addEventListener('touchstart', follow, { passive: false });
+  play.addEventListener('touchmove', follow, { passive: false });
+  play.addEventListener('pointermove', e => { if (stacking() && e.pointerType !== 'touch' && e.buttons) window.PT.stackTo(e.clientX / innerWidth); });
   play.addEventListener('touchstart', e => {
     if (!document.body.classList.contains('racing') || e.target.closest('button, .rspot')) return;
     for (const tch of e.changedTouches) window.PT.tap(tch.clientX >= innerWidth / 2 ? 'r' : 'l');
@@ -510,6 +566,7 @@ __ENGINE__
   }, { passive: false });
   play.addEventListener('pointerdown', e => {
     if (e.target.closest('button')) return;
+    if (stacking()) { if (e.pointerType !== 'touch') window.PT.stackTo(e.clientX / innerWidth); e.preventDefault(); return; }
     if (document.body.classList.contains('racing')) { if (e.pointerType !== 'touch') window.PT.tap(e.clientX >= innerWidth / 2 ? 'r' : 'l'); e.preventDefault(); return; }
     const s = e.clientX >= innerWidth / 2 ? 'r' : 'l';
     release(); side = s; downAt = performance.now(); window.PT.press(s, true); edge(s).classList.add('on');

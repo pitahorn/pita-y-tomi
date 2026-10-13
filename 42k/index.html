@@ -15,7 +15,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>Pita y Tomi · 42K</title>
-<script>window.__START42K = true;</script>
+<script>window.__START = '42k';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
@@ -115,8 +115,8 @@ body:not(.playing) .hud,body:not(.playing) .banner{display:none}
 .fin .home{background:transparent;color:var(--cream)}
 [hidden]{display:none!important}
 /* Desafío 42K */
-body.racing .hud,body.racing .edge,body.racing .onb{display:none}
-body.racing .banner{top:30%}
+body.racing .hud,body.racing .edge,body.racing .onb,body.stacking .hud,body.stacking .edge,body.stacking .onb{display:none}
+body.racing .banner,body.stacking .banner{top:30%}
 .rhud,.rctl{display:none}
 body.racing .rctl{display:grid}
 .rctl{position:absolute;inset:0;z-index:5;grid-template-columns:1fr 1fr;pointer-events:none}
@@ -128,7 +128,7 @@ body.racing .rctl.out{display:none}
 .rctl .hand{width:48px}
 .rctl .hand.d2{animation-delay:.25s}
 .rhud{position:absolute;z-index:6;left:10px;top:calc(10px + env(safe-area-inset-top,0px));width:min(58vw,260px);gap:5px;font-family:var(--f-px);font-weight:700;color:#fff;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;pointer-events:none}
-body.racing .rhud{display:grid}
+body.racing #rhud,body.stacking #shud{display:grid}
 .rhud .top{display:flex;gap:10px;align-items:baseline;font-size:15px}
 .rhud .lives{color:var(--rose);font-size:18px;letter-spacing:2px}
 .rbar{display:grid;grid-template-columns:22px 1fr;align-items:center;gap:6px}
@@ -149,12 +149,24 @@ body.racing .rhud{display:grid}
 .fin button small{display:block;font-size:12px;font-weight:400;margin-top:4px}
 .fin .ultra{background:#e05a5a;color:#fff}
 .medal{width:78px;image-rendering:pixelated}
-.tomi-btn{position:absolute;left:12px;bottom:calc(100% + 10px);padding:4px;background:none;border:0;cursor:pointer;animation:bob 2.4s ease-in-out infinite;touch-action:manipulation}
-.tomi-btn img{width:63px;display:block;image-rendering:pixelated;filter:drop-shadow(2px 2px 0 rgba(15,12,28,.55))}
+.head-btn{position:absolute;left:12px;bottom:calc(100% + 10px);padding:4px;background:none;border:0;cursor:pointer;animation:bob 2.4s ease-in-out infinite;touch-action:manipulation}
+#b-pita{left:84px;animation-delay:-1.2s}
+.head-btn img{width:63px;display:block;image-rendering:pixelated;filter:drop-shadow(2px 2px 0 rgba(15,12,28,.55))}
 @keyframes bob{50%{transform:translateY(-5px)}}
 .info{display:none;position:absolute;z-index:6;top:calc(70px + env(safe-area-inset-top,0px));right:18px;width:40px;height:40px;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--cream);background:rgba(15,12,28,.55);border:3px solid var(--cream);border-radius:50%;cursor:pointer;touch-action:manipulation;background:rgba(15,12,28,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 7' shape-rendering='crispEdges'%3E%3Cpath fill='%23fbf3e4' d='M1 0h1v1H1zM0 2h2v4h1v1H0V6h1V3H0z'/%3E%3C/svg%3E") center/9px 21px no-repeat}
 body.racing .info{display:block}
-body.racing .close{display:none}
+body.racing .close,body.stacking .close{display:none}
+body.stacking #b-menu{display:block}
+body.lobby .hud,body.lobby .edge,body.lobby .onb,body.lobby .close{display:none}
+#shud{width:auto;right:80px}
+body.stacking .banner{width:calc(100% - 100px);left:calc(50% - 30px)}
+#s-tired{display:none;position:absolute;z-index:6;right:16px;top:calc(76px + env(safe-area-inset-top,0px));justify-items:center;gap:6px;pointer-events:none}
+body.stacking #s-tired{display:grid}
+#s-tired img{width:52px;image-rendering:pixelated}
+#s-tired b{display:block;width:14px;height:28vh;border:2px solid var(--ink);background:rgba(15,12,28,.6);position:relative;box-shadow:0 0 0 1px rgba(251,243,228,.6)}
+#s-tired b span{position:absolute;left:0;right:0;bottom:0;background:#f0c040}
+#s-tired.low b{animation:rblink .5s steps(2) infinite}
+#shud .top span{white-space:nowrap}
 .info.menu{top:calc(10px + env(safe-area-inset-top,0px));right:12px;width:52px;height:52px;border-radius:0;background:rgba(15,12,28,.55);font-size:24px;line-height:1}
 .gloss{display:grid;gap:8px;width:min(320px,100%);text-align:left;font-family:var(--f-px);font-weight:700;font-size:14px;color:#fff}
 .gloss div{display:grid;grid-template-columns:56px 1fr;align-items:center;gap:10px}
@@ -179,7 +191,8 @@ body.racing .close{display:none}
       </div>
     </div>
     <button class="cta" id="b-start" disabled>Cargando…</button>
-    <button class="tomi-btn" id="b-tomi" aria-label="Desafío 42K" hidden><img id="tomi-head" alt=""></button>
+    <button class="head-btn" id="b-tomi" aria-label="Desafío 42K" hidden><img id="tomi-head" alt=""></button>
+    <button class="head-btn" id="b-pita" aria-label="Pita en la PUC" hidden><img id="pita-head" alt=""></button>
   </div>
 </main>
 
@@ -197,6 +210,10 @@ body.racing .close{display:none}
     <div class="rbar" data-k="sun" style="--c:#f8e070"><i>☀️</i><b><span></span></b></div>
     <div class="rbar" data-k="salt" style="--c:#e8e8f0"><i>🧂</i><b><span></span></b></div>
   </div>
+  <div class="rhud" id="shud" aria-live="off">
+    <div class="top"><span id="s-sem">SEMESTRE 1</span><span id="s-got"></span></div>
+  </div>
+  <div id="s-tired" aria-hidden="true"><img id="s-face" alt=""><b><span></span></b></div>
   <div class="rctl" id="rctl"><div><span class="hands"><img class="hand" alt=""></span>TOCA<br>PARA SALTAR</div><div><span class="hands"><img class="hand" alt=""><img class="hand d2" alt=""></span>TOCA Y TOCA<br>PARA CORRER</div></div>
   <div class="rspot" id="rspot" hidden><div class="hole" id="rspot-hole"></div><p class="rtip" id="rspot-tip"></p></div>
 </section>
@@ -211,7 +228,7 @@ body.racing .close{display:none}
   <div class="row"><button class="again" id="b-again">↻ Ver de nuevo</button><button class="home" id="b-home">Salir</button></div>
 </div>
 <div class="fin" id="rpick" hidden>
-  <span class="b">Pita y Tomi en la Maratón 2026</span>
+  <span class="b" id="rpick-t"></span>
   <div class="row"><button class="race" id="b-resume" hidden>▶ Volver a la carrera</button><button class="again" id="b-restart" hidden>↻ Reiniciar carrera</button><button class="again" id="b-facil">FÁCIL<small id="best-facil" hidden></small></button><button class="ultra" id="b-ultra">DIFÍCIL<small id="best-ultra" hidden></small></button><button class="home" id="b-pick-x">Salir</button></div>
 </div>
 <div class="fin" id="rgloss" hidden>
@@ -472,8 +489,12 @@ function drawPerson(c, s, lf, lb, run, kneel, kissPose, sit) {
   if (hat && hat.kind === 'grad') { rect(c, 8, 2, 10, 4, '#2a2a30'); rect(c, 4, 1, 18, 2, '#1a1a1e'); rect(c, 5, 1, 16, 1, '#3a3a44'); px(c, 13, 0, '#f0c040'); rect(c, 20, 2, 1, 4, '#f0c040'); px(c, 20, 6, '#f8d860'); }
   if (hat && hat.kind === 'beanie') { ell(c, 12.5, 4.4, 7.2, 3.4, hat.color); rect(c, 5, 6, 15, 2, shade(hat.color, .8)); rect(c, 11, 0, 3, 2, shade(hat.color, 1.3)); }
   rect(c, 11, 8, 2, 1, s.brow); rect(c, 15, 8, 3, 1, s.brow);
-  for (const ex of [12, 16]) { if (kissPose) rect(c, ex - 1, 11, 2, 1, '#2a1e24'); else { px(c, ex, 10, '#2a1e24'); px(c, ex, 11, s.eye); } }
+  for (const ex of [12, 16]) { if (kissPose || s.asleep) rect(c, ex - 1, 11, 2, 1, '#2a1e24'); else { px(c, ex, 10, '#2a1e24'); px(c, ex, 11, s.eye); } }
   px(c, 11, 12, '#f0a0a0'); px(c, 17, 12, '#f0a0a0');
+  // Pita en la PUC: eye bags for the first 2 tired steps (the wiry hair is painted on the grown sprite)
+  if (s.tired) {
+    for (const ex of [12, 16]) { rect(c, ex - 1, 12, s.tired > 1 ? 3 : 2, 1, s.tired > 1 ? '#8a6a90' : '#c8a8b8'); if (s.tired > 1) rect(c, ex - 1, 13, 3, 1, '#c8a8b8'); }
+  }
   if (kissPose) { px(c, 16, 13, '#b04a5a'); px(c, 17, 13, '#c05a6a'); } 
   if (s.mask) { rect(c, 11, 12, 8, 3, '#cfe8f4'); rect(c, 11, 13, 8, 1, '#a8cce0'); rect(c, 7, 11, 4, 1, '#e8f4fa'); }
   if (s.glasses === 'round') { for (const ex of [12, 16]) { rect(c, ex - 1, 9, 3, 1, OUT); rect(c, ex - 1, 12, 3, 1, OUT); px(c, ex - 1, 10, OUT); px(c, ex - 1, 11, OUT); px(c, ex + 1, 10, OUT); px(c, ex + 1, 11, OUT); } px(c, 14, 10, OUT); rect(c, 7, 10, 4, 1, OUT); }
@@ -505,10 +526,12 @@ function person(spec, lf, lb, run, kneel, kissPose, sit) {
   return cv;
 }
 const HEAD_ROWS = 26, HEAD_PAD = 3;
-function tomiHead() {
-  const src = outfitSprites('casual').tomi.walk[1];
-  return bake(src.width + HEAD_PAD * 2, HEAD_ROWS + HEAD_PAD * 2, c => {
-    c.drawImage(src, 0, 0, src.width, HEAD_ROWS, HEAD_PAD, HEAD_PAD, src.width, HEAD_ROWS);
+// lvl: Pita's tiredness step in Pita en la PUC (0..4), for the energy bar's face
+function head(who, lvl) {
+  const src = lvl === undefined ? outfitSprites('casual')[who].walk[1] : pitaStack(lvl).walk[1];
+  const rows = HEAD_ROWS + (src.pad || 0);
+  return bake(src.width + HEAD_PAD * 2, rows + HEAD_PAD * 2, c => {
+    c.drawImage(src, 0, 0, src.width, rows, HEAD_PAD, HEAD_PAD, src.width, rows);
     outline(c); outline(c, '#fbf3e4'); outline(c, '#0f0c1c');
   });
 }
@@ -1324,7 +1347,8 @@ function stretchEdges(cv, off, interior) {
 }
 function setViewport(w, hs) {
   W = Math.round(w); TALL = hs > H; PLAYER_SX = Math.round(W * (TALL ? .5 : .39)); canvas.width = W;
-  Hs = Math.max(H, Math.round(hs)); offY = Hs === H ? 0 : Math.round(Math.max(0, Hs * .66 - 140));
+  // Pita en la PUC keeps only a strip of grass: the sky is room for the tower
+  Hs = Math.max(H, Math.round(hs)); offY = Hs === H ? 0 : mode === 'stack' ? Math.max(0, Hs - GROUND - STACK_FLOOR) : Math.round(Math.max(0, Hs * .66 - 140));
   canvas.height = Hs; mainCtx.imageSmoothingEnabled = false;
   skyImg = mainCtx.createImageData(W, Hs); sky32 = new Uint32Array(skyImg.data.buffer); drops = [];
   for (const k in built) built[k].skyTab = skyTable(SCENES[k].skyStops);
@@ -1539,6 +1563,7 @@ function kiss() { if (dating && !prop && kissT <= 0) { kissT = 1.9; kissHearts =
 function frame(now) {
   const t = now / 1000, dt = Math.max(0, Math.min(.05, last ? t - last : 0)); last = Math.max(last, t);
   if (mode === 'race') { raceFrame(t, dt); requestAnimationFrame(frame); return; }
+  if (mode === 'stack') { stackFrame(t, dt); requestAnimationFrame(frame); return; }
   if (mode === 'landing') { dir = 0; landT -= dt; if (landT <= 0) { landT = 6; kiss(); } }
   if (lockT > 0) lockT -= dt;
   if (intro >= 0 && mode === 'game') { if (intro === 0 && dir > 0) intro = .001; else if (intro > 0) { intro += dt; if (intro > 1.4) { intro = -1; facing = 1; } } }
@@ -1647,6 +1672,7 @@ addEventListener('keydown', e => {
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) { held.add('l'); syncDir(); e.preventDefault(); }
   if (['ArrowRight', 'd', 'D'].includes(e.key)) { held.add('r'); syncDir(); e.preventDefault(); }
   if (mode === 'race') { if (!e.repeat && ['ArrowLeft', 'ArrowUp', ' '].includes(e.key)) raceTap('l'); if (!e.repeat && e.key === 'ArrowRight') raceTap('r'); e.preventDefault(); return; }
+  if (mode === 'stack') { e.preventDefault(); return; }
   if (e.key === ' ' && !e.repeat) { transform(); e.preventDefault(); }
   if ((e.key === 'k' || e.key === 'K') && !e.repeat) kiss();
   if ((e.key === 'n' || e.key === 'N') && !e.repeat && !riding) { const s = SEGS[Math.min(SEGS.length - 1, segAt(pos[lead]) + 1)]; jumpTo(s.start + 20); }
@@ -1963,8 +1989,309 @@ function raceFrame(t, dt) {
 // pixel art as image URLs for the page's glossary
 const raceArtURL = key => (key === 'luck' ? LUCK_HEART : artOf(key, key.startsWith('rock') ? ROCK_ART[key[4]] : ITEM_ART[key])).toDataURL();
 function startRace(kind, w, hs) {
-  setViewport(w || W0, hs || H); mode = 'race'; race = newRace(kind);
+  mode = 'race'; setViewport(w || W0, hs || H); race = newRace(kind);
   fx = []; capQueue = []; bannerT = 0; banner.hidden = true; held.clear(); dir = 0; hint.hidden = true; $('b-kiss').hidden = true;
+}
+
+/* ---------- Pita en la PUC ---------- */
+// Pita catches falling coursework on a stack of books. Items land where they hit; an off-center
+// tower or too much sway topples it. Energy items fight tiredness, which makes Pita shaky.
+const STACK_CFG = {
+  facil: { need: 3, every: 1.7, fall: 38, speedUp: 0, giant: [], snackEvery: 9, drain: .55, hints: true, grace: 5, sway: .5, luckSems: [[4, 6], [8, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas'] },
+  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, drain: 1, hints: false, grace: 1.5, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
+};
+const SEMESTERS = 12, GIANT_N = 6, GIANT_NAMES = { 6: '¡Certamen!', 12: '¡Examen de título!' };
+// the stack rides on Pita's head, so her tired face stays visible
+const HAND_Y = GROUND - 49, HANDS_HALF = 7, PITA_SPEED = 150, KEY_SPEED = 110;
+// from semester 9 the camera keeps the tower's top halfway up the screen; before, only near the top edge
+const LIFT_SEM = 9, LIFT_LATE = .5, LIFT_EARLY = .12, STACK_FLOOR = 36, SWAY_K = 18, SWAY_DAMP = 3.2, SWAY_ACCEL = .00045, SWAY_KICK = .004;
+// stackable coursework: w × h in game px, heavier things weigh more
+const WORK = {
+  libro: { w: [10, 14], h: [3, 4], m: 1, cols: ['#c84a4a', '#3a6ab0', '#4a9a5a', '#e0b040', '#7a4ab0'] },
+  laptop: { w: [16, 16], h: [3, 3], m: 1.6, cols: ['#9aa0ac'] },
+  cuaderno: { w: [10, 11], h: [2, 2], m: .6, cols: ['#e07a3a', '#4aa0c8', '#d05a8a'] },
+  pruebas: { w: [11, 12], h: [4, 4], m: .8, cols: ['#fbf8ee'] },
+  calculadora: { w: [6, 6], h: [3, 3], m: .7, cols: ['#3a3e48'] },
+};
+const SNACKS = { cafe: .35, muffin: .25, galleta: .2, almohada: .6 }, SNACK_KINDS = ['cafe', 'cafe', 'muffin', 'galleta', 'almohada'];
+const SNACK_ART = {
+  cafe: [['.w.w...', 'kkkkk..', 'kbbbkk.', 'kWWWk.k', 'kWWWkk.', 'kWWWk..', '.kkk...'], { k: '#2a1e24', b: '#6a3a20', W: '#fbf8ee', w: '#d8dade' }],
+  muffin: [['..kkk..', '.kpPpk.', 'kpppppk', 'kyYyYyk', '.kyyyk.', '.kkkkk.'], { k: '#4a2a18', p: '#7a4a2a', P: '#e05a6a', y: '#e8b060', Y: '#c88a40' }],
+  galleta: [['.kkkk.', 'kyycyk', 'kycyyk', 'kyyyck', '.kkkk.'], { k: '#6a4018', y: '#e0a850', c: '#5a3018' }],
+  almohada: [['kk........kk', 'kWkkkkkkkkWk', '.kwwwwwwwwk.', 'kwwwwwwwwwSk', 'kwwSwwwwwwSk', '.kwwwwwwwSk.', 'kWkkkkkkkkWk', 'kk........kk'], { k: '#5a6a8a', w: '#eef2fb', W: '#c8d4ec', S: '#b8c4e0' }],
+};
+let stk = null;
+// things fall clear of the energy bar on the right edge
+const dropX = (r, pad) => pad + r() * (W - Math.round(W * .12) - pad * 2);
+const stackRnd = (r, a, b) => a + Math.floor(r() * (b - a + 1));
+
+function newStack(kind) {
+  const cfg = STACK_CFG[kind], s = segWith('kiss');
+  return {
+    kind, cfg, cam: s.start + s.kiss - Math.round(W / 2), paused: false, rand: courseRng(kind === 'ultra' ? 2023 : 2015), t: 0,
+    x: Math.round(W / 2), v: 0, target: null, items: [], falling: [], th: 0, thv: 0, e: 1, exhausted: false, exhaustT: 0, unstable: false, risk: 0,
+    sem: 1, got: 0, nextWork: 1.2, nextSnack: cfg.snackEvery, giantLeft: 0, nextGiant: 0, giantX: 0, lift: 0,
+    phase: 0, fall: null, done: 0, reported: false, hinted: {}, cameo: null,
+    luck: { state: 'wait', x: 0, y: 0 }, luckSems: cfg.luckSems.map(([a, b]) => stackRnd(Math.random, a, b)),
+  };
+}
+const stackNeed = () => stk.cfg.giant.includes(stk.sem) ? GIANT_N : stk.cfg.need;
+const stackHint = (key, target) => { if (stk.cfg.hints && !stk.hinted[key]) { stk.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
+// where every stacked thing sits right now: x centre (with sway) and bottom y
+function stackLayout() {
+  let sx = stk.x, y = HAND_Y;
+  return stk.items.map(it => { sx += it.off; const yc = HAND_Y - y + it.h / 2, o = { it, cx: sx + stk.th * yc, y, yc }; y -= it.h; return o; });
+}
+const stackTopY = () => stk.items.reduce((y, it) => y - it.h, HAND_Y);
+// the worst support in the tower: >1 means something hangs past its edge
+function stackRisk(lay) {
+  let worst = 0, mass = 0, mx = 0;
+  for (let j = lay.length - 1; j >= -1; j--) {
+    if (mass > 0) {
+      const sx = j < 0 ? stk.x : lay[j].cx, half = j < 0 ? HANDS_HALF : lay[j].it.w / 2;
+      worst = Math.max(worst, Math.abs(mx / mass - sx) / (half + stk.cfg.grace));
+    }
+    if (j >= 0) { const m = lay[j].it.w * lay[j].it.h * lay[j].it.m; mass += m; mx += m * lay[j].cx; }
+  }
+  return worst;
+}
+function stackTo(fx) { if (stk) stk.target = Math.max(12, Math.min(W - 12, fx * W)); }
+
+function spawnWork(x) {
+  const r = stk.rand, kinds = stk.cfg.work, k = kinds[Math.floor(r() * kinds.length)], d = WORK[k];
+  const w = stackRnd(r, d.w[0], d.w[1]), h = stackRnd(r, d.h[0], d.h[1]);
+  stk.falling.push({ kind: 'work', k, w, h, m: d.m, col: d.cols[Math.floor(r() * d.cols.length)], x: x ?? dropX(r, 12), y: -offY - stk.lift - 6, vy: stk.cfg.fall + stk.cfg.speedUp * (stk.sem - 1) });
+}
+function spawnSnack() {
+  const r = stk.rand, k = SNACK_KINDS[Math.floor(r() * SNACK_KINDS.length)];
+  stk.falling.push({ kind: 'snack', k, x: dropX(r, 12), y: -offY - stk.lift - 6, vy: stk.cfg.fall * .9 });
+}
+function nextSemester() {
+  stk.sem++; stk.got = 0;
+  if (stk.sem > SEMESTERS) { graduate(); return; }
+  if (stk.cfg.giant.includes(stk.sem)) { stk.giantLeft = GIANT_N; stk.nextGiant = 1.2; stk.giantX = dropX(stk.rand, 30); showCaption(GIANT_NAMES[stk.sem]); }
+  else showCaption('Semestre ' + stk.sem);
+  if (stk.luckSems.includes(stk.sem)) Object.assign(stk.luck, { state: 'live', x: dropX(stk.rand, 30), y: -offY - stk.lift - 12 });
+}
+// graduation: the tower bursts into flying papers, Tomi walks in, and both hop in ceremony clothes
+const GRAD_WALK = .9, GRAD_HOP = .9, GRAD_REPORT = 3.6;
+function graduate() {
+  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; showCaption('¡Titulada!');
+  stackLayout().forEach(o => fx.push({ x: s.cam + o.cx + (Math.random() - .5) * o.it.w, y: o.y - o.it.h, vx: (Math.random() - .5) * 60, vy: -50 - Math.random() * 50, life: 1.8, kind: 'paper' }));
+  s.items = []; s.th = s.thv = 0; s.luck.state = 'gone';
+}
+const gradHop = d => d > GRAD_WALK && d < GRAD_WALK + GRAD_HOP ? Math.round(Math.abs(Math.sin(Math.PI * 2 * (d - GRAD_WALK) / GRAD_HOP)) * 8) : 0;
+// besito de la suerte: the tower straightens halfway, the sway stops, and Tomi drops by for a kiss
+const CAMEO_SECS = 2.4;
+function catchLuck() {
+  const s = stk; s.luck.state = 'gone';
+  s.items.forEach(it => { it.off *= .5; }); s.th = s.thv = 0; s.unstable = false;
+  s.cameo = { t: 0 }; showCaption('¡Besito de la suerte!');
+  for (let i = 0, n = reduced ? 14 : 40; i < n; i++) { const a = Math.random() * Math.PI * 2, v = 30 + Math.random() * 60; fx.push({ x: s.cam + s.x, y: stackTopY(), vx: Math.cos(a) * v, vy: Math.sin(a) * v - 15, life: 1.4 + Math.random() * .6, kind: i % 4 === 3 ? 's' : 'h' }); }
+  if (window.onPTBoom) window.onPTBoom();
+}
+function topple(lay) {
+  const pivot = stk.x, dirn = (lay.length ? lay[lay.length - 1].cx - pivot : 1) >= 0 ? 1 : -1;
+  stk.fall = { t: 0, dir: dirn, pile: {}, pieces: lay.map((o, i) => ({ ...o.it, x: o.cx, y: o.y - o.it.h, vx: dirn * (12 + i * 2.5) + (o.cx - pivot) * 1.5, vy: -10 - i, rest: false })) };
+  stk.items = []; stk.th = stk.thv = 0; showCaption('Todo se derrumbó 💔');
+}
+
+function stackUpdate(dt) {
+  const s = stk; s.t += dt;
+  if (s.cameo) { s.cameo.t += dt; if (s.cameo.t > .8 && s.cameo.t < 1.6 && Math.random() < dt * 8) hearts(s.cam + s.x + 11, GROUND - 56, 1); if (s.cameo.t >= CAMEO_SECS) s.cameo = null; return; }
+  if (s.fall) {
+    s.fall.t += dt;
+    s.fall.pieces.forEach(p => {
+      if (p.rest) return;
+      p.vy += 300 * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+      const col = Math.round(p.x / 6), floor = GROUND + 2 - (s.fall.pile[col] || 0);
+      if (p.y + p.h >= floor) { p.y = floor - p.h; p.rest = true; for (let c = col - 1; c <= col + 1; c++) s.fall.pile[c] = (s.fall.pile[c] || 0) + p.h; }
+    });
+    if (s.fall.t > 2.8 && !s.reported) { s.reported = true; if (window.onPTStackEnd) window.onPTStackEnd({ ok: false, kind: s.kind, sem: s.sem }); }
+    return;
+  }
+  if (s.done) {
+    s.done += dt; s.falling = [];
+    if (Math.random() < dt * 30) fx.push({ x: s.cam + Math.random() * W, y: -offY - s.lift, vx: (Math.random() - .5) * 20, vy: 22 + Math.random() * 20, life: 3, kind: Math.random() < .2 ? 'diploma' : 'confetti', col: BOOK_COLS[Math.floor(Math.random() * BOOK_COLS.length)] });
+    if (s.done > GRAD_REPORT && !s.reported) { s.reported = true; if (window.onPTStackEnd) window.onPTStackEnd({ ok: true, kind: s.kind, n: s.n }); }
+    return;
+  }
+  // Pita: follow the finger, or the arrow keys
+  const keys = dir; if (keys) s.target = null;
+  const want = s.target != null ? Math.max(-PITA_SPEED, Math.min(PITA_SPEED, (s.target - s.x) * 9)) : keys * KEY_SPEED;
+  const v0 = s.v; s.v += (want - s.v) * Math.min(1, dt * 12); s.x = Math.max(12, Math.min(W - 12, s.x + s.v * dt));
+  if (s.x <= 12 || s.x >= W - 12) s.v = 0;
+  s.phase += dt * Math.abs(s.v) / 85 * 12;
+  // energy: a taller tower tires her faster; at zero the shaking grows until it all falls
+  const n = s.items.length;
+  s.e = Math.max(0, s.e - dt * (.012 + .0016 * n) * s.cfg.drain);
+  // at zero she's exhausted ("Ya me cansé"): the next catch decides — food or the pillow wakes her, a book drops it all
+  if (s.e <= 0 && !s.exhausted) { s.exhausted = true; s.exhaustT = 0; showCaption('Ya me cansé 🎵'); }
+  if (s.exhausted) s.exhaustT += dt;
+  const shake = .02 + .5 * Math.pow(Math.max(0, .55 - s.e), 2);
+  // sway: a spring, kicked by Pita's acceleration and by tired hands
+  const acc = dt > 0 ? (s.v - v0) / dt : 0;
+  s.thv += (-SWAY_K * s.th - SWAY_DAMP * s.thv - acc * SWAY_ACCEL * s.cfg.sway * Math.min(1, n / 6)) * dt + (Math.random() - .5) * shake * s.cfg.sway * Math.sqrt(dt) * 2;
+  s.th += s.thv * dt;
+  // spawns
+  if (s.giantLeft > 0) {
+    s.nextGiant -= dt;
+    if (s.nextGiant <= 0) { s.giantLeft--; s.nextGiant = .55; s.giantX = Math.max(14, Math.min(W - Math.round(W * .12) - 14, s.giantX + (s.rand() - .5) * 36)); spawnWork(s.giantX); }
+  } else {
+    s.nextWork -= dt; if (s.nextWork <= 0) { spawnWork(); s.nextWork = Math.max(.9, s.cfg.every - (s.cfg.speedUp ? .06 * (s.sem - 1) : 0)); }
+  }
+  s.nextSnack -= dt; if (s.nextSnack <= 0) { spawnSnack(); s.nextSnack = s.cfg.snackEvery * (.7 + s.rand() * .6); }
+  // falling things: coursework lands on the top it hits, snacks get eaten by the tower or Pita
+  let lay = stackLayout(), caught = false, collapse = false;
+  const wasUnstable = s.unstable, top = lay.length ? lay[lay.length - 1] : null, topY = stackTopY(), topX = top ? top.cx : s.x, topHalf = top ? top.it.w / 2 : HANDS_HALF;
+  s.falling = s.falling.filter(f => {
+    const y0 = f.y; f.y += f.vy * dt;
+    // missed things land on the grass and fade
+    if (f.y >= GROUND + 2) { f.y = GROUND + 2; f.gone = (f.gone || 0) + dt; return f.gone < .6; }
+    if (f.kind === 'work') {
+      if (f.missed) return true;
+      if (f.y >= topY && y0 < topY + 3) {
+        if (Math.abs(f.x - topX) < f.w / 2 + topHalf - 1) {
+          const yc = HAND_Y - topY + f.h / 2, off = (f.x - s.th * yc) - (top ? top.cx - s.th * top.yc : s.x);
+          // a badly placed piece slides off on its own and shakes the tower; only a leaning tower topples
+          if (Math.abs(off) > topHalf + s.cfg.grace) { f.missed = true; f.x += Math.sign(off) * 4; s.thv += Math.sign(off) * .02; return true; }
+          s.items.push({ k: f.k, w: f.w, h: f.h, m: f.m, col: f.col, off }); s.thv += off * SWAY_KICK * s.cfg.sway; s.got++; caught = true;
+          if (s.exhausted) { collapse = true; return false; }
+          if (s.got >= stackNeed()) nextSemester();
+          return false;
+        }
+        if (f.y > topY + 3) f.missed = true;
+      }
+      return true;
+    }
+    // snacks are eaten by anything they touch: Pita or any piece of the tower
+    const onPita = Math.abs(f.x - s.x) < 10 && f.y > GROUND - 50, onTower = lay.some(o => Math.abs(f.x - o.cx) < o.it.w / 2 + 4 && f.y > o.y - o.it.h - 3 && f.y < o.y + 2);
+    if (onPita || onTower || (f.y >= topY && y0 < topY + 3 && Math.abs(f.x - topX) < topHalf + 4)) { s.e = Math.min(1, s.e + SNACKS[f.k]); s.exhausted = false; hearts(s.cam + f.x, f.y, 2); return false; }
+    if (f.y > topY - 40 && f.y < topY) stackHint('p-snack', { x: f.x, y: offY + s.lift + f.y, r: 14 });
+    return true;
+  });
+  const lk = s.luck;
+  if (lk.state === 'live') {
+    lk.y += s.cfg.fall * .55 * dt; lk.x = Math.max(14, Math.min(W - Math.round(W * .12) - 14, lk.x + Math.sin(s.t * 2) * 12 * dt));
+    if (lk.y > GROUND) lk.state = 'gone';
+    else if (Math.abs(lk.x - s.x) < 12 && lk.y > GROUND - 54 || lay.some(o => Math.abs(lk.x - o.cx) < o.it.w / 2 + 8 && lk.y > o.y - o.it.h - 8 && lk.y < o.y + 4)) { catchLuck(); return; }
+    else if (lk.y > -offY - s.lift + 40) stackHint('p-luck', { x: lk.x, y: offY + s.lift + lk.y, r: 20 });
+  }
+  // past the tipping point the tower shakes but holds: the next catch can counterweight it, or it falls
+  lay = stackLayout();
+  const risk = stackRisk(lay);
+  if (collapse || (wasUnstable && caught && risk > 1)) { topple(lay); return; }
+  s.unstable = risk > 1 || (s.unstable && risk > .95);
+  if (s.unstable) stackHint('p-sway', { x: lay[lay.length - 1].cx, y: offY + s.lift + stackTopY(), r: 22 });
+  if (s.e < .45) stackHint('p-energy', { bar: 's-tired' });
+  if (s.t > .6) stackHint('p-move', { x: s.x, y: offY + s.lift + GROUND - 24, r: 26 });
+  s.risk = risk;
+}
+
+// tired Pita (0..4) and asleep, baked once
+const PITA_STACK = {};
+function pitaStack(lvl) {
+  return PITA_STACK[lvl] || (PITA_STACK[lvl] = (() => {
+    const tired = lvl === 'asleep' ? 4 : lvl, spec = { ...BASE_P, ...OUTFITS.student.pita, backpack: undefined, tired, asleep: lvl === 'asleep' };
+    const wire = cv => wiry(cv, tired);
+    return { walk: WALK.map(([f, b]) => wire(person(spec, f, b))), kiss: wire(person(spec, 0, 0, false, false, true)) };
+  })());
+}
+// messy hair: thin wiry strands painted after the outline (outlined pixels turn into blobs)
+const WIRE_PAD = 6, WIRES = [
+  [[14, 5], [12, 1], [10, -2]], [[25, 4], [27, 0], [30, -2]], [[31, 10], [35, 8], [36, 5]], [[8, 11], [5, 9], [4, 6]],
+  [[19, 4], [18, 0], [20, -4]], [[22, 4], [24, -1], [23, -4]], [[32, 15], [36, 15], [38, 13]], [[8, 16], [4, 17], [2, 15]], [[11, 7], [7, 4], [7, 1]], [[28, 6], [32, 3], [33, 0]],
+];
+function wiry(cv, tired) {
+  if (tired < 3) return cv;
+  const out = bake(cv.width, cv.height + WIRE_PAD, c => {
+    c.drawImage(cv, 0, WIRE_PAD);
+    WIRES.slice(0, tired > 3 ? WIRES.length : 4).forEach(([a, b, d]) => { line(c, a[0], a[1] + WIRE_PAD, b[0], b[1] + WIRE_PAD, '#6a4426'); line(c, b[0], b[1] + WIRE_PAD, d[0], d[1] + WIRE_PAD, '#6a4426'); });
+  });
+  out.pad = WIRE_PAD; return out;
+}
+function drawWork(it, cx, yBottom) {
+  const x = Math.round(cx - it.w / 2), y = Math.round(yBottom - it.h);
+  rect(ctx, x - 1, y - 1, it.w + 2, it.h + 2, OUT); rect(ctx, x, y, it.w, it.h, it.col);
+  if (it.k === 'libro') { rect(ctx, x, y, 1, it.h, shade(it.col, 1.3)); rect(ctx, x + 2, y + 1, it.w - 4, 1, '#fbf8ee'); }
+  else if (it.k === 'laptop') { rect(ctx, x, y + it.h - 1, it.w, 1, '#5a5e68'); px(ctx, x + it.w / 2, y + 1, '#e8ecf4'); }
+  else if (it.k === 'pruebas') { rect(ctx, x + 1, y + 1, it.w - 2, 1, '#9aa4b8'); rect(ctx, x + 1, y + 3, it.w - 4, 1, '#9aa4b8'); px(ctx, x + it.w - 3, y, '#e04040'); }
+  else if (it.k === 'cuaderno') rect(ctx, x, y, it.w, 1, '#fbf8ee');
+  else if (it.k === 'calculadora') { rect(ctx, x + 1, y, 4, 1, '#9ad0a0'); px(ctx, x + 1, y + 2, '#e0e0e0'); px(ctx, x + 3, y + 2, '#e0e0e0'); }
+}
+const tiredLevel = e => e < .2 ? 4 : e < .4 ? 3 : e < .6 ? 2 : e < .8 ? 1 : 0;
+
+function stackFrame(t, dt) {
+  const s = stk; if (s.paused) dt = 0;
+  stackUpdate(dt);
+  cam = s.cam;
+  // camera slides up as the tower grows, but Pita's head stays on screen
+  const topScreen = offY + stackTopY() - 10;
+  const wantLift = Math.max(0, Math.min(Hs - offY - GROUND + 44, Hs * (s.sem >= LIFT_SEM ? LIFT_LATE : LIFT_EARLY) - topScreen));
+  s.lift += (wantLift - s.lift) * Math.min(1, dt * 3);
+  const seg = segWith('kiss'), segIdx = SEGS.indexOf(seg), lift = Math.round(s.lift);
+  if (!raceCP || raceCP.A.length !== W || raceCP.A[0] !== segIdx) { const A = new Int8Array(W).fill(segIdx); raceCP = { A, B: A, Wt: new Float32Array(W) }; }
+  renderSky(raceCP);
+  mainCtx.save(); mainCtx.translate(0, lift); renderFar(raceCP); mainCtx.translate(0, offY);
+  drawLayerOf(mainCtx, seg, 'mid', t, dt); drawLayerOf(mainCtx, seg, 'near', t, dt);
+  // the fall: books on a pile, Pita asleep on top
+  if (s.fall) {
+    s.fall.pieces.forEach(p => drawWork(p, p.x, p.y + p.h));
+    const ft = s.fall.t, img = pitaStack(ft < .6 ? 4 : 'asleep').walk[1], col = Math.round(s.x / 6), pileH = Math.max(0, ...[-1, 0, 1].map(k => s.fall.pile[col + k] || 0));
+    if (ft < .6) sprite(img, s.x, GROUND + 2, false);
+    else {
+      ctx.save(); ctx.translate(Math.round(s.x), Math.round(GROUND + 2 - pileH)); ctx.rotate(-Math.PI / 2); ctx.drawImage(img, -img.width + 4, -Math.round(img.width / 2) - 4); ctx.restore();
+      if (ft > 1) { const zt = (ft * .8) % 1; text(ctx, 'Z', Math.round(s.x + 18 + zt * 8), Math.round(GROUND - pileH - 18 - zt * 16), '#ffffff'); text(ctx, 'Z', Math.round(s.x + 12 + ((zt + .5) % 1) * 8), Math.round(GROUND - pileH - 12 - ((zt + .5) % 1) * 16), '#ffffff'); }
+    }
+  } else {
+    const tired = tiredLevel(s.e), set = s.done ? outfitSprites('ceremony').pita : pitaStack(tired), moving = Math.abs(s.v) > 8 && !s.done;
+    if (s.done) {
+      const d = s.done, gt = outfitSprites('ceremony').tomi, stand = s.x + 26, edge = W + 24, tx = d < GRAD_WALK ? edge + (stand - edge) * smooth(d / GRAD_WALK) : stand;
+      shadow(tx, 20); sprite(d < GRAD_WALK ? gt.walk[Math.floor(d * 10) % 4] : gt.walk[1], tx, GROUND + 2 - gradHop(d), true);
+    }
+    shadow(s.x, 20);
+    const kissing = s.cameo && s.cameo.t >= .8 && s.cameo.t < 1.6;
+    sprite(kissing ? set.kiss : set.walk[moving ? Math.floor(s.phase) % 4 : 1], s.x, GROUND + 2 - (moving && Math.floor(s.phase) % 2 ? 1 : 0) - (s.done ? gradHop(s.done) : 0), false);
+    // shaking telegraphs danger: a tower near or past its tipping point, or an exhausted Pita
+    const lay = stackLayout(), n = lay.length;
+    const amp = Math.max(0, Math.min(1, (s.risk - .55) / .45)) * 2 + (s.unstable ? 1.5 : 0) + (s.exhausted ? Math.min(2.5, 1 + s.exhaustT * .3) : tired === 4 ? .6 : 0);
+    lay.forEach((o, i) => drawWork(o.it, o.cx + Math.round(amp * Math.sin(t * 28 + i * 1.7) * (.3 + .7 * i / Math.max(1, n - 1))), o.y));
+    if ((s.risk > .75 || s.unstable) && n && (s.unstable || Math.floor(t * 6) % 2)) text(ctx, '!', Math.round(lay[n - 1].cx - 1), Math.round(stackTopY() - 9), '#f04040');
+    if (s.exhausted && Math.floor(t * 3) % 2) text(ctx, 'Z', Math.round(s.x + 10), GROUND - 54, '#ffffff');
+  }
+  if (s.luck.state === 'live') {
+    const lx = Math.round(s.luck.x), ly = Math.round(s.luck.y + Math.sin(t * 5) * 2);
+    ctx.drawImage(LUCK_HEART, lx - 12, ly - 11);
+    for (let k = 0; k < 4; k++) {
+      const a = t * 3 + k * Math.PI / 2, px0 = Math.round(lx + Math.cos(a) * 17), py0 = Math.round(ly + Math.sin(a) * 14), on = Math.floor(t * 8 + k) % 3;
+      if (on) { const col = k % 2 ? '#fff4c0' : '#f6cf6a'; rect(ctx, px0 - on, py0, on * 2 + 1, 1, col); rect(ctx, px0, py0 - on, 1, on * 2 + 1, col); }
+    }
+  }
+  // Tomi walks in from the right, kisses Pita, walks back out
+  if (s.cameo) {
+    const ct = s.cameo.t, set = outfitSprites('student').tomi, stand = s.x + 23, edge = W + 24;
+    const tx = ct < .8 ? edge + (stand - edge) * smooth(ct / .8) : ct < 1.6 ? stand : stand + (edge - stand) * smooth((ct - 1.6) / .8);
+    const walking = ct < .8 || ct >= 1.6, img = walking ? set.walk[Math.floor(ct * 10) % 4] : set.kiss;
+    shadow(tx, 20); sprite(img, tx, GROUND + 2, ct < 1.6);
+  }
+  s.falling.forEach(f => {
+    ctx.globalAlpha = 1 - (f.gone || 0) / .6;
+    if (f.kind === 'work') drawWork(f, f.x, f.y);
+    else {
+      const img = artOf('snack-' + f.k, SNACK_ART[f.k]); ctx.drawImage(img, Math.round(f.x - img.width), Math.round(f.y - img.height * 2), img.width * 2, img.height * 2);
+      if (f.k === 'almohada') text(ctx, 'Z', Math.round(f.x + img.width + 1), Math.round(f.y - img.height * 2 - 6), '#2a3a6a');
+    }
+    ctx.globalAlpha = 1;
+  });
+  drawFx(dt);
+  mainCtx.restore();
+  if (bannerT > 0) { bannerT -= dt; if (bannerT <= 0) banner.hidden = true; }
+  if (bannerT <= 0 && capQueue.length) { banner.textContent = capQueue.shift(); banner.hidden = false; bannerT = 2; }
+  if (window.onPTStackHUD) window.onPTStackHUD({ sem: s.sem, got: s.got, need: stackNeed(), e: s.e, tired: tiredLevel(s.e) });
+}
+function startStack(kind, w, hs) {
+  mode = 'stack'; setViewport(w || W0, hs || H); stk = newStack(kind); race = null;
+  fx = []; capQueue = ['Semestre 1']; bannerT = 0; banner.hidden = true; held.clear(); dir = 0; hint.hidden = true; $('b-kiss').hidden = true;
 }
 
 const resetFlags = () => SEGS.forEach(s => { s.kissed = false; s.fainted = false; s.sofaDone = false; });
@@ -1976,10 +2303,12 @@ window.PT = {
   press(k, on) { if (on) held.add(k); else held.delete(k); syncDir(); },
   race(kind, w, hs) { startRace(kind, w, hs); },
   tap: raceTap,
-  pause(on) { if (race) race.paused = on; },
+  pause(on) { if (race) race.paused = on; if (stk) stk.paused = on; },
   art: raceArtURL,
   milky: () => milkySet('scarf').idle[0], heart: () => HEART,
-  tomiHead,
+  head, stack: startStack, stackTo,
+  // a game's menu sits on that game's own scene: started, paused, and quiet
+  lobby(game, w, hs) { (game === 'puc' ? startStack : startRace)('facil', w, hs); capQueue = []; this.pause(true); },
 };
 const names = Object.keys(SCENES);
 (function boot(i) {
@@ -1999,7 +2328,7 @@ const names = Object.keys(SCENES);
 
   function ready() {
     start.disabled = false; start.textContent = '▶ Recorre nuestra historia';
-    $('tomi-head').src = window.PT.tomiHead().toDataURL();
+    $('tomi-head').src = window.PT.head('tomi').toDataURL(); $('pita-head').src = window.PT.head('pita').toDataURL();
   }
   if (window.PT_READY) ready(); else addEventListener('pt-ready', ready, { once: true });
 
@@ -2090,14 +2419,14 @@ const names = Object.keys(SCENES);
   function closeGame() {
     release(); play.classList.remove('in'); fin.classList.remove('in');
     ['rpick', 'rend', 'rgloss'].forEach(id => { $(id).classList.remove('in'); });
-    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; $('rpick').hidden = $('rend').hidden = $('rgloss').hidden = $('rspot').hidden = true; document.body.classList.remove('playing', 'racing'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
+    setTimeout(() => { play.hidden = true; fin.hidden = true; tip.hidden = true; $('rpick').hidden = $('rend').hidden = $('rgloss').hidden = $('rspot').hidden = true; document.body.classList.remove('playing', 'racing', 'stacking', 'lobby'); strip.appendChild(screen); window.PT.landing(); }, reduced ? 0 : 400);
   }
   start.addEventListener('click', openGame);
   $('b-close').addEventListener('click', closeGame);
   $('b-home').addEventListener('click', closeGame);
   $('b-again').addEventListener('click', () => { fin.classList.remove('in'); setTimeout(() => { fin.hidden = true; }, 300); window.PT.start(gameW(), gameH()); play.classList.remove('moved'); onb.hidden = false; onb.classList.remove('out'); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !play.hidden) closeGame(); });
-  window.onPTFinal = () => { release(); showKisses(); show(fin); store.set('ptStoryDone', true); $('b-tomi').hidden = false; };
+  window.onPTFinal = () => { release(); showKisses(); show(fin); store.set('ptStoryDone', true); $('b-tomi').hidden = $('b-pita').hidden = false; };
   const show = el => { el.hidden = false; requestAnimationFrame(() => el.classList.add('in')); };
   const hide = el => { el.classList.remove('in'); el.hidden = true; };
   const store = {
@@ -2114,7 +2443,9 @@ const names = Object.keys(SCENES);
   // Desafío 42K
   const fmt = sec => { sec = Math.round(sec); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, ss = sec % 60; return h + ':' + String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0'); };
   const MODE = { facil: 'FÁCIL', ultra: 'DIFÍCIL' };
-  let raceKind = 'facil', lastRace = null;
+  // two minigames share the menu, results and hints: the 42K race and Pita en la PUC
+  const TITLES = { '42k': 'Pita y Tomi en la Maratón 2026', puc: 'Pita en la PUC' };
+  let game = window.__START || '42k', raceKind = 'facil', lastRace = null;
   (() => {
     const R = ['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'];
     const col = { b: '#3a6ad0', r: '#e05050', o: '#8a5a10', y: '#f6cf6a', w: '#fff6c8', d: '#c89a30' };
@@ -2125,18 +2456,23 @@ const names = Object.keys(SCENES);
   // inRace: opened from ☰ mid-race, so the race is paused and can be resumed or restarted
   function openPick(inRace) {
     hide(fin); hide($('rend'));
-    $('b-resume').hidden = $('b-restart').hidden = !inRace;
+    $('b-resume').hidden = $('b-restart').hidden = !inRace; $('rpick-t').textContent = TITLES[game];
     const best = store.get('pt42k', {});
-    for (const k of ['facil', 'ultra']) { const el = $('best-' + k); el.hidden = !best[k]; el.textContent = best[k] ? 'Tu mejor: ' + fmt(best[k]) : ''; }
+    for (const k of ['facil', 'ultra']) { const el = $('best-' + k); el.hidden = !best[k] || game !== '42k'; el.textContent = best[k] ? 'Tu mejor: ' + fmt(best[k]) : ''; }
     show($('rpick'));
   }
-  function runRace(kind) {
+  function playGame(kind) {
     raceKind = kind; hide($('rpick')); hide($('rend')); hide(fin); release();
-    document.body.classList.add('racing'); play.classList.add('moved'); onb.hidden = true; tip.hidden = true;
+    document.body.classList.remove('racing', 'stacking', 'lobby'); document.body.classList.add(game === 'puc' ? 'stacking' : 'racing'); play.classList.add('moved'); onb.hidden = true; tip.hidden = true;
+    if (game === 'puc') { window.PT.stack(kind, gameW(), gameH()); return; }
     bars.sun.hidden = bars.salt.hidden = kind !== 'ultra';
     $('rctl').classList.remove('out');
     window.PT.race(kind, gameW(), gameH());
     if (!store.get('pt42kGloss', false)) { store.set('pt42kGloss', true); openGloss(); }
+  }
+  function openLobby() {
+    openGame(); onb.hidden = true; document.body.classList.add('lobby');
+    window.PT.lobby(game, gameW(), gameH()); openPick(false);
   }
   // glossary: what each road thing is; shown before the first race, and from the (i) button
   const GLOSS = [
@@ -2156,24 +2492,25 @@ const names = Object.keys(SCENES);
   }
   $('b-info').addEventListener('click', openGloss);
   $('b-gloss-x').addEventListener('click', () => { hide($('rgloss')); window.PT.pause(false); });
-  // finished the story once: Tomi's head floats on the landing and opens the race
-  const tomiBtn = $('b-tomi');
-  tomiBtn.hidden = !store.get('ptStoryDone', false);
-  tomiBtn.addEventListener('click', () => { openGame(); openPick(false); });
-  // /42k opens straight into the race menu
-  if (window.__START42K) { const go = () => { openGame(); openPick(false); }; if (window.PT_READY) go(); else addEventListener('pt-ready', go, { once: true }); }
-  $('b-facil').addEventListener('click', () => runRace('facil'));
-  $('b-ultra').addEventListener('click', () => runRace('ultra'));
-  $('b-retry').addEventListener('click', () => runRace(raceKind));
-  // Salir always lands on the save-the-date page, also from /42k
-  const leave = () => { if (window.__START42K) location.href = '/'; else closeGame(); };
+  // finished the story once: Tomi's and Pita's heads float on the landing and open their games
+  for (const [id, g] of [['b-tomi', '42k'], ['b-pita', 'puc']]) {
+    $(id).hidden = !store.get('ptStoryDone', false);
+    $(id).addEventListener('click', () => { game = g; openLobby(); });
+  }
+  // /42k and /puc open straight into their menu
+  if (window.__START) { if (window.PT_READY) openLobby(); else addEventListener('pt-ready', openLobby, { once: true }); }
+  $('b-facil').addEventListener('click', () => playGame('facil'));
+  $('b-ultra').addEventListener('click', () => playGame('ultra'));
+  $('b-retry').addEventListener('click', () => playGame(raceKind));
+  // Salir always lands on the save-the-date page, also from /42k and /puc
+  const leave = () => { if (window.__START) location.href = '/'; else closeGame(); };
   $('b-pick-x').addEventListener('click', leave);
   $('b-rend-x').addEventListener('click', leave);
   $('b-rend-menu').addEventListener('click', () => openPick(false));
   $('b-menu').addEventListener('click', () => { window.PT.pause(true); openPick(true); });
   $('b-resume').addEventListener('click', () => { hide($('rpick')); window.PT.pause(false); });
-  $('b-restart').addEventListener('click', () => runRace(raceKind));
-  const bars = {}; document.querySelectorAll('.rbar').forEach(el => { bars[el.dataset.k] = el; });
+  $('b-restart').addEventListener('click', () => playGame(raceKind));
+  const bars = {}; document.querySelectorAll('#rhud .rbar').forEach(el => { bars[el.dataset.k] = el; });
   const CAUSE_BAR = { '¡Sin energía!': 'e', '¡Sin agua!': 'w', '¡Insolación!': 'sun', '¡Dolor de guatita!': 'g', '¡Calambre: pocas sales!': 'salt' };
   window.onPTRaceHUD = h => {
     $('r-lives').textContent = '♥'.repeat(Math.max(0, h.lives)) + '♡'.repeat(3 - Math.max(0, h.lives));
@@ -2191,6 +2528,15 @@ const names = Object.keys(SCENES);
     bars.salt.classList.toggle('low', h.cramp);
     if (h.tapped) $('rctl').classList.add('out');
   };
+  const faces = [];
+  window.onPTStackHUD = h => {
+    $('s-sem').textContent = 'SEMESTRE ' + h.sem + '/12';
+    $('s-got').textContent = '📚 ' + h.got + '/' + h.need;
+    $('s-tired').querySelector('span').style.height = Math.round(h.e * 100) + '%';
+    $('s-tired').classList.toggle('low', h.e < .25);
+    const face = faces[h.tired] ??= window.PT.head('pita', h.tired).toDataURL();
+    if ($('s-face').src !== face) $('s-face').src = face;
+  };
   // Fácil hints: pause, dim everything but the thing being taught, tap to continue
   const HINTS = {
     fast: 'Toca y toca aquí para correr más rápido',
@@ -2200,6 +2546,11 @@ const names = Object.keys(SCENES);
     w: 'Agua baja: agarra botellas de agua',
     g: 'Dolor de guatita: no agarres tanta comida seguida',
     luck: '¡Besito de la suerte! Corre rápido y salta para atraparlo',
+    'p-move': 'Desliza el dedo para mover a Pita',
+    'p-sway': '¡Se va a caer! Atrapa algo al otro lado para equilibrarla',
+    'p-energy': 'Pita se cansa: atrapa café, queques y siestas',
+    'p-snack': '¡Comida! Atrápala para recuperar energía',
+    'p-luck': '¡Besito de la suerte! Atrápalo para enderezar la torre',
   };
   window.onPTRaceHint = (key, tg) => {
     const seen = store.get('pt42kHints', {}); if (seen[key] || !HINTS[key]) return;
@@ -2207,7 +2558,7 @@ const names = Object.keys(SCENES);
     window.PT.pause(true); $('rctl').classList.add('out');
     const spot = $('rspot'), hole = $('rspot-hole'), tip = $('rspot-tip'), pad = 6;
     let x, y, w, h, round = true;
-    if (tg.bar) { const b = bars[tg.bar].getBoundingClientRect(); x = b.left - pad; y = b.top - pad; w = b.width + pad * 2; h = b.height + pad * 2; round = false; }
+    if (tg.bar) { const b = (bars[tg.bar] || $(tg.bar)).getBoundingClientRect(); x = b.left - pad; y = b.top - pad; w = b.width + pad * 2; h = b.height + pad * 2; round = false; }
     else if (tg.side) { x = innerWidth / 2 + 10; y = innerHeight * .2; w = innerWidth / 2 - 20; h = innerHeight * .55; round = false; }
     else { const cv = $('game').getBoundingClientRect(), k = cv.width / $('game').width, cx = cv.left + tg.x * k, cy = cv.top + tg.y * cv.height / $('game').height, rad = Math.max(28, tg.r * k); x = cx - rad; y = cy - rad; w = h = rad * 2; }
     Object.assign(hole.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', borderRadius: round ? '50%' : '8px' });
@@ -2215,9 +2566,10 @@ const names = Object.keys(SCENES);
     tip.innerHTML = ''; tip.append(HINTS[key]); const ok = document.createElement('button'); ok.textContent = 'OK'; ok.disabled = true; tip.appendChild(ok);
     setTimeout(() => { ok.disabled = false; }, 600);
     ok.addEventListener('click', () => { spot.hidden = true; window.PT.pause(false); });
-    const below = !!(tg.bar || tg.side); // road things: card above, clear of the runners
-    Object.assign(tip.style, below ? { top: (y + h + 18) + 'px', bottom: '' } : { top: '', bottom: (innerHeight - y + 18) + 'px' });
+    // road things: card above, clear of the runners — unless the spot is too close to the top
     spot.hidden = false;
+    const below = !!(tg.bar || tg.side) || y - 18 - tip.offsetHeight < 10;
+    Object.assign(tip.style, below ? { top: (y + h + 18) + 'px', bottom: '' } : { top: '', bottom: (innerHeight - y + 18) + 'px' });
   };
   $('rspot').addEventListener('pointerdown', e => { e.stopPropagation(); if (!e.target.closest('button')) e.preventDefault(); });
   window.onPTRaceEnd = res => {
@@ -2237,9 +2589,19 @@ const names = Object.keys(SCENES);
     }
     show($('rend'));
   };
+  window.onPTStackEnd = res => {
+    $('rspot').hidden = true; lastRace = res;
+    $('medal').hidden = true; $('b-share').hidden = !res.ok;
+    $('rend-s').textContent = res.ok ? '🎓 ¡TITULADA! · ' + MODE[res.kind] : 'TODO SE DERRUMBÓ 💔';
+    $('rend-d').textContent = res.ok ? '12 semestres' : 'Semestre ' + res.sem;
+    $('rend-n').textContent = res.ok ? 'Con una torre de ' + res.n + ' cosas' : 'Pita se quedó dormida';
+    show($('rend'));
+  };
   $('b-share').addEventListener('click', () => {
     if (!lastRace || !lastRace.ok) return;
-    const text = 'Corrí el 42K de Pita & Tomi en ' + fmt(lastRace.time) + ' 🏅 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com';
+    const text = game === 'puc'
+      ? 'Me titulé con Pita en la PUC con una torre de ' + lastRace.n + ' cosas 🎓 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com/puc'
+      : 'Corrí el 42K de Pita & Tomi en ' + fmt(lastRace.time) + ' 🏅 modo ' + MODE[lastRace.kind] + ' → https://matri.pitahorn.com';
     if (navigator.share) navigator.share({ text }).catch(() => {});
     else window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
   });
@@ -2259,6 +2621,12 @@ const names = Object.keys(SCENES);
   const edge = s => $(s === 'r' ? 'edge-r' : 'edge-l');
   function release() { clearTimeout(timer); if (side) { window.PT.press(side, false); edge(side).classList.remove('on'); } side = null; }
   // race: read raw touches, so a left tap while a right finger is still down isn't swallowed as a pinch
+  // Pita en la PUC: Pita follows the finger
+  const stacking = () => document.body.classList.contains('stacking');
+  const follow = e => { if (!stacking() || e.target.closest('button, .rspot')) return; window.PT.stackTo(e.touches[0].clientX / innerWidth); e.preventDefault(); };
+  play.addEventListener('touchstart', follow, { passive: false });
+  play.addEventListener('touchmove', follow, { passive: false });
+  play.addEventListener('pointermove', e => { if (stacking() && e.pointerType !== 'touch' && e.buttons) window.PT.stackTo(e.clientX / innerWidth); });
   play.addEventListener('touchstart', e => {
     if (!document.body.classList.contains('racing') || e.target.closest('button, .rspot')) return;
     for (const tch of e.changedTouches) window.PT.tap(tch.clientX >= innerWidth / 2 ? 'r' : 'l');
@@ -2266,6 +2634,7 @@ const names = Object.keys(SCENES);
   }, { passive: false });
   play.addEventListener('pointerdown', e => {
     if (e.target.closest('button')) return;
+    if (stacking()) { if (e.pointerType !== 'touch') window.PT.stackTo(e.clientX / innerWidth); e.preventDefault(); return; }
     if (document.body.classList.contains('racing')) { if (e.pointerType !== 'touch') window.PT.tap(e.clientX >= innerWidth / 2 ? 'r' : 'l'); e.preventDefault(); return; }
     const s = e.clientX >= innerWidth / 2 ? 'r' : 'l';
     release(); side = s; downAt = performance.now(); window.PT.press(s, true); edge(s).classList.add('on');

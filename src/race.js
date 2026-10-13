@@ -286,6 +286,6 @@ function raceFrame(t, dt) {
 // pixel art as image URLs for the page's glossary
 const raceArtURL = key => (key === 'luck' ? LUCK_HEART : artOf(key, key.startsWith('rock') ? ROCK_ART[key[4]] : ITEM_ART[key])).toDataURL();
 function startRace(kind, w, hs) {
-  setViewport(w || W0, hs || H); mode = 'race'; race = newRace(kind);
+  mode = 'race'; setViewport(w || W0, hs || H); race = newRace(kind);
   fx = []; capQueue = []; bannerT = 0; banner.hidden = true; held.clear(); dir = 0; hint.hidden = true; $('b-kiss').hidden = true;
 }
