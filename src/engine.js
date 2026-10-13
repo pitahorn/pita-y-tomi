@@ -268,6 +268,14 @@ function person(spec, lf, lb, run, kneel, kissPose, sit) {
   }
   return cv;
 }
+const HEAD_ROWS = 26, HEAD_PAD = 3;
+function tomiHead() {
+  const src = outfitSprites('casual').tomi.walk[1];
+  return bake(src.width + HEAD_PAD * 2, HEAD_ROWS + HEAD_PAD * 2, c => {
+    c.drawImage(src, 0, 0, src.width, HEAD_ROWS, HEAD_PAD, HEAD_PAD, src.width, HEAD_ROWS);
+    outline(c); outline(c, '#fbf3e4'); outline(c, '#0f0c1c');
+  });
+}
 const spriteCache = {};
 function outfitSprites(key) {
   if (spriteCache[key]) return spriteCache[key];
@@ -1444,6 +1452,7 @@ window.PT = {
   pause(on) { if (race) race.paused = on; },
   art: raceArtURL,
   milky: () => milkySet('scarf').idle[0], heart: () => HEART,
+  tomiHead,
 };
 const names = Object.keys(SCENES);
 (function boot(i) {
