@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Save the date: Pita & Tomi, 9 de octubre de 2027.">
+<meta name="description" content="Equilibra los libros y titúlate con Pita y Tomi 🎓">
 <meta property="og:title" content="Pita y Tomi en la PUC">
-<meta property="og:description" content="Save the date ♥ Recorre nuestra historia.">
+<meta property="og:description" content="Equilibra los libros y titúlate con Pita y Tomi 🎓">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://matri.pitahorn.com/puc/">
 <meta property="og:image" content="https://matri.pitahorn.com/puc/og.jpg">
@@ -229,7 +229,7 @@ body.stacking #s-tired{display:grid}
 </div>
 <div class="fin" id="rpick" hidden>
   <span class="b" id="rpick-t"></span>
-  <div class="row"><button class="race" id="b-resume" hidden>▶ Volver a la carrera</button><button class="again" id="b-restart" hidden>↻ Reiniciar carrera</button><button class="again" id="b-facil">FÁCIL<small id="best-facil" hidden></small></button><button class="ultra" id="b-ultra">DIFÍCIL<small id="best-ultra" hidden></small></button><button class="home" id="b-pick-x">Salir</button></div>
+  <div class="row"><button class="race" id="b-resume" hidden></button><button class="again" id="b-restart" hidden></button><button class="again" id="b-facil">FÁCIL<small id="best-facil" hidden></small></button><button class="ultra" id="b-ultra">DIFÍCIL<small id="best-ultra" hidden></small></button><button class="home" id="b-pick-x">Salir</button></div>
 </div>
 <div class="fin" id="rgloss" hidden>
   <span class="s">¿QUÉ ES QUÉ?</span>
@@ -2076,7 +2076,7 @@ function nextSemester() {
 // graduation: the tower bursts into flying papers, Pita walks to the middle so Tomi fits beside her on a phone, and both hop in ceremony clothes
 const GRAD_WALK = .9, GRAD_HOP = .9, GRAD_REPORT = 3.6, GRAD_GAP = 26, GRAD_PITA_X = () => Math.round(W / 2 - GRAD_GAP / 2);
 function graduate() {
-  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; showCaption('¡Titulada!');
+  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; showCaption('¡Titulados!');
   stackLayout().forEach(o => fx.push({ x: s.cam + o.cx + (Math.random() - .5) * o.it.w, y: o.y - o.it.h, vx: (Math.random() - .5) * 60, vy: -50 - Math.random() * 50, life: 1.8, kind: 'paper' }));
   s.items = []; s.th = s.thv = 0; s.luck.state = 'gone';
 }
@@ -2445,6 +2445,7 @@ const names = Object.keys(SCENES);
   const MODE = { facil: 'FÁCIL', ultra: 'DIFÍCIL' };
   // two minigames share the menu, results and hints: the 42K race and Pita y Tomi en la PUC
   const TITLES = { '42k': 'Pita y Tomi en la Maratón 2026', puc: 'Pita y Tomi en la PUC' };
+  const RESUME = { '42k': ['▶ Volver a la carrera', '↻ Reiniciar carrera'], puc: ['▶ Volver al juego', '↻ Reiniciar juego'] };
   let game = window.__START || '42k', raceKind = 'facil', lastRace = null;
   (() => {
     const R = ['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'];
@@ -2457,6 +2458,7 @@ const names = Object.keys(SCENES);
   function openPick(inRace) {
     hide(fin); hide($('rend'));
     $('b-resume').hidden = $('b-restart').hidden = !inRace; $('rpick-t').textContent = TITLES[game];
+    [$('b-resume').textContent, $('b-restart').textContent] = RESUME[game];
     const best = store.get('pt42k', {});
     for (const k of ['facil', 'ultra']) { const el = $('best-' + k); el.hidden = !best[k] || game !== '42k'; el.textContent = best[k] ? 'Tu mejor: ' + fmt(best[k]) : ''; }
     show($('rpick'));
@@ -2546,7 +2548,7 @@ const names = Object.keys(SCENES);
     w: 'Agua baja: agarra botellas de agua',
     g: 'Dolor de guatita: no agarres tanta comida seguida',
     luck: '¡Besito de la suerte! Corre rápido y salta para atraparlo',
-    'p-move': 'Desliza el dedo para mover a Pita',
+    'p-move': 'Mueve a Pita con el dedo y atrapa lo que cae del cielo',
     'p-sway': '¡Se va a caer! Atrapa algo al otro lado para equilibrarla',
     'p-energy': 'Pita se cansa: atrapa café, queques y siestas',
     'p-snack': '¡Comida! Atrápala para recuperar energía',
@@ -2592,7 +2594,7 @@ const names = Object.keys(SCENES);
   window.onPTStackEnd = res => {
     $('rspot').hidden = true; lastRace = res;
     $('medal').hidden = true; $('b-share').hidden = !res.ok;
-    $('rend-s').textContent = res.ok ? '🎓 ¡TITULADA! · ' + MODE[res.kind] : 'TODO SE DERRUMBÓ 💔';
+    $('rend-s').textContent = res.ok ? '🎓 ¡TITULADOS! · ' + MODE[res.kind] : 'TODO SE DERRUMBÓ 💔';
     $('rend-d').textContent = res.ok ? '12 semestres' : 'Semestre ' + res.sem;
     $('rend-n').textContent = res.ok ? 'Con una torre de ' + res.n + ' cosas' : 'Pita se quedó dormida';
     show($('rend'));

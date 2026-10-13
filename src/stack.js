@@ -81,7 +81,7 @@ function nextSemester() {
 // graduation: the tower bursts into flying papers, Pita walks to the middle so Tomi fits beside her on a phone, and both hop in ceremony clothes
 const GRAD_WALK = .9, GRAD_HOP = .9, GRAD_REPORT = 3.6, GRAD_GAP = 26, GRAD_PITA_X = () => Math.round(W / 2 - GRAD_GAP / 2);
 function graduate() {
-  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; showCaption('¡Titulada!');
+  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; showCaption('¡Titulados!');
   stackLayout().forEach(o => fx.push({ x: s.cam + o.cx + (Math.random() - .5) * o.it.w, y: o.y - o.it.h, vx: (Math.random() - .5) * 60, vy: -50 - Math.random() * 50, life: 1.8, kind: 'paper' }));
   s.items = []; s.th = s.thv = 0; s.luck.state = 'gone';
 }

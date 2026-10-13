@@ -36,5 +36,5 @@ same shape as the Desafío 42K. Front-end only.
 
 ## Results
 - Win: tower bursts into papers, Pita and Tomi in ceremony clothes hop, confetti
-  and diplomas. "¡Titulada!". Buttons: Compartir · ↻ Otra vez · ☰ Menú · Salir.
+  and diplomas. "¡Titulados!". Buttons: Compartir · ↻ Otra vez · ☰ Menú · Salir.
 - Topple: "TODO SE DERRUMBÓ 💔 · Semestre N". Buttons: ↻ Otra vez · ☰ Menú · Salir.

@@ -228,7 +228,7 @@ body.stacking #s-tired{display:grid}
 </div>
 <div class="fin" id="rpick" hidden>
   <span class="b" id="rpick-t"></span>
-  <div class="row"><button class="race" id="b-resume" hidden>▶ Volver a la carrera</button><button class="again" id="b-restart" hidden>↻ Reiniciar carrera</button><button class="again" id="b-facil">FÁCIL<small id="best-facil" hidden></small></button><button class="ultra" id="b-ultra">DIFÍCIL<small id="best-ultra" hidden></small></button><button class="home" id="b-pick-x">Salir</button></div>
+  <div class="row"><button class="race" id="b-resume" hidden></button><button class="again" id="b-restart" hidden></button><button class="again" id="b-facil">FÁCIL<small id="best-facil" hidden></small></button><button class="ultra" id="b-ultra">DIFÍCIL<small id="best-ultra" hidden></small></button><button class="home" id="b-pick-x">Salir</button></div>
 </div>
 <div class="fin" id="rgloss" hidden>
   <span class="s">¿QUÉ ES QUÉ?</span>
@@ -377,6 +377,7 @@ __ENGINE__
   const MODE = { facil: 'FÁCIL', ultra: 'DIFÍCIL' };
   // two minigames share the menu, results and hints: the 42K race and Pita y Tomi en la PUC
   const TITLES = { '42k': 'Pita y Tomi en la Maratón 2026', puc: 'Pita y Tomi en la PUC' };
+  const RESUME = { '42k': ['▶ Volver a la carrera', '↻ Reiniciar carrera'], puc: ['▶ Volver al juego', '↻ Reiniciar juego'] };
   let game = window.__START || '42k', raceKind = 'facil', lastRace = null;
   (() => {
     const R = ['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'];
@@ -389,6 +390,7 @@ __ENGINE__
   function openPick(inRace) {
     hide(fin); hide($('rend'));
     $('b-resume').hidden = $('b-restart').hidden = !inRace; $('rpick-t').textContent = TITLES[game];
+    [$('b-resume').textContent, $('b-restart').textContent] = RESUME[game];
     const best = store.get('pt42k', {});
     for (const k of ['facil', 'ultra']) { const el = $('best-' + k); el.hidden = !best[k] || game !== '42k'; el.textContent = best[k] ? 'Tu mejor: ' + fmt(best[k]) : ''; }
     show($('rpick'));
@@ -478,7 +480,7 @@ __ENGINE__
     w: 'Agua baja: agarra botellas de agua',
     g: 'Dolor de guatita: no agarres tanta comida seguida',
     luck: '¡Besito de la suerte! Corre rápido y salta para atraparlo',
-    'p-move': 'Desliza el dedo para mover a Pita',
+    'p-move': 'Mueve a Pita con el dedo y atrapa lo que cae del cielo',
     'p-sway': '¡Se va a caer! Atrapa algo al otro lado para equilibrarla',
     'p-energy': 'Pita se cansa: atrapa café, queques y siestas',
     'p-snack': '¡Comida! Atrápala para recuperar energía',
@@ -524,7 +526,7 @@ __ENGINE__
   window.onPTStackEnd = res => {
     $('rspot').hidden = true; lastRace = res;
     $('medal').hidden = true; $('b-share').hidden = !res.ok;
-    $('rend-s').textContent = res.ok ? '🎓 ¡TITULADA! · ' + MODE[res.kind] : 'TODO SE DERRUMBÓ 💔';
+    $('rend-s').textContent = res.ok ? '🎓 ¡TITULADOS! · ' + MODE[res.kind] : 'TODO SE DERRUMBÓ 💔';
     $('rend-d').textContent = res.ok ? '12 semestres' : 'Semestre ' + res.sem;
     $('rend-n').textContent = res.ok ? 'Con una torre de ' + res.n + ' cosas' : 'Pita se quedó dormida';
     show($('rend'));
