@@ -2004,7 +2004,7 @@ const SEMESTERS = 12, GIANT_N = 6, GIANT_NAMES = { 6: '¡Certamen!', 12: '¡Exam
 // the stack rides on Pita's head, so her tired face stays visible
 const HAND_Y = GROUND - 49, HANDS_HALF = 7, PITA_SPEED = 150, KEY_SPEED = 110;
 // from semester 9 the camera keeps the tower's top halfway up the screen; before, only near the top edge
-const LIFT_SEM = 9, LIFT_LATE = .5, LIFT_EARLY = .12, STACK_FLOOR = 36, SWAY_K = 18, SWAY_DAMP = 3.2, SWAY_ACCEL = .00045, SWAY_KICK = .004;
+const LIFT_SEM = 9, LIFT_LATE = .5, LIFT_EARLY = .12, LIFT_SPEED = 10, STACK_FLOOR = 36, SWAY_K = 18, SWAY_DAMP = 3.2, SWAY_ACCEL = .00045, SWAY_KICK = .004;
 // stackable coursework: w × h in game px, heavier things weigh more
 const WORK = {
   libro: { w: [10, 14], h: [3, 4], m: 1, cols: ['#c84a4a', '#3a6ab0', '#4a9a5a', '#e0b040', '#7a4ab0'] },
@@ -2228,7 +2228,7 @@ function stackFrame(t, dt) {
   // camera slides up as the tower grows, but Pita's head stays on screen
   const topScreen = offY + stackTopY() - 10;
   const wantLift = Math.max(0, Math.min(Hs - offY - GROUND + 44, Hs * (s.sem >= LIFT_SEM ? LIFT_LATE : LIFT_EARLY) - topScreen));
-  s.lift += (wantLift - s.lift) * Math.min(1, dt * 3);
+  s.lift += Math.max(-LIFT_SPEED * dt, Math.min(LIFT_SPEED * dt, wantLift - s.lift));
   const seg = segWith('kiss'), segIdx = SEGS.indexOf(seg), lift = Math.round(s.lift);
   if (!raceCP || raceCP.A.length !== W || raceCP.A[0] !== segIdx) { const A = new Int8Array(W).fill(segIdx); raceCP = { A, B: A, Wt: new Float32Array(W) }; }
   renderSky(raceCP);
