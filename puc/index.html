@@ -159,6 +159,17 @@ body.racing .close,body.stacking .close{display:none}
 body.stacking #b-menu{display:block}
 body.lobby .hud,body.lobby .edge,body.lobby .onb,body.lobby .close{display:none}
 #shud{width:auto;right:80px}
+.board{display:grid;gap:8px;width:min(320px,84vw);font-family:var(--f-px);font-weight:700;color:#fff}
+.board ol:empty{display:none}
+.board ol{margin:0;padding:10px 14px;list-style:none;display:grid;gap:4px;background:rgba(15,12,28,.55);border:3px solid var(--cream);font-size:16px}
+.board li{display:flex;justify-content:space-between;gap:12px}
+.board li.me{color:var(--gold)}
+.board form{display:grid;gap:6px;font-size:14px;color:var(--gold);min-width:0}
+.board label,.board form span{min-width:0}
+.board form span{display:flex;gap:8px}
+.board input{flex:1;min-width:0;width:0;font-family:var(--f-px);font-weight:700;font-size:20px;letter-spacing:.2em;text-transform:uppercase;padding:8px;border:3px solid var(--cream);background:var(--ink);color:#fff;border-radius:0}
+.board form button{flex:none;min-height:48px;padding:0 14px;font-size:16px;background:var(--gold);color:var(--ink);box-shadow:0 0 0 3px var(--ink)}
+.board small{font-size:12px;color:#e6d8ee}
 body.stacking .banner{width:calc(100% - 100px);left:calc(50% - 30px)}
 #s-tired{display:none;position:absolute;z-index:6;right:16px;top:calc(76px + env(safe-area-inset-top,0px));justify-items:center;gap:6px;pointer-events:none}
 body.stacking #s-tired{display:grid}
@@ -241,6 +252,11 @@ body.stacking #s-tired{display:grid}
   <span class="s" id="rend-s"></span>
   <span class="d" id="rend-d"></span>
   <span class="n" id="rend-n"></span>
+  <div class="board" id="board" hidden>
+    <ol id="board-rows"></ol>
+    <form id="board-form" hidden><label for="board-name">¡Entraste al top 5! Tu nombre:</label><span><input id="board-name" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" required><button>Guardar</button></span></form>
+    <small id="board-err" hidden>No se pudo guardar</small>
+  </div>
   <div class="row"><button class="race" id="b-share">Compartir</button><button class="again" id="b-retry">↻ Otra vez</button><button class="again" id="b-rend-menu">☰ Menú</button><button class="home" id="b-rend-x">Salir</button></div>
 </div>
 
@@ -2076,7 +2092,7 @@ function nextSemester() {
 // graduation: the tower bursts into flying papers, Pita walks to the middle so Tomi fits beside her on a phone, and both hop in ceremony clothes
 const GRAD_WALK = .9, GRAD_HOP = .9, GRAD_REPORT = 3.6, GRAD_GAP = 26, GRAD_PITA_X = () => Math.round(W / 2 - GRAD_GAP / 2);
 function graduate() {
-  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; showCaption('¡Titulados!');
+  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; s.time = s.t; showCaption('¡Titulados!');
   stackLayout().forEach(o => fx.push({ x: s.cam + o.cx + (Math.random() - .5) * o.it.w, y: o.y - o.it.h, vx: (Math.random() - .5) * 60, vy: -50 - Math.random() * 50, life: 1.8, kind: 'paper' }));
   s.items = []; s.th = s.thv = 0; s.luck.state = 'gone';
 }
@@ -2113,7 +2129,7 @@ function stackUpdate(dt) {
   if (s.done) {
     s.done += dt; s.falling = []; s.x += (GRAD_PITA_X() - s.x) * Math.min(1, dt * 4);
     if (Math.random() < dt * 30) fx.push({ x: s.cam + Math.random() * W, y: -offY - s.lift, vx: (Math.random() - .5) * 20, vy: 22 + Math.random() * 20, life: 3, kind: Math.random() < .2 ? 'diploma' : 'confetti', col: BOOK_COLS[Math.floor(Math.random() * BOOK_COLS.length)] });
-    if (s.done > GRAD_REPORT && !s.reported) { s.reported = true; if (window.onPTStackEnd) window.onPTStackEnd({ ok: true, kind: s.kind, n: s.n }); }
+    if (s.done > GRAD_REPORT && !s.reported) { s.reported = true; if (window.onPTStackEnd) window.onPTStackEnd({ ok: true, kind: s.kind, n: s.n, time: s.time }); }
     return;
   }
   // Pita: follow the finger, or the arrow keys
@@ -2434,11 +2450,19 @@ const names = Object.keys(SCENES);
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
   };
 
-  // besitos given, per phone for now (a global total needs a backend)
-  let kisses = store.get('ptBesitos', 0);
-  const kissLabel = () => { kissBtn.textContent = '♥ besito' + (kisses ? ' · ' + kisses : ''); };
-  kissLabel(); kissBtn.addEventListener('click', () => { kisses++; store.set('ptBesitos', kisses); kissLabel(); });
-  function showKisses() { const el = $('fin-kisses'); el.hidden = !kisses; el.textContent = 'Le diste ' + kisses + (kisses === 1 ? ' besito' : ' besitos') + ' a Pita & Tomi ♥'; }
+  // besitos: everyone's total from the counter, plus this visit's taps; sent once at the end of the story
+  const API = 'https://pita-y-tomi.pitahorn.workers.dev';
+  const api = (path, body) => fetch(API + path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}).then(r => r.ok ? r.json() : Promise.reject(r));
+  let taps = 0, global = 0;
+  const kisses = () => global + taps;
+  const kissLabel = () => { kissBtn.textContent = '♥ besito' + (kisses() ? ' · ' + kisses() : ''); };
+  kissLabel(); kissBtn.addEventListener('click', () => { taps++; kissLabel(); });
+  api('/besitos').then(d => { global = d.total; kissLabel(); }).catch(() => {});
+  function showKisses() {
+    const el = $('fin-kisses'), paint = () => { el.hidden = !kisses(); el.textContent = 'BESITOS · ' + kisses(); kissLabel(); };
+    paint();
+    if (taps) { const n = taps; api('/besitos', { n }).then(d => { global = d.total; taps -= n; paint(); }).catch(() => {}); }
+  }
 
   // Desafío 42K
   const fmt = sec => { sec = Math.round(sec); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, ss = sec % 60; return h + ':' + String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0'); };
@@ -2589,16 +2613,46 @@ const names = Object.keys(SCENES);
       $('rend-d').textContent = 'Llegaste al km ' + res.km;
       $('rend-n').textContent = '3 desmayos. El último: ' + res.cause;
     }
+    showBoard(res.ok && res.time);
     show($('rend'));
   };
   window.onPTStackEnd = res => {
     $('rspot').hidden = true; lastRace = res;
     $('medal').hidden = true; $('b-share').hidden = !res.ok;
     $('rend-s').textContent = res.ok ? '🎓 ¡TITULADOS! · ' + MODE[res.kind] : 'TODO SE DERRUMBÓ 💔';
-    $('rend-d').textContent = res.ok ? '12 semestres' : 'Semestre ' + res.sem;
-    $('rend-n').textContent = res.ok ? 'Con una torre de ' + res.n + ' cosas' : 'Pita se quedó dormida';
+    $('rend-d').textContent = res.ok ? fmtShort(res.time) : 'Semestre ' + res.sem;
+    $('rend-n').textContent = res.ok ? '12 semestres · torre de ' + res.n + ' cosas' : 'Pita se quedó dormida';
+    showBoard(res.ok && res.time);
     show($('rend'));
   };
+  // top 5 per game and mode: only finishers; a name (6 arcade characters) is needed to get on it
+  const fmtShort = sec => { sec = Math.round(sec); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); };
+  const player = store.get('ptPlayer', null) || (() => { const id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36)); store.set('ptPlayer', id); return id; })();
+  const NAME_OK = /^[A-Z0-9Ñ]{1,6}$/;
+  let boardTime = null;
+  function paintBoard(rows, rank) {
+    const ol = $('board-rows'); ol.innerHTML = '';
+    rows.forEach((r, i) => { const li = document.createElement('li'), a = document.createElement('span'), b = document.createElement('span'); a.textContent = (i + 1) + '. ' + r.name; b.textContent = (game === 'puc' ? fmtShort : fmt)(r.time); li.append(a, b); if (i + 1 === rank) li.className = 'me'; ol.appendChild(li); });
+    $('board').hidden = !rows.length && $('board-form').hidden;
+  }
+  function showBoard(time) {
+    boardTime = time; $('board').hidden = true; $('board-form').hidden = true; $('board-err').hidden = true;
+    if (!boardTime) return;
+    api('/board/' + game + '/' + raceKind).then(d => {
+      const fits = d.rows.length < 5 || boardTime < d.rows[d.rows.length - 1].time;
+      if (fits) { $('board-form').hidden = false; $('board-name').value = store.get('ptName', ''); }
+      paintBoard(d.rows, 0);
+    }).catch(() => {});
+  }
+  $('board-name').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9Ñ]/g, '').slice(0, 6); });
+  $('board-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('board-name').value; if (!NAME_OK.test(name) || !boardTime) return;
+    store.set('ptName', name);
+    api('/board/' + game + '/' + raceKind, { id: player, name, time: Math.round(boardTime) })
+      .then(d => { $('board-form').hidden = true; $('board-err').hidden = true; paintBoard(d.rows, d.rank); })
+      .catch(() => { $('board-err').hidden = false; });
+  });
   $('b-share').addEventListener('click', () => {
     if (!lastRace || !lastRace.ok) return;
     const text = game === 'puc'

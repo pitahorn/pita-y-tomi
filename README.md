@@ -21,4 +21,11 @@ Edit `src/`, then rebuild and push:
 
 Commit `index.html`, `42k/index.html` and `puc/index.html` together with the `src/` change; Pages serves them as-is.
 
+## Counter and leaderboards
+
+`worker/` is a Cloudflare Worker (KV) at `https://pita-y-tomi.pitahorn.workers.dev`: the global
+besito total (sent once at the end of the story) and a top 5 per game and mode (finishers only,
+6-character arcade names, one row per player id kept on the phone). Deploy with
+`cd worker && npx wrangler deploy`.
+
 Design of the games: `docs/v2-desafio-42k.md`, `docs/v3-pita-en-la-puc.md`.

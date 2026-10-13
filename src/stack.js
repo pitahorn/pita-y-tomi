@@ -81,7 +81,7 @@ function nextSemester() {
 // graduation: the tower bursts into flying papers, Pita walks to the middle so Tomi fits beside her on a phone, and both hop in ceremony clothes
 const GRAD_WALK = .9, GRAD_HOP = .9, GRAD_REPORT = 3.6, GRAD_GAP = 26, GRAD_PITA_X = () => Math.round(W / 2 - GRAD_GAP / 2);
 function graduate() {
-  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; showCaption('¡Titulados!');
+  const s = stk; s.sem = SEMESTERS; s.done = .001; s.n = s.items.length; s.time = s.t; showCaption('¡Titulados!');
   stackLayout().forEach(o => fx.push({ x: s.cam + o.cx + (Math.random() - .5) * o.it.w, y: o.y - o.it.h, vx: (Math.random() - .5) * 60, vy: -50 - Math.random() * 50, life: 1.8, kind: 'paper' }));
   s.items = []; s.th = s.thv = 0; s.luck.state = 'gone';
 }
@@ -118,7 +118,7 @@ function stackUpdate(dt) {
   if (s.done) {
     s.done += dt; s.falling = []; s.x += (GRAD_PITA_X() - s.x) * Math.min(1, dt * 4);
     if (Math.random() < dt * 30) fx.push({ x: s.cam + Math.random() * W, y: -offY - s.lift, vx: (Math.random() - .5) * 20, vy: 22 + Math.random() * 20, life: 3, kind: Math.random() < .2 ? 'diploma' : 'confetti', col: BOOK_COLS[Math.floor(Math.random() * BOOK_COLS.length)] });
-    if (s.done > GRAD_REPORT && !s.reported) { s.reported = true; if (window.onPTStackEnd) window.onPTStackEnd({ ok: true, kind: s.kind, n: s.n }); }
+    if (s.done > GRAD_REPORT && !s.reported) { s.reported = true; if (window.onPTStackEnd) window.onPTStackEnd({ ok: true, kind: s.kind, n: s.n, time: s.time }); }
     return;
   }
   // Pita: follow the finger, or the arrow keys

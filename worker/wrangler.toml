@@ -1,0 +1,7 @@
+name = "pita-y-tomi"
+main = "index.js"
+compatibility_date = "2026-09-01"
+
+[[kv_namespaces]]
+binding = "PT"
+id = "1fd7fb9394f548558bba519f3c2993b4"
