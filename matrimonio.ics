@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//matri.pitahorn.com//ES
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:matrimonio-pita-tomi-20271009@matri.pitahorn.com
+DTSTAMP:20261014T000000Z
+DTSTART;VALUE=DATE:20271009
+DTEND;VALUE=DATE:20271010
+SUMMARY:Matrimonio Pita & Tomi
+LOCATION:Santiago\, Chile
+DESCRIPTION:¡Nos casamos! matri.pitahorn.com
+URL:https://matri.pitahorn.com
+END:VEVENT
+END:VCALENDAR

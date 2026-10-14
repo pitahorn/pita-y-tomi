@@ -145,7 +145,27 @@ body.racing #rhud,body.stacking #shud{display:grid}
 .rspot .rtip{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:84vw;margin:0;font-family:var(--f-px);font-weight:700;font-size:16px;line-height:1.35;text-align:center;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px}
 .rspot .rtip button{display:block;margin:10px auto 0;min-width:96px;min-height:44px;font-family:var(--f-px);font-weight:700;font-size:16px;color:var(--ink);background:var(--rose);border:3px solid var(--ink);border-radius:0;cursor:pointer;touch-action:manipulation}
 .rspot .rtip button:disabled{opacity:.45}
-.fin .n.k{color:var(--rose)}
+/* final screen: the poster sits in the sky above the trio, the actions on the snow */
+body:has(#fin:not([hidden])) :is(.hud,.edge,.close,.onb){visibility:hidden}
+#fin{display:flex;flex-direction:column;align-items:center;place-content:normal;gap:0;padding:0 24px;background:linear-gradient(180deg,rgba(15,12,28,.55) 0%,rgba(15,12,28,.25) 40%,rgba(15,12,28,0) 52%,rgba(15,12,28,0) 66%,rgba(15,12,28,.45) 100%)}
+#fin .poster,#fin .links,#fin .k{text-shadow:2px 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink)}
+#fin .poster{display:grid;justify-items:center;margin-top:calc(env(safe-area-inset-top,0px) + 12svh)}
+#fin .b{font-size:clamp(16px,4.6vw,24px);white-space:nowrap}
+#fin .d{margin-top:22px;display:grid;justify-items:center;gap:10px;font-size:clamp(22px,7vw,32px);line-height:1.15;white-space:nowrap}
+#fin .d .rings{height:24px;margin:0}
+#fin .n{margin-top:10px;font-size:18px;color:#fff}
+#fin .n i{font-style:normal;color:var(--rose)}
+#fin .acts{margin-top:auto;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));display:grid;justify-items:center;gap:6px;width:100%}
+#fin .cal{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:min(260px,100%);min-height:52px;font-size:19px;color:var(--ink);background:var(--gold);box-shadow:0 0 0 4px var(--ink)}
+#fin .cal-ico{width:24px;image-rendering:pixelated}
+#fin .links{display:flex;gap:28px;margin-top:8px}
+#fin .links button{font-size:17px;min-height:44px;padding:0 4px;color:var(--cream);background:none;border:0}
+#fin .k{font-size:15px;font-weight:700;color:var(--rose)}
+.sheet{position:absolute;inset:0;z-index:2;display:grid;align-content:end;background:rgba(10,8,20,.55)}
+.sheet .panel{display:grid;gap:12px;padding:22px 24px calc(28px + env(safe-area-inset-bottom,0px));background:var(--cream);color:var(--ink);border-top:4px solid var(--ink);text-align:center}
+.sheet b{font-size:17px}
+.sheet a{display:grid;place-items:center;min-height:54px;font-family:var(--f-px);font-weight:700;font-size:17px;color:var(--ink);background:#fff;border:4px solid var(--ink);text-decoration:none}
+#fin .sheet .shut{min-height:44px;font-size:16px;color:var(--ink);background:none;border:0}
 .fin .race{background:var(--gold);color:var(--ink);box-shadow:0 0 0 4px var(--ink)}
 .fin button small{display:block;font-size:12px;font-weight:400;margin-top:4px}
 .fin .ultra{background:#e05a5a;color:#fff}
@@ -237,12 +257,18 @@ body.stacking #s-tired{display:grid}
 <button class="kiss" id="b-kiss" hidden>♥ besito</button>
 <div class="kiss-tip" id="kiss-tip" hidden>¡Toca aquí para un besito!</div>
 <div class="fin" id="fin" hidden>
-  <span class="s">SAVE THE DATE</span>
-  <span class="b">¡NOS CASAMOS!</span>
-  <span class="d"><img class="rings" alt="">9 de octubre de 2027</span>
-  <span class="n">Pita &amp; Tomi ♥ Milky</span>
-  <span class="n k" id="fin-kisses" hidden></span>
-  <div class="row"><button class="again" id="b-again">↻ Ver de nuevo</button><button class="home" id="b-home">Salir</button></div>
+  <div class="poster"><span class="b">¡NOS CASAMOS!</span><span class="d"><img class="rings" alt="">9 de octubre<br>de 2027</span><span class="n">Pita <i>♥</i> Tomi <i>♥</i> Milky</span></div>
+  <div class="acts">
+    <button class="cal" id="b-cal"><img class="cal-ico" alt="">Anótalo</button>
+    <div class="links"><button id="b-again">↻ Ver de nuevo</button><button id="b-home">Salir</button></div>
+    <span class="k" id="fin-kisses" hidden></span>
+  </div>
+  <div class="sheet" id="cal-sheet" hidden><div class="panel" role="dialog" aria-label="Anótalo en tu calendario">
+    <b>¿Dónde lo guardas?</b>
+    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Matrimonio%20Pita%20%26%20Tomi&amp;dates=20271009%2F20271010&amp;location=Santiago%2C%20Chile&amp;details=%C2%A1Nos%20casamos!%20matri.pitahorn.com" target="_blank" rel="noopener">Google Calendar</a>
+    <a href="/matrimonio.ics" download>Apple Calendar / otro</a>
+    <button class="shut" id="b-cal-x">Cerrar</button>
+  </div></div>
 </div>
 <div class="fin" id="rpick" hidden>
   <span class="b" id="rpick-t"></span>
@@ -2404,13 +2430,14 @@ const names = Object.keys(SCENES);
     else { tree(Math.round(w * .68), Math.round(h * .63), Math.max(5, Math.round(w * .1)), false); }
     x.putImageData(img, 0, 0);
   }
-  (() => {
-    const R = ['.......w.......', '......ddd......', '..ggg.gyg......', '.g...gg..g.....', 'g...g.g...g....', 'g...g.g...g....', 'g...g.g...g....', '.g...gg..g.....', '..ggg.ggg......'];
-    const c = document.createElement('canvas'); c.width = 15; c.height = 9; const x = c.getContext('2d');
-    const col = { g: '#f2c64a', y: '#fff0a8', d: '#bfe8ff', w: '#ffffff' };
-    R.forEach((row, yy) => [...row].forEach((ch, xx) => { if (col[ch]) { x.fillStyle = col[ch]; x.fillRect(xx, yy, 1, 1); } }));
-    const url = c.toDataURL(); document.querySelectorAll('.rings').forEach(im => { im.src = url; });
-  })();
+  const pixels = (rows, col) => {
+    const c = document.createElement('canvas'); c.width = rows[0].length; c.height = rows.length; const x = c.getContext('2d');
+    rows.forEach((row, yy) => [...row].forEach((ch, xx) => { if (col[ch]) { x.fillStyle = col[ch]; x.fillRect(xx, yy, 1, 1); } }));
+    return c.toDataURL();
+  };
+  const ringsSrc = pixels(['.......w.......', '......ddd......', '..ggg.gyg......', '.g...gg..g.....', 'g...g.g...g....', 'g...g.g...g....', 'g...g.g...g....', '.g...gg..g.....', '..ggg.ggg......'], { g: '#f2c64a', y: '#fff0a8', d: '#bfe8ff', w: '#ffffff' });
+  document.querySelectorAll('.rings').forEach(im => { im.src = ringsSrc; });
+  $('fin').querySelector('.cal-ico').src = pixels(['..k....k....', '.kKk..kKk...', 'kkkkkkkkkkkk', 'kRRRRRRRRRRk', 'kRRRRRRRRRRk', 'kkkkkkkkkkkk', 'kWWWWWWWWWWk', 'kWkWWkWWkWWk', 'kWWWWWWWWWWk', 'kWkWWkWWRRWk', 'kWWWWWWWRRWk', 'kkkkkkkkkkkk'], { k: '#0f0c1c', K: '#9aa0ac', R: '#e05a5a', W: '#fbf8ee' });
   const sides = () => { paintSide($('side-l'), 'l'); paintSide($('side-r'), 'r'); };
   sides(); addEventListener('resize', () => { if (play.hidden) sides(); });
   const edgeX = () => Math.random() < .5 ? 2 + Math.random() * 9 : 89 + Math.random() * 8;
@@ -2429,8 +2456,8 @@ const names = Object.keys(SCENES);
   const gameW = () => innerWidth > innerHeight ? 384 : Math.max(150, Math.min(384, Math.round(innerWidth / innerHeight * 340)));
   const gameH = () => Math.round(gameW() * innerHeight / innerWidth);
   const onb = $('onb'), tip = $('kiss-tip'), kissBtn = $('b-kiss');
-  const HAND = ['....kk......', '...kwwk.....', '...kwwk.....', '...kwwkkk...', '...kwwkwwkk.', '.kkkwwkwwkwk', 'kwwkwwwwwwwk', 'kwwwwwwwwwwk', '.kwwwwwwwwwk', '..kwwwwwwwk.', '...kwwwwwwk.', '....kkkkkk..'];
-  (() => { const c = document.createElement('canvas'); c.width = 12; c.height = 12; const x = c.getContext('2d'); HAND.forEach((row, y) => [...row].forEach((ch, i) => { if (ch !== '.') { x.fillStyle = ch === 'k' ? '#0f0c1c' : '#fbf3e4'; x.fillRect(i, y, 1, 1); } })); document.querySelectorAll('.hand').forEach(im => { im.src = c.toDataURL(); }); })();
+  const handSrc = pixels(['....kk......', '...kwwk.....', '...kwwk.....', '...kwwkkk...', '...kwwkwwkk.', '.kkkwwkwwkwk', 'kwwkwwwwwwwk', 'kwwwwwwwwwwk', '.kwwwwwwwwwk', '..kwwwwwwwk.', '...kwwwwwwk.', '....kkkkkk..'], { k: '#0f0c1c', w: '#fbf3e4' });
+  document.querySelectorAll('.hand').forEach(im => { im.src = handSrc; });
   let tipShown = false;
   new MutationObserver(() => { if (!kissBtn.hidden && !tipShown && !play.hidden) { tipShown = true; tip.hidden = false; setTimeout(() => { tip.hidden = true; }, 5000); } }).observe(kissBtn, { attributes: true, attributeFilter: ['hidden'] });
   kissBtn.addEventListener('click', () => { tip.hidden = true; });
@@ -2451,6 +2478,10 @@ const names = Object.keys(SCENES);
   start.addEventListener('click', openGame);
   $('b-close').addEventListener('click', closeGame);
   $('b-home').addEventListener('click', closeGame);
+  const sheet = $('cal-sheet');
+  $('b-cal').addEventListener('click', () => { sheet.hidden = false; });
+  $('b-cal-x').addEventListener('click', () => { sheet.hidden = true; });
+  sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
   $('b-again').addEventListener('click', () => { fin.classList.remove('in'); setTimeout(() => { fin.hidden = true; }, 300); window.PT.start(gameW(), gameH()); play.classList.remove('moved'); onb.hidden = false; onb.classList.remove('out'); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !play.hidden) closeGame(); });
   window.onPTFinal = () => { release(); showKisses(); show(fin); store.set('ptStoryDone', true); $('b-tomi').hidden = $('b-pita').hidden = false; };
@@ -2482,13 +2513,7 @@ const names = Object.keys(SCENES);
   const TITLES = { '42k': 'Pita y Tomi en la Maratón 2026', puc: 'Pita y Tomi en la PUC' };
   const RESUME = { '42k': ['▶ Volver a la carrera', '↻ Reiniciar carrera'], puc: ['▶ Volver al juego', '↻ Reiniciar juego'] };
   let game = window.__START || '42k', raceKind = 'facil', lastRace = null;
-  (() => {
-    const R = ['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'];
-    const col = { b: '#3a6ad0', r: '#e05050', o: '#8a5a10', y: '#f6cf6a', w: '#fff6c8', d: '#c89a30' };
-    const c = document.createElement('canvas'); c.width = 9; c.height = 12; const x = c.getContext('2d');
-    R.forEach((row, yy) => [...row].forEach((ch, xx) => { if (col[ch]) { x.fillStyle = col[ch]; x.fillRect(xx, yy, 1, 1); } }));
-    $('medal').src = c.toDataURL();
-  })();
+  $('medal').src = pixels(['bbb...rrr', '.bbb.rrr.', '..bbrrr..', '...brr...', '..ooooo..', '.oyyyyyo.', 'oyywyyyyo', 'oywyyyyyo', 'oyyyyyydo', 'oyyyyyydo', '.oyyyydo.', '..ooooo..'], { b: '#3a6ad0', r: '#e05050', o: '#8a5a10', y: '#f6cf6a', w: '#fff6c8', d: '#c89a30' });
   // inRace: opened from ☰ mid-race, so the race is paused and can be resumed or restarted
   function openPick(inRace) {
     hide(fin); hide($('rend'));
