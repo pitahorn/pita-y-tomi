@@ -518,8 +518,8 @@ __ENGINE__
     'p-luck': '¡Besito de la suerte! Atrápalo para enderezar la torre',
   };
   window.onPTRaceHint = (key, tg) => {
-    const seen = store.get('pt42kHints', {}); if (seen[key] || !HINTS[key]) return;
     dragLesson = key === 'p-move';
+    const seen = store.get('pt42kHints', {}); if ((seen[key] && !dragLesson) || !HINTS[key]) return;
     if (!dragLesson) { seen[key] = true; store.set('pt42kHints', seen); }
     window.PT.pause(true); $('rctl').classList.add('out'); $('rspot').classList.toggle('drag', dragLesson);
     const spot = $('rspot'), hole = $('rspot-hole'), tip = $('rspot-tip'), pad = 6;
@@ -545,7 +545,6 @@ __ENGINE__
   const DRAG_PX = 12;
   function endDragLesson() {
     dragLesson = false; $('rspot').hidden = true; window.PT.pause(false);
-    const seen = store.get('pt42kHints', {}); seen['p-move'] = true; store.set('pt42kHints', seen);
   }
   $('rspot').addEventListener('pointerdown', e => { e.stopPropagation(); if (!e.target.closest('button')) e.preventDefault(); });
   window.onPTRaceEnd = res => {

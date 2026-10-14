@@ -41,7 +41,7 @@ function newStack(kind) {
   };
 }
 const stackNeed = () => stk.cfg.giant.includes(stk.sem) ? GIANT_N : stk.cfg.need;
-// the drag lesson shows in both modes, until the player has dragged once
+// the drag lesson opens every game, in both modes
 const stackHint = (key, target) => { if ((stk.cfg.hints || key === 'p-move') && !stk.hinted[key]) { stk.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
 // where every stacked thing sits right now: x centre (with sway) and bottom y
 function stackLayout() {
