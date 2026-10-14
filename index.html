@@ -125,7 +125,8 @@ body.racing .rctl.out{display:none}
 .rctl div:last-child{background:linear-gradient(270deg,rgba(10,8,20,.45),rgba(10,8,20,0))}
 .rctl .hands{display:flex;justify-content:center;gap:4px;margin-bottom:10px}
 .rctl .hand{width:48px}
-.rctl .hand.d2{animation-delay:.25s}
+.rctl .hand.hold{animation:none;transform:translateY(8px) scale(.94)}
+.rctl .ring{width:64px;height:64px;margin:-32px 0 0 -32px}
 .rhud{position:absolute;z-index:6;left:10px;top:calc(10px + env(safe-area-inset-top,0px));width:min(58vw,260px);gap:5px;font-family:var(--f-px);font-weight:700;color:#fff;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;pointer-events:none}
 body.racing #rhud,body.stacking #shud{display:grid}
 .rhud .top{display:flex;gap:10px;align-items:baseline;font-size:15px}
@@ -140,6 +141,7 @@ body.racing #rhud,body.stacking #shud{display:grid}
 .rspot{position:absolute;inset:0;z-index:8;overflow:hidden;touch-action:manipulation}
 .rspot .hole{position:absolute;border-radius:50%;box-shadow:0 0 0 200vmax rgba(10,8,20,.74);outline:3px dashed var(--cream);outline-offset:4px;animation:spot 1.2s ease-in-out infinite}
 @keyframes spot{50%{outline-offset:9px}}
+.rspot.drag{pointer-events:none}
 .rspot .rtip{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:84vw;margin:0;font-family:var(--f-px);font-weight:700;font-size:16px;line-height:1.35;text-align:center;color:var(--ink);background:var(--cream);border:3px solid var(--ink);padding:10px 14px}
 .rspot .rtip button{display:block;margin:10px auto 0;min-width:96px;min-height:44px;font-family:var(--f-px);font-weight:700;font-size:16px;color:var(--ink);background:var(--rose);border:3px solid var(--ink);border-radius:0;cursor:pointer;touch-action:manipulation}
 .rspot .rtip button:disabled{opacity:.45}
@@ -148,10 +150,11 @@ body.racing #rhud,body.stacking #shud{display:grid}
 .fin button small{display:block;font-size:12px;font-weight:400;margin-top:4px}
 .fin .ultra{background:#e05a5a;color:#fff}
 .medal{width:78px;image-rendering:pixelated}
-.head-btn{position:absolute;left:12px;bottom:calc(100% + 10px);padding:4px;background:none;border:0;cursor:pointer;animation:bob 2.4s ease-in-out infinite;touch-action:manipulation}
-#b-pita{left:84px;animation-delay:-1.2s}
-.head-btn img{width:63px;display:block;image-rendering:pixelated;filter:drop-shadow(2px 2px 0 rgba(15,12,28,.55))}
-@keyframes bob{50%{transform:translateY(-5px)}}
+.ava-row{justify-self:stretch;display:flex;justify-content:space-between;align-items:end}
+.heads{display:grid;gap:20px;margin-bottom:6px}
+.head-btn{width:68px;height:68px;padding:0;display:grid;place-items:center;border-radius:50%;border:3px solid var(--ink);background:radial-gradient(circle at 50% 38%,var(--cream),var(--rose));box-shadow:0 0 0 3px var(--cream),0 6px 0 3px var(--ink);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.head-btn:active{transform:translateY(4px);box-shadow:0 0 0 3px var(--cream),0 2px 0 3px var(--ink)}
+.head-btn img{width:52px;display:block;image-rendering:pixelated}
 .info{display:none;position:absolute;z-index:6;top:calc(70px + env(safe-area-inset-top,0px));right:18px;width:40px;height:40px;font-family:var(--f-px);font-weight:700;font-size:20px;color:var(--cream);background:rgba(15,12,28,.55);border:3px solid var(--cream);border-radius:50%;cursor:pointer;touch-action:manipulation;background:rgba(15,12,28,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 7' shape-rendering='crispEdges'%3E%3Cpath fill='%23fbf3e4' d='M1 0h1v1H1zM0 2h2v4h1v1H0V6h1V3H0z'/%3E%3C/svg%3E") center/9px 21px no-repeat}
 body.racing .info{display:block}
 body.racing .close,body.stacking .close{display:none}
@@ -192,17 +195,21 @@ body.stacking #s-tired{display:grid}
   <canvas class="side r" id="side-r" aria-hidden="true"></canvas>
   <div class="ov ov-top"><span class="std">SAVE THE DATE</span><span class="names">PITA <b>&amp;</b> TOMI</span><span class="pdate"><img class="rings" alt="">9 de octubre de 2027</span></div>
   <div class="bottom">
-    <div class="ava" id="strip">
-      <div class="screen" id="screen">
-        <canvas id="game" aria-label="Pita, Tomi y Milky en Bariloche al atardecer"></canvas>
-        <div class="hud"><span id="year">2014</span> · <span id="place">TEMUCO</span></div>
-        <div class="hint" id="hint"></div>
-        <div class="banner" id="banner" hidden></div>
+    <div class="ava-row">
+      <div class="heads">
+        <button class="head-btn" id="b-tomi" aria-label="Desafío 42K" hidden><img id="tomi-head" alt=""></button>
+        <button class="head-btn" id="b-pita" aria-label="Pita y Tomi en la PUC" hidden><img id="pita-head" alt=""></button>
+      </div>
+      <div class="ava" id="strip">
+        <div class="screen" id="screen">
+          <canvas id="game" aria-label="Pita, Tomi y Milky en Bariloche al atardecer"></canvas>
+          <div class="hud"><span id="year">2014</span> · <span id="place">TEMUCO</span></div>
+          <div class="hint" id="hint"></div>
+          <div class="banner" id="banner" hidden></div>
+        </div>
       </div>
     </div>
     <button class="cta" id="b-start" disabled>Cargando…</button>
-    <button class="head-btn" id="b-tomi" aria-label="Desafío 42K" hidden><img id="tomi-head" alt=""></button>
-    <button class="head-btn" id="b-pita" aria-label="Pita y Tomi en la PUC" hidden><img id="pita-head" alt=""></button>
   </div>
 </main>
 
@@ -224,7 +231,7 @@ body.stacking #s-tired{display:grid}
     <div class="top"><span id="s-sem">SEMESTRE 1</span><span id="s-got"></span></div>
   </div>
   <div id="s-tired" aria-hidden="true"><img id="s-face" alt=""><b><span></span></b></div>
-  <div class="rctl" id="rctl"><div><span class="hands"><img class="hand" alt=""></span>TOCA<br>PARA SALTAR</div><div><span class="hands"><img class="hand" alt=""><img class="hand d2" alt=""></span>TOCA Y TOCA<br>PARA CORRER</div></div>
+  <div class="rctl" id="rctl"><div><span class="hands"><img class="hand" alt=""></span>TOCA<br>PARA SALTAR</div><div><span class="hands"><span class="tap"><span class="ring"></span><span class="ring d2"></span><img class="hand hold" alt=""></span></span>MANTÉN<br>PARA CORRER</div></div>
   <div class="rspot" id="rspot" hidden><div class="hole" id="rspot-hole"></div><p class="rtip" id="rspot-tip"></p></div>
 </section>
 <button class="kiss" id="b-kiss" hidden>♥ besito</button>
@@ -1686,7 +1693,7 @@ addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('button, input')) return;
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) { held.add('l'); syncDir(); e.preventDefault(); }
   if (['ArrowRight', 'd', 'D'].includes(e.key)) { held.add('r'); syncDir(); e.preventDefault(); }
-  if (mode === 'race') { if (!e.repeat && ['ArrowLeft', 'ArrowUp', ' '].includes(e.key)) raceTap('l'); if (!e.repeat && e.key === 'ArrowRight') raceTap('r'); e.preventDefault(); return; }
+  if (mode === 'race') { if (!e.repeat && ['ArrowLeft', 'ArrowUp', ' '].includes(e.key)) raceJump(); if (e.key === 'ArrowRight') raceRun(true); e.preventDefault(); return; }
   if (mode === 'stack') { e.preventDefault(); return; }
   if (e.key === ' ' && !e.repeat) { transform(); e.preventDefault(); }
   if ((e.key === 'k' || e.key === 'K') && !e.repeat) kiss();
@@ -1695,6 +1702,7 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => {
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) held.delete('l');
   if (['ArrowRight', 'd', 'D'].includes(e.key)) held.delete('r');
+  if (mode === 'race' && e.key === 'ArrowRight') raceRun(false);
   syncDir();
 });
 // rage-kiss: 5 taps in 2 s → heart explosion, at most one every 3 s
@@ -1717,14 +1725,14 @@ function boom() {
 $('b-kiss').addEventListener('click', tapBesito);
 
 /* ---------- Desafío 42K ---------- */
-// Tomi runs the Maratón de Santiago: tap left = jump (grab floating items, clear rocks), tap right = faster.
+// Tomi runs the Maratón de Santiago: tap left = jump (grab floating items, clear rocks), hold right = run, let go = walk.
 // Bars are 0..1: e energía, w agua, g guatita (bad when high), sun bloqueador, salt sales.
 const RACE_CFG = {
   // eDrain: jogging with no food runs dry around km 10
   facil: { secs: 75, eDrain: .032, aid: ['agua', 'gel', 'agua'], items: ['gel', 'frugele', 'agua'], hints: true, cost: .85 },
   ultra: { secs: 150, eDrain: .016, aid: ['agua', 'gel', 'sal', 'agua'], items: ['gel', 'frugele', 'gel', 'frugele', 'agua', 'agua', 'agua', 'bloqueador', 'sal'], hints: false, cost: 1.15 },
 };
-const WALK_MUL = .55, JOG = 80, AVG_MUL = 1.4, TAP_MUL = 1.2, MAX_MUL = 4, MUL_DECAY = 1.5;
+const WALK_MUL = .55, JOG = 80, AVG_MUL = 1.4, MAX_MUL = 4, MUL_EASE = .8;
 const JUMP_BUFFER = .2, JUMP_V = 200, GRAVITY = 667, ITEM_LO = 58, ITEM_ARC = 14, ARC_W = 70, TOMI_H = 48, TARGET_CLOCK = 3.5 * 3600;
 // nobody beats a 1:59:59 marathon: speed is capped at that pace
 const MIN_CLOCK = 7199, FAINT_SECS = 3.2, RECOVER_SECS = 3, FAINT_PENALTY = 360, STUMBLE_SECS = 1, KM_COUNT = 42.195;
@@ -1736,7 +1744,7 @@ function newRace(kind) {
   const cfg = RACE_CFG[kind], L = cfg.secs * JOG * AVG_MUL, rand = courseRng(kind === 'ultra' ? 4207 : 1910);
   return {
     kind, cfg, L, kmPx: L / KM_COUNT, clockScale: TARGET_CLOCK / cfg.secs, vmax: L * TARGET_CLOCK / cfg.secs / MIN_CLOCK, paused: false,
-    d: 0, clock: 0, t: 0, lives: 3, e: .8, w: .8, g: 0, sun: 1, salt: 1, mul: 1, jy: 0, jv: 0, jumpBuf: 0, stumble: 0,
+    d: 0, clock: 0, t: 0, lives: 3, e: .8, w: .8, g: 0, sun: 1, salt: 1, mul: WALK_MUL, running: false, jy: 0, jv: 0, jumpBuf: 0, stumble: 0,
     kiss: 0, turboMul: 1, gels: [], lastWater: -99, eaten: [], quemado: false, burnFaint: false, calambre: false, tired: false, thirsty: false, faint: null, recover: 0, boost: 0, done: 0, over: false,
     things: [], nextAt: 260, aidKm: 5, tapped: false, rand,
     luck: { at: L * (.5 + rand() * .35), state: 'wait', x: 0, t: 0 }, hinted: {},
@@ -1748,14 +1756,13 @@ const raceInSun = () => race.kind === 'ultra' && sunnyKm(Math.floor(race.d / rac
 // target tells the page what to spotlight: a bar, the right half, or a point in game px (offY included)
 const raceHint = (key, target) => { if (race.cfg.hints && !race.hinted[key]) { race.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
 
-function raceTap(side) {
+function raceJump() {
   const r = race; if (!r || r.faint || r.done || r.over) return;
   r.tapped = true;
   // a tap in the last moments of a jump is kept and fires on landing, so fast tappers don't lose jumps
-  if (side === 'l') { if (r.jy <= 0) { r.jv = JUMP_V; r.jy = .01; } else r.jumpBuf = JUMP_BUFFER; return; }
-  if (r.recover > 0 || r.stumble > 0 || r.calambre || r.tired || r.thirsty) return;
-  r.mul = Math.min(MAX_MUL, r.mul * TAP_MUL); r.hinted.fast = true;
+  if (r.jy <= 0) { r.jv = JUMP_V; r.jy = .01; } else r.jumpBuf = JUMP_BUFFER;
 }
+function raceRun(on) { if (!race) return; race.running = on; if (on) { race.tapped = true; race.hinted.fast = true; } }
 // combos: items grabbed together give a turbo (speed without the extra drain); any order counts.
 // Judged on landing, so a small combo can't steal a bigger one from the same jump.
 const COMBOS = [
@@ -1832,8 +1839,10 @@ function raceUpdate(dt) {
   if (r.boost > 0) r.boost -= dt;
   if (r.stumble > 0) r.stumble -= dt;
   if (r.kiss > 0) r.kiss -= dt;
-  if (r.calambre) r.mul = 1;
-  r.mul = 1 + (r.mul - 1) * Math.exp(-dt / MUL_DECAY);
+  // held: speed builds up to a run; let go: it eases back to a walk. Stumbles, cramps and recovery cap it at a jog
+  const capped = r.recover > 0 || r.stumble > 0 || r.calambre;
+  const goal = !r.running ? WALK_MUL : capped ? 1 : MAX_MUL;
+  r.mul = goal + (r.mul - goal) * Math.exp(-dt / MUL_EASE);
   if (r.jumpBuf > 0) r.jumpBuf -= dt;
   if (r.jy > 0) { r.jy += r.jv * dt; r.jv -= GRAVITY * dt; if (r.jy <= 0) { r.jy = 0; r.jv = 0; if (r.eaten.length) raceCombo(); if (r.jumpBuf > 0) { r.jumpBuf = 0; r.jv = JUMP_V; r.jy = .01; } } }
   // bars drain at fixed rates: speed is its own difficulty (harder to grab items and dodge obstacles); guatita only comes from food
@@ -1850,7 +1859,7 @@ function raceUpdate(dt) {
   r.gels = r.gels.filter(gl => { const k = Math.min(gl.left, dt * .4 / 3); r.e = Math.min(1, r.e + k); gl.left -= k; return gl.left > 1e-4; });
   r.e = Math.max(0, r.e); r.w = Math.max(0, r.w);
   if (r.e < .35) raceHint('e', { bar: 'e' }); if (r.w < .35) raceHint('w', { bar: 'w' }); if (r.g > .6) raceHint('g', { bar: 'g' });
-  if (r.t > 4) raceHint('fast', { side: 'r' });
+  if (r.t > 2) raceHint('fast', { side: 'r' });
   if (r.tired && r.e > .02) r.tired = false;
   if (r.thirsty && r.w > .02) r.thirsty = false;
   const walking = r.tired || r.thirsty;
@@ -1972,7 +1981,9 @@ function raceFrame(t, dt) {
   }
   // runners: Pita alongside, Tomi is the player
   const set = outfitSprites('run'), tx = tomiSX(), finished = r.done > .4;
-  const runner = (who, sx, moving, flip, lift) => { const fr = moving ? Math.floor(phase) % 4 : 1; shadow(sx, 20); sprite(set[who].run[lift ? 0 : fr], sx, GROUND + 2 - lift - (moving && fr % 2 ? 1 : 0), flip); };
+  // no finger on the right: they walk, with walking legs
+  const gait = r.tired || r.thirsty || (r.mul < .8 && r.boost <= 0) ? 'walk' : 'run';
+  const runner = (who, sx, moving, flip, lift) => { const fr = moving ? Math.floor(phase) % 4 : 1; shadow(sx, 20); sprite(set[who][gait][lift ? 0 : fr], sx, GROUND + 2 - lift - (moving && fr % 2 ? 1 : 0), flip); };
   if (r.kiss > 0 && !r.faint) { shadow(tx + 23, 20); sprite(set.pita.kiss, tx + 23, GROUND + 2, true); }
   else runner('pita', r.faint ? tx + 22 : tx - 26, !r.faint && !finished, !!r.faint, 0);
   if (r.faint) {
@@ -2012,8 +2023,8 @@ function startRace(kind, w, hs) {
 // Pita catches falling coursework on a stack of books. Items land where they hit; an off-center
 // tower or too much sway topples it. Energy items fight tiredness, which makes Pita shaky.
 const STACK_CFG = {
-  facil: { need: 3, every: 1.7, fall: 38, speedUp: 0, giant: [], snackEvery: 9, drain: .55, hints: true, grace: 5, sway: .5, luckSems: [[4, 6], [8, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas'] },
-  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, drain: 1, hints: false, grace: 1.5, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
+  facil: { need: 3, every: 1.7, fall: 38, speedUp: 0, giant: [], snackEvery: 9, snackRamp: 0, drain: .55, hints: true, grace: 5, sway: .5, luckSems: [[4, 6], [8, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas'] },
+  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, snackRamp: .16, drain: 1, hints: false, grace: 2.5, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
 };
 const SEMESTERS = 12, GIANT_N = 6, GIANT_NAMES = { 6: '¡Certamen!', 12: '¡Examen de título!' };
 // the stack rides on Pita's head, so her tired face stays visible
@@ -2051,7 +2062,8 @@ function newStack(kind) {
   };
 }
 const stackNeed = () => stk.cfg.giant.includes(stk.sem) ? GIANT_N : stk.cfg.need;
-const stackHint = (key, target) => { if (stk.cfg.hints && !stk.hinted[key]) { stk.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
+// the drag lesson shows in both modes, until the player has dragged once
+const stackHint = (key, target) => { if ((stk.cfg.hints || key === 'p-move') && !stk.hinted[key]) { stk.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
 // where every stacked thing sits right now: x centre (with sway) and bottom y
 function stackLayout() {
   let sx = stk.x, y = HAND_Y;
@@ -2155,7 +2167,7 @@ function stackUpdate(dt) {
   } else {
     s.nextWork -= dt; if (s.nextWork <= 0) { spawnWork(); s.nextWork = Math.max(.9, s.cfg.every - (s.cfg.speedUp ? .06 * (s.sem - 1) : 0)); }
   }
-  s.nextSnack -= dt; if (s.nextSnack <= 0) { spawnSnack(); s.nextSnack = s.cfg.snackEvery * (.7 + s.rand() * .6); }
+  s.nextSnack -= dt; if (s.nextSnack <= 0) { spawnSnack(); s.nextSnack = s.cfg.snackEvery * (.7 + s.rand() * .6) / (1 + s.cfg.snackRamp * (s.sem - 1)); }
   // falling things: coursework lands on the top it hits, snacks get eaten by the tower or Pita
   let lay = stackLayout(), caught = false, collapse = false;
   const wasUnstable = s.unstable, top = lay.length ? lay[lay.length - 1] : null, topY = stackTopY(), topX = top ? top.cx : s.x, topHalf = top ? top.it.w / 2 : HANDS_HALF;
@@ -2199,7 +2211,7 @@ function stackUpdate(dt) {
   s.unstable = risk > 1 || (s.unstable && risk > .95);
   if (s.unstable) stackHint('p-sway', { x: lay[lay.length - 1].cx, y: offY + s.lift + stackTopY(), r: 22 });
   if (s.e < .45) stackHint('p-energy', { bar: 's-tired' });
-  if (s.t > .6) stackHint('p-move', { x: s.x, y: offY + s.lift + GROUND - 24, r: 26 });
+  if (s.t > .3) stackHint('p-move', { x: s.x, y: offY + s.lift + GROUND - 24, r: 26 });
   s.risk = risk;
 }
 
@@ -2317,7 +2329,7 @@ window.PT = {
   resize(w, hs) { setViewport(w, hs); },
   press(k, on) { if (on) held.add(k); else held.delete(k); syncDir(); },
   race(kind, w, hs) { startRace(kind, w, hs); },
-  tap: raceTap,
+  jump: raceJump, run: raceRun,
   pause(on) { if (race) race.paused = on; if (stk) stk.paused = on; },
   art: raceArtURL,
   milky: () => milkySet('scarf').idle[0], heart: () => HEART,
@@ -2564,14 +2576,14 @@ const names = Object.keys(SCENES);
   };
   // Fácil hints: pause, dim everything but the thing being taught, tap to continue
   const HINTS = {
-    fast: 'Toca y toca aquí para correr más rápido',
+    fast: 'Mantén el dedo aquí para correr. Si lo sueltas, Tomi camina',
     jump: 'Toca a la izquierda para saltar y agarrarlo',
     rock: '¡Obstáculo! Toca a la izquierda para saltarlo',
     e: 'Energía baja: agarra geles y Frugeles',
     w: 'Agua baja: agarra botellas de agua',
     g: 'Dolor de guatita: no agarres tanta comida seguida',
     luck: '¡Besito de la suerte! Corre rápido y salta para atraparlo',
-    'p-move': 'Mueve a Pita con el dedo y atrapa lo que cae del cielo',
+    'p-move': 'Arrastra a Pita con un dedo y atrapa lo que cae del cielo',
     'p-sway': '¡Se va a caer! Atrapa algo al otro lado para equilibrarla',
     'p-energy': 'Pita se cansa: atrapa café, queques y siestas',
     'p-snack': '¡Comida! Atrápala para recuperar energía',
@@ -2579,8 +2591,9 @@ const names = Object.keys(SCENES);
   };
   window.onPTRaceHint = (key, tg) => {
     const seen = store.get('pt42kHints', {}); if (seen[key] || !HINTS[key]) return;
-    seen[key] = true; store.set('pt42kHints', seen);
-    window.PT.pause(true); $('rctl').classList.add('out');
+    dragLesson = key === 'p-move';
+    if (!dragLesson) { seen[key] = true; store.set('pt42kHints', seen); }
+    window.PT.pause(true); $('rctl').classList.add('out'); $('rspot').classList.toggle('drag', dragLesson);
     const spot = $('rspot'), hole = $('rspot-hole'), tip = $('rspot-tip'), pad = 6;
     let x, y, w, h, round = true;
     if (tg.bar) { const b = (bars[tg.bar] || $(tg.bar)).getBoundingClientRect(); x = b.left - pad; y = b.top - pad; w = b.width + pad * 2; h = b.height + pad * 2; round = false; }
@@ -2588,14 +2601,24 @@ const names = Object.keys(SCENES);
     else { const cv = $('game').getBoundingClientRect(), k = cv.width / $('game').width, cx = cv.left + tg.x * k, cy = cv.top + tg.y * cv.height / $('game').height, rad = Math.max(28, tg.r * k); x = cx - rad; y = cy - rad; w = h = rad * 2; }
     Object.assign(hole.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', borderRadius: round ? '50%' : '8px' });
     // only OK closes it, and only after a beat, so speed-tapping can't skip the lesson
-    tip.innerHTML = ''; tip.append(HINTS[key]); const ok = document.createElement('button'); ok.textContent = 'OK'; ok.disabled = true; tip.appendChild(ok);
-    setTimeout(() => { ok.disabled = false; }, 600);
-    ok.addEventListener('click', () => { spot.hidden = true; window.PT.pause(false); });
+    tip.innerHTML = ''; tip.append(HINTS[key]);
+    if (!dragLesson) {
+      const ok = document.createElement('button'); ok.textContent = 'OK'; ok.disabled = true; tip.appendChild(ok);
+      setTimeout(() => { ok.disabled = false; }, 600);
+      ok.addEventListener('click', () => { spot.hidden = true; window.PT.pause(false); });
+    }
     // road things: card above, clear of the runners — unless the spot is too close to the top
     spot.hidden = false;
     const below = !!(tg.bar || tg.side) || y - 18 - tip.offsetHeight < 10;
     Object.assign(tip.style, below ? { top: (y + h + 18) + 'px', bottom: '' } : { top: '', bottom: (innerHeight - y + 18) + 'px' });
   };
+  // the drag lesson has no OK: it lets touches through and closes on the first real drag
+  let dragLesson = false;
+  const DRAG_PX = 12;
+  function endDragLesson() {
+    dragLesson = false; $('rspot').hidden = true; window.PT.pause(false);
+    const seen = store.get('pt42kHints', {}); seen['p-move'] = true; store.set('pt42kHints', seen);
+  }
   $('rspot').addEventListener('pointerdown', e => { e.stopPropagation(); if (!e.target.closest('button')) e.preventDefault(); });
   window.onPTRaceEnd = res => {
     $('rspot').hidden = true; lastRace = res;
@@ -2675,28 +2698,33 @@ const names = Object.keys(SCENES);
   let side = null, downAt = 0, timer = 0;
   const edge = s => $(s === 'r' ? 'edge-r' : 'edge-l');
   function release() { clearTimeout(timer); if (side) { window.PT.press(side, false); edge(side).classList.remove('on'); } side = null; }
-  // race: read raw touches, so a left tap while a right finger is still down isn't swallowed as a pinch
-  // Pita y Tomi en la PUC: Pita follows the finger
+  // Pita y Tomi en la PUC: Pita follows the finger; a drag also closes the drag lesson
   const stacking = () => document.body.classList.contains('stacking');
-  const follow = e => { if (!stacking() || e.target.closest('button, .rspot')) return; window.PT.stackTo(e.touches[0].clientX / innerWidth); e.preventDefault(); };
-  play.addEventListener('touchstart', follow, { passive: false });
+  let dragFrom = null;
+  const dragged = x => { if (dragFrom == null) dragFrom = x; else if (dragLesson && Math.abs(x - dragFrom) > DRAG_PX) endDragLesson(); };
+  const follow = e => { if (!stacking() || e.target.closest('button, .rspot')) return; const x = e.touches[0].clientX; dragged(x); window.PT.stackTo(x / innerWidth); e.preventDefault(); };
+  play.addEventListener('touchstart', e => { dragFrom = null; follow(e); }, { passive: false });
   play.addEventListener('touchmove', follow, { passive: false });
-  play.addEventListener('pointermove', e => { if (stacking() && e.pointerType !== 'touch' && e.buttons) window.PT.stackTo(e.clientX / innerWidth); });
+  play.addEventListener('pointermove', e => { if (stacking() && e.pointerType !== 'touch' && e.buttons) { dragged(e.clientX); window.PT.stackTo(e.clientX / innerWidth); } });
+  // race: a left touch jumps; Tomi runs while any finger rests on the right half
+  const racing = () => document.body.classList.contains('racing');
+  const runIfHeld = e => window.PT.run([...e.touches].some(tch => tch.clientX >= innerWidth / 2));
   play.addEventListener('touchstart', e => {
-    if (!document.body.classList.contains('racing') || e.target.closest('button, .rspot')) return;
-    for (const tch of e.changedTouches) window.PT.tap(tch.clientX >= innerWidth / 2 ? 'r' : 'l');
-    e.preventDefault();
+    if (!racing() || e.target.closest('button, .rspot')) return;
+    for (const tch of e.changedTouches) if (tch.clientX < innerWidth / 2) window.PT.jump();
+    runIfHeld(e); e.preventDefault();
   }, { passive: false });
+  ['touchend', 'touchcancel'].forEach(ev => play.addEventListener(ev, e => { if (racing()) runIfHeld(e); }));
   play.addEventListener('pointerdown', e => {
     if (e.target.closest('button')) return;
     if (stacking()) { if (e.pointerType !== 'touch') window.PT.stackTo(e.clientX / innerWidth); e.preventDefault(); return; }
-    if (document.body.classList.contains('racing')) { if (e.pointerType !== 'touch') window.PT.tap(e.clientX >= innerWidth / 2 ? 'r' : 'l'); e.preventDefault(); return; }
+    if (racing()) { if (e.pointerType !== 'touch') { if (e.clientX >= innerWidth / 2) window.PT.run(true); else window.PT.jump(); } e.preventDefault(); return; }
     const s = e.clientX >= innerWidth / 2 ? 'r' : 'l';
     release(); side = s; downAt = performance.now(); window.PT.press(s, true); edge(s).classList.add('on');
     try { play.setPointerCapture(e.pointerId); } catch (err) {}
     e.preventDefault();
   });
-  const up = () => { if (!side) return; const s = side; clearTimeout(timer); timer = setTimeout(() => { if (side === s) release(); }, Math.max(0, 400 - (performance.now() - downAt))); };
+  const up = e => { if (racing() && e.pointerType !== 'touch') window.PT.run(false); if (!side) return; const s = side; clearTimeout(timer); timer = setTimeout(() => { if (side === s) release(); }, Math.max(0, 400 - (performance.now() - downAt))); };
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => play.addEventListener(ev, up));
   play.addEventListener('contextmenu', e => e.preventDefault());
 })();

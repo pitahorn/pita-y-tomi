@@ -1418,7 +1418,7 @@ addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('button, input')) return;
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) { held.add('l'); syncDir(); e.preventDefault(); }
   if (['ArrowRight', 'd', 'D'].includes(e.key)) { held.add('r'); syncDir(); e.preventDefault(); }
-  if (mode === 'race') { if (!e.repeat && ['ArrowLeft', 'ArrowUp', ' '].includes(e.key)) raceTap('l'); if (!e.repeat && e.key === 'ArrowRight') raceTap('r'); e.preventDefault(); return; }
+  if (mode === 'race') { if (!e.repeat && ['ArrowLeft', 'ArrowUp', ' '].includes(e.key)) raceJump(); if (e.key === 'ArrowRight') raceRun(true); e.preventDefault(); return; }
   if (mode === 'stack') { e.preventDefault(); return; }
   if (e.key === ' ' && !e.repeat) { transform(); e.preventDefault(); }
   if ((e.key === 'k' || e.key === 'K') && !e.repeat) kiss();
@@ -1427,6 +1427,7 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => {
   if (['ArrowLeft', 'a', 'A'].includes(e.key)) held.delete('l');
   if (['ArrowRight', 'd', 'D'].includes(e.key)) held.delete('r');
+  if (mode === 'race' && e.key === 'ArrowRight') raceRun(false);
   syncDir();
 });
 // rage-kiss: 5 taps in 2 s → heart explosion, at most one every 3 s
@@ -1458,7 +1459,7 @@ window.PT = {
   resize(w, hs) { setViewport(w, hs); },
   press(k, on) { if (on) held.add(k); else held.delete(k); syncDir(); },
   race(kind, w, hs) { startRace(kind, w, hs); },
-  tap: raceTap,
+  jump: raceJump, run: raceRun,
   pause(on) { if (race) race.paused = on; if (stk) stk.paused = on; },
   art: raceArtURL,
   milky: () => milkySet('scarf').idle[0], heart: () => HEART,

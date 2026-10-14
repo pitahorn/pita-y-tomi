@@ -2,8 +2,8 @@
 // Pita catches falling coursework on a stack of books. Items land where they hit; an off-center
 // tower or too much sway topples it. Energy items fight tiredness, which makes Pita shaky.
 const STACK_CFG = {
-  facil: { need: 3, every: 1.7, fall: 38, speedUp: 0, giant: [], snackEvery: 9, drain: .55, hints: true, grace: 5, sway: .5, luckSems: [[4, 6], [8, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas'] },
-  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, drain: 1, hints: false, grace: 1.5, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
+  facil: { need: 3, every: 1.7, fall: 38, speedUp: 0, giant: [], snackEvery: 9, snackRamp: 0, drain: .55, hints: true, grace: 5, sway: .5, luckSems: [[4, 6], [8, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas'] },
+  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, snackRamp: .16, drain: 1, hints: false, grace: 2.5, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
 };
 const SEMESTERS = 12, GIANT_N = 6, GIANT_NAMES = { 6: '¡Certamen!', 12: '¡Examen de título!' };
 // the stack rides on Pita's head, so her tired face stays visible
@@ -41,7 +41,8 @@ function newStack(kind) {
   };
 }
 const stackNeed = () => stk.cfg.giant.includes(stk.sem) ? GIANT_N : stk.cfg.need;
-const stackHint = (key, target) => { if (stk.cfg.hints && !stk.hinted[key]) { stk.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
+// the drag lesson shows in both modes, until the player has dragged once
+const stackHint = (key, target) => { if ((stk.cfg.hints || key === 'p-move') && !stk.hinted[key]) { stk.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
 // where every stacked thing sits right now: x centre (with sway) and bottom y
 function stackLayout() {
   let sx = stk.x, y = HAND_Y;
@@ -145,7 +146,7 @@ function stackUpdate(dt) {
   } else {
     s.nextWork -= dt; if (s.nextWork <= 0) { spawnWork(); s.nextWork = Math.max(.9, s.cfg.every - (s.cfg.speedUp ? .06 * (s.sem - 1) : 0)); }
   }
-  s.nextSnack -= dt; if (s.nextSnack <= 0) { spawnSnack(); s.nextSnack = s.cfg.snackEvery * (.7 + s.rand() * .6); }
+  s.nextSnack -= dt; if (s.nextSnack <= 0) { spawnSnack(); s.nextSnack = s.cfg.snackEvery * (.7 + s.rand() * .6) / (1 + s.cfg.snackRamp * (s.sem - 1)); }
   // falling things: coursework lands on the top it hits, snacks get eaten by the tower or Pita
   let lay = stackLayout(), caught = false, collapse = false;
   const wasUnstable = s.unstable, top = lay.length ? lay[lay.length - 1] : null, topY = stackTopY(), topX = top ? top.cx : s.x, topHalf = top ? top.it.w / 2 : HANDS_HALF;
@@ -189,7 +190,7 @@ function stackUpdate(dt) {
   s.unstable = risk > 1 || (s.unstable && risk > .95);
   if (s.unstable) stackHint('p-sway', { x: lay[lay.length - 1].cx, y: offY + s.lift + stackTopY(), r: 22 });
   if (s.e < .45) stackHint('p-energy', { bar: 's-tired' });
-  if (s.t > .6) stackHint('p-move', { x: s.x, y: offY + s.lift + GROUND - 24, r: 26 });
+  if (s.t > .3) stackHint('p-move', { x: s.x, y: offY + s.lift + GROUND - 24, r: 26 });
   s.risk = risk;
 }
 

@@ -1,12 +1,12 @@
 /* ---------- Desafío 42K ---------- */
-// Tomi runs the Maratón de Santiago: tap left = jump (grab floating items, clear rocks), tap right = faster.
+// Tomi runs the Maratón de Santiago: tap left = jump (grab floating items, clear rocks), hold right = run, let go = walk.
 // Bars are 0..1: e energía, w agua, g guatita (bad when high), sun bloqueador, salt sales.
 const RACE_CFG = {
   // eDrain: jogging with no food runs dry around km 10
   facil: { secs: 75, eDrain: .032, aid: ['agua', 'gel', 'agua'], items: ['gel', 'frugele', 'agua'], hints: true, cost: .85 },
   ultra: { secs: 150, eDrain: .016, aid: ['agua', 'gel', 'sal', 'agua'], items: ['gel', 'frugele', 'gel', 'frugele', 'agua', 'agua', 'agua', 'bloqueador', 'sal'], hints: false, cost: 1.15 },
 };
-const WALK_MUL = .55, JOG = 80, AVG_MUL = 1.4, TAP_MUL = 1.2, MAX_MUL = 4, MUL_DECAY = 1.5;
+const WALK_MUL = .55, JOG = 80, AVG_MUL = 1.4, MAX_MUL = 4, MUL_EASE = .8;
 const JUMP_BUFFER = .2, JUMP_V = 200, GRAVITY = 667, ITEM_LO = 58, ITEM_ARC = 14, ARC_W = 70, TOMI_H = 48, TARGET_CLOCK = 3.5 * 3600;
 // nobody beats a 1:59:59 marathon: speed is capped at that pace
 const MIN_CLOCK = 7199, FAINT_SECS = 3.2, RECOVER_SECS = 3, FAINT_PENALTY = 360, STUMBLE_SECS = 1, KM_COUNT = 42.195;
@@ -18,7 +18,7 @@ function newRace(kind) {
   const cfg = RACE_CFG[kind], L = cfg.secs * JOG * AVG_MUL, rand = courseRng(kind === 'ultra' ? 4207 : 1910);
   return {
     kind, cfg, L, kmPx: L / KM_COUNT, clockScale: TARGET_CLOCK / cfg.secs, vmax: L * TARGET_CLOCK / cfg.secs / MIN_CLOCK, paused: false,
-    d: 0, clock: 0, t: 0, lives: 3, e: .8, w: .8, g: 0, sun: 1, salt: 1, mul: 1, jy: 0, jv: 0, jumpBuf: 0, stumble: 0,
+    d: 0, clock: 0, t: 0, lives: 3, e: .8, w: .8, g: 0, sun: 1, salt: 1, mul: WALK_MUL, running: false, jy: 0, jv: 0, jumpBuf: 0, stumble: 0,
     kiss: 0, turboMul: 1, gels: [], lastWater: -99, eaten: [], quemado: false, burnFaint: false, calambre: false, tired: false, thirsty: false, faint: null, recover: 0, boost: 0, done: 0, over: false,
     things: [], nextAt: 260, aidKm: 5, tapped: false, rand,
     luck: { at: L * (.5 + rand() * .35), state: 'wait', x: 0, t: 0 }, hinted: {},
@@ -30,14 +30,13 @@ const raceInSun = () => race.kind === 'ultra' && sunnyKm(Math.floor(race.d / rac
 // target tells the page what to spotlight: a bar, the right half, or a point in game px (offY included)
 const raceHint = (key, target) => { if (race.cfg.hints && !race.hinted[key]) { race.hinted[key] = true; if (window.onPTRaceHint) window.onPTRaceHint(key, target); } };
 
-function raceTap(side) {
+function raceJump() {
   const r = race; if (!r || r.faint || r.done || r.over) return;
   r.tapped = true;
   // a tap in the last moments of a jump is kept and fires on landing, so fast tappers don't lose jumps
-  if (side === 'l') { if (r.jy <= 0) { r.jv = JUMP_V; r.jy = .01; } else r.jumpBuf = JUMP_BUFFER; return; }
-  if (r.recover > 0 || r.stumble > 0 || r.calambre || r.tired || r.thirsty) return;
-  r.mul = Math.min(MAX_MUL, r.mul * TAP_MUL); r.hinted.fast = true;
+  if (r.jy <= 0) { r.jv = JUMP_V; r.jy = .01; } else r.jumpBuf = JUMP_BUFFER;
 }
+function raceRun(on) { if (!race) return; race.running = on; if (on) { race.tapped = true; race.hinted.fast = true; } }
 // combos: items grabbed together give a turbo (speed without the extra drain); any order counts.
 // Judged on landing, so a small combo can't steal a bigger one from the same jump.
 const COMBOS = [
@@ -114,8 +113,10 @@ function raceUpdate(dt) {
   if (r.boost > 0) r.boost -= dt;
   if (r.stumble > 0) r.stumble -= dt;
   if (r.kiss > 0) r.kiss -= dt;
-  if (r.calambre) r.mul = 1;
-  r.mul = 1 + (r.mul - 1) * Math.exp(-dt / MUL_DECAY);
+  // held: speed builds up to a run; let go: it eases back to a walk. Stumbles, cramps and recovery cap it at a jog
+  const capped = r.recover > 0 || r.stumble > 0 || r.calambre;
+  const goal = !r.running ? WALK_MUL : capped ? 1 : MAX_MUL;
+  r.mul = goal + (r.mul - goal) * Math.exp(-dt / MUL_EASE);
   if (r.jumpBuf > 0) r.jumpBuf -= dt;
   if (r.jy > 0) { r.jy += r.jv * dt; r.jv -= GRAVITY * dt; if (r.jy <= 0) { r.jy = 0; r.jv = 0; if (r.eaten.length) raceCombo(); if (r.jumpBuf > 0) { r.jumpBuf = 0; r.jv = JUMP_V; r.jy = .01; } } }
   // bars drain at fixed rates: speed is its own difficulty (harder to grab items and dodge obstacles); guatita only comes from food
@@ -132,7 +133,7 @@ function raceUpdate(dt) {
   r.gels = r.gels.filter(gl => { const k = Math.min(gl.left, dt * .4 / 3); r.e = Math.min(1, r.e + k); gl.left -= k; return gl.left > 1e-4; });
   r.e = Math.max(0, r.e); r.w = Math.max(0, r.w);
   if (r.e < .35) raceHint('e', { bar: 'e' }); if (r.w < .35) raceHint('w', { bar: 'w' }); if (r.g > .6) raceHint('g', { bar: 'g' });
-  if (r.t > 4) raceHint('fast', { side: 'r' });
+  if (r.t > 2) raceHint('fast', { side: 'r' });
   if (r.tired && r.e > .02) r.tired = false;
   if (r.thirsty && r.w > .02) r.thirsty = false;
   const walking = r.tired || r.thirsty;
@@ -254,7 +255,9 @@ function raceFrame(t, dt) {
   }
   // runners: Pita alongside, Tomi is the player
   const set = outfitSprites('run'), tx = tomiSX(), finished = r.done > .4;
-  const runner = (who, sx, moving, flip, lift) => { const fr = moving ? Math.floor(phase) % 4 : 1; shadow(sx, 20); sprite(set[who].run[lift ? 0 : fr], sx, GROUND + 2 - lift - (moving && fr % 2 ? 1 : 0), flip); };
+  // no finger on the right: they walk, with walking legs
+  const gait = r.tired || r.thirsty || (r.mul < .8 && r.boost <= 0) ? 'walk' : 'run';
+  const runner = (who, sx, moving, flip, lift) => { const fr = moving ? Math.floor(phase) % 4 : 1; shadow(sx, 20); sprite(set[who][gait][lift ? 0 : fr], sx, GROUND + 2 - lift - (moving && fr % 2 ? 1 : 0), flip); };
   if (r.kiss > 0 && !r.faint) { shadow(tx + 23, 20); sprite(set.pita.kiss, tx + 23, GROUND + 2, true); }
   else runner('pita', r.faint ? tx + 22 : tx - 26, !r.faint && !finished, !!r.faint, 0);
   if (r.faint) {
