@@ -3,7 +3,7 @@
 // tower or too much sway topples it. Energy items fight tiredness, which makes Pita shaky.
 const STACK_CFG = {
   facil: { need: 3, every: 1.7, fall: 38, speedUp: 0, giant: [], snackEvery: 9, snackRamp: 0, drain: .55, hints: true, grace: 5, sway: .5, luckSems: [[4, 6], [8, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas'] },
-  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, snackRamp: .16, drain: 1, hints: false, grace: 2.5, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
+  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, snackRamp: .08, drain: 1, hints: false, grace: 2, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
 };
 const SEMESTERS = 12, GIANT_N = 6, GIANT_NAMES = { 6: '¡Certamen!', 12: '¡Examen de título!' };
 // the stack rides on Pita's head, so her tired face stays visible

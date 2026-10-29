@@ -424,12 +424,12 @@ __ENGINE__
   const API = 'https://pita-y-tomi.pitahorn.workers.dev';
   const api = (path, body) => fetch(API + path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}).then(r => r.ok ? r.json() : Promise.reject(r));
   let taps = 0, global = 0;
-  const kisses = () => global + taps;
-  const kissLabel = () => { kissBtn.textContent = '♥ besito' + (kisses() ? ' · ' + kisses() : ''); };
+  const kisses = () => global + taps, dotted = n => String(n).replace(/\B(?=(\d{3})+$)/g, '.');
+  const kissLabel = () => { kissBtn.textContent = '♥ besito' + (kisses() ? ' · ' + dotted(kisses()) : ''); };
   kissLabel(); kissBtn.addEventListener('click', () => { taps++; kissLabel(); });
   api('/besitos').then(d => { global = d.total; kissLabel(); }).catch(() => {});
   function showKisses() {
-    const el = $('fin-kisses'), paint = () => { el.hidden = !kisses(); el.textContent = 'BESITOS · ' + kisses(); kissLabel(); };
+    const el = $('fin-kisses'), paint = () => { el.hidden = !kisses(); el.textContent = 'BESITOS · ' + dotted(kisses()); kissLabel(); };
     paint();
     if (taps) { const n = taps; api('/besitos', { n }).then(d => { global = d.total; taps -= n; paint(); }).catch(() => {}); }
   }

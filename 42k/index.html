@@ -2051,7 +2051,7 @@ function startRace(kind, w, hs) {
 // tower or too much sway topples it. Energy items fight tiredness, which makes Pita shaky.
 const STACK_CFG = {
   facil: { need: 3, every: 1.7, fall: 38, speedUp: 0, giant: [], snackEvery: 9, snackRamp: 0, drain: .55, hints: true, grace: 5, sway: .5, luckSems: [[4, 6], [8, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas'] },
-  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, snackRamp: .16, drain: 1, hints: false, grace: 2.5, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
+  ultra: { need: 4, every: 1.5, fall: 38, speedUp: 5, giant: [6, 12], snackEvery: 11, snackRamp: .08, drain: 1, hints: false, grace: 2, sway: 1, luckSems: [[7, 11]], work: ['libro', 'libro', 'libro', 'laptop', 'cuaderno', 'pruebas', 'calculadora'] },
 };
 const SEMESTERS = 12, GIANT_N = 6, GIANT_NAMES = { 6: '¡Certamen!', 12: '¡Examen de título!' };
 // the stack rides on Pita's head, so her tired face stays visible
@@ -2497,12 +2497,12 @@ const names = Object.keys(SCENES);
   const API = 'https://pita-y-tomi.pitahorn.workers.dev';
   const api = (path, body) => fetch(API + path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}).then(r => r.ok ? r.json() : Promise.reject(r));
   let taps = 0, global = 0;
-  const kisses = () => global + taps;
-  const kissLabel = () => { kissBtn.textContent = '♥ besito' + (kisses() ? ' · ' + kisses() : ''); };
+  const kisses = () => global + taps, dotted = n => String(n).replace(/\B(?=(\d{3})+$)/g, '.');
+  const kissLabel = () => { kissBtn.textContent = '♥ besito' + (kisses() ? ' · ' + dotted(kisses()) : ''); };
   kissLabel(); kissBtn.addEventListener('click', () => { taps++; kissLabel(); });
   api('/besitos').then(d => { global = d.total; kissLabel(); }).catch(() => {});
   function showKisses() {
-    const el = $('fin-kisses'), paint = () => { el.hidden = !kisses(); el.textContent = 'BESITOS · ' + kisses(); kissLabel(); };
+    const el = $('fin-kisses'), paint = () => { el.hidden = !kisses(); el.textContent = 'BESITOS · ' + dotted(kisses()); kissLabel(); };
     paint();
     if (taps) { const n = taps; api('/besitos', { n }).then(d => { global = d.total; taps -= n; paint(); }).catch(() => {}); }
   }
